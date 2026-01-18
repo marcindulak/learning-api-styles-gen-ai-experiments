@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 007 Weather Alerts
   As an API consumer
   I want to receive weather alerts via WebSocket

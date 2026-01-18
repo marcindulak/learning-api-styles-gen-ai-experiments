@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 006 Weather Forecast
   As an API consumer
   I want to access weather forecasts for cities

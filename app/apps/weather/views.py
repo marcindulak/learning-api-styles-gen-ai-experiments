@@ -3,8 +3,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
-from .models import Weather
-from .serializers import WeatherSerializer
+from .models import Weather, Forecast
+from .serializers import WeatherSerializer, ForecastSerializer
 from apps.cities.models import City
 
 
@@ -62,4 +62,24 @@ class WeatherViewSet(viewsets.ReadOnlyModelViewSet):
             return Response({'error': 'No weather data found for this city'}, status=404)
 
         serializer = self.get_serializer(weather)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def forecast(self, request):
+        """
+        Get weather forecast data for a specific city.
+        Query parameter: city_uuid (required)
+        Returns up to 7 days of forecast data in chronological order.
+        """
+        city_uuid = request.query_params.get('city_uuid')
+        if not city_uuid:
+            return Response({'error': 'city_uuid parameter is required'}, status=400)
+
+        city = get_object_or_404(City, uuid=city_uuid)
+        forecasts = Forecast.objects.filter(city=city).order_by('forecast_date')[:7]
+
+        if not forecasts:
+            return Response({'error': 'No forecast data found for this city'}, status=404)
+
+        serializer = ForecastSerializer(forecasts, many=True)
         return Response(serializer.data)

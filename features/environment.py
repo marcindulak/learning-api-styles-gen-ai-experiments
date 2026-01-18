@@ -7,7 +7,6 @@ import django
 from django.conf import settings
 from django.test.utils import get_runner
 from django.test import Client
-from django.contrib.auth.models import User
 import json
 
 # Add the app directory to sys.path so Django can find our project
@@ -17,7 +16,7 @@ if APP_DIR not in sys.path:
     sys.path.insert(0, APP_DIR)
 
 # Set Django settings module
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.base')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.test')
 
 # Avoid errors when no database is configured yet
 if not settings.configured:
@@ -59,6 +58,10 @@ def before_all(context):
     context.graphql_response = None
     context.graphql_response_status = None
     context.graphql_response_data = None
+    context.forecast_data = {}
+    context.forecast_response = None
+    context.forecast_response_status = None
+    context.forecast_response_data = None
 
     # Create default test users
     create_test_users(context)
@@ -93,6 +96,10 @@ def before_scenario(context, scenario):
     context.graphql_response = None
     context.graphql_response_status = None
     context.graphql_response_data = None
+    context.forecast_data = {}
+    context.forecast_response = None
+    context.forecast_response_status = None
+    context.forecast_response_data = None
 
 
 def after_scenario(context, scenario):
@@ -107,6 +114,8 @@ def create_test_users(context):
     """
     Create default test users for authentication scenarios.
     """
+    from django.contrib.auth.models import User
+
     # Admin user
     admin_user, created = User.objects.get_or_create(
         username='admin',

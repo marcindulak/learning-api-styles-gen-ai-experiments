@@ -107,7 +107,7 @@ def step_response_contains_city_metadata(context):
         assert field in city_data, f"Expected city field '{field}' not found in response"
 
 
-@given("no city named \\\"{city_name}\\\" exists")
+@given("no city named \"{city_name}\" exists")
 def step_no_city_exists(context, city_name):
     """
     Ensure a city does not exist.

@@ -170,6 +170,46 @@ def step_request_successful(context):
         f"Expected 200 OK, got {context.response.status_code}: {context.response.content}"
 
 
+@given("I am authenticated as an admin user")
+def step_auth_as_admin(context):
+    """Authenticate as admin user and obtain JWT token."""
+    if not hasattr(context, 'client'):
+        context.client = Client()
+
+    # Ensure admin user exists
+    admin_user, created = User.objects.get_or_create(
+        username='admin',
+        defaults={'email': 'admin@test.local'}
+    )
+    if created or admin_user.password == '!':
+        admin_user.set_password('admin')
+        admin_user.save()
+
+    # Request JWT token
+    step_request_jwt_token(context, 'admin', 'admin')
+    context.current_user = admin_user
+
+
+@given("I am authenticated as a regular user")
+def step_auth_as_regular_user(context):
+    """Authenticate as regular user and obtain JWT token."""
+    if not hasattr(context, 'client'):
+        context.client = Client()
+
+    # Ensure regular user exists
+    regular_user, created = User.objects.get_or_create(
+        username='user',
+        defaults={'email': 'user@test.local'}
+    )
+    if created or regular_user.password == '!':
+        regular_user.set_password('password')
+        regular_user.save()
+
+    # Request JWT token
+    step_request_jwt_token(context, 'user', 'password')
+    context.current_user = regular_user
+
+
 @given('no JWT token is provided')
 def step_no_jwt_token(context):
     """

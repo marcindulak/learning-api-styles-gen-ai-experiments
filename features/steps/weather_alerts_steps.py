@@ -52,20 +52,6 @@ def _get_jwt_token(username, password):
     return None
 
 
-@given('I am authenticated as a regular user')
-def step_authenticated_regular_user(context):
-    """Ensure user is authenticated as a regular user."""
-    _ensure_client(context)
-
-    # Create or get regular user
-    user = _get_or_create_user('user', 'password')
-    context.current_user = user
-
-    # Get JWT token
-    token = _get_jwt_token('user', 'password')
-    context.access_token = token
-
-
 @when('I establish a WebSocket connection to the alerts endpoint')
 def step_establish_websocket(context):
     """Establish WebSocket connection to alerts endpoint."""
@@ -110,7 +96,16 @@ def step_connection_status_open(context):
 @given('I have an active WebSocket connection to the alerts endpoint')
 def step_active_websocket_connection(context):
     """Establish active WebSocket connection."""
-    step_authenticated_regular_user(context)
+    _ensure_client(context)
+
+    # Create or get regular user
+    user = _get_or_create_user('user', 'password')
+    context.current_user = user
+
+    # Get JWT token
+    token = _get_jwt_token('user', 'password')
+    context.access_token = token
+
     step_establish_websocket(context)
     step_connection_established(context)
 
@@ -249,12 +244,6 @@ def step_no_subsequent_messages(context):
 
     message = loop.run_until_complete(try_receive())
     assert message is None, f"Received unexpected message after close: {message}"
-
-
-@given('no JWT token is provided')
-def step_no_jwt_token(context):
-    """Ensure no JWT token is available."""
-    context.access_token = None
 
 
 @when('I attempt to establish a WebSocket connection to the alerts endpoint')

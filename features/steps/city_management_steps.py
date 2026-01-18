@@ -4,36 +4,6 @@ from django.contrib.auth.models import User
 from apps.cities.models import City
 
 
-@given("I am authenticated as an admin user")
-def step_auth_as_admin(context):
-    """Authenticate as admin user and obtain JWT token."""
-    credentials = {"username": "admin", "password": "admin"}
-    response = context.client.post(
-        '/api/jwt/obtain',
-        data=json.dumps(credentials),
-        content_type='application/json'
-    )
-    assert response.status_code == 200
-    context.response_data = json.loads(response.content)
-    context.access_token = context.response_data['access']
-    context.response = response
-
-
-@given("I am authenticated as a regular user")
-def step_auth_as_regular_user(context):
-    """Authenticate as regular user and obtain JWT token."""
-    credentials = {"username": "user", "password": "password"}
-    response = context.client.post(
-        '/api/jwt/obtain',
-        data=json.dumps(credentials),
-        content_type='application/json'
-    )
-    assert response.status_code == 200
-    context.response_data = json.loads(response.content)
-    context.access_token = context.response_data['access']
-    context.response = response
-
-
 @when("I create a city with name \"{name}\", country \"{country}\", region \"{region}\", timezone \"{timezone}\", latitude {latitude}, longitude {longitude}")
 def step_create_city(context, name, country, region, timezone, latitude, longitude):
     """Create a city via REST API."""

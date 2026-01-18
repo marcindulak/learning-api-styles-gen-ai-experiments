@@ -103,18 +103,6 @@ def step_webhook_with_signature(context):
     context.webhook_headers['X-Hub-Signature-256'] = signature
 
 
-@given('no JWT token is provided')
-def step_no_jwt_token(context):
-    """
-    Ensure no JWT token is provided in the request.
-    """
-    # This is the default state - webhooks don't require authentication
-    if not hasattr(context, 'webhook_headers'):
-        context.webhook_headers = {}
-
-    # Make sure we don't have authorization header
-    if 'Authorization' in context.webhook_headers:
-        del context.webhook_headers['Authorization']
 
 
 @when('I make a POST request to the webhook endpoint')

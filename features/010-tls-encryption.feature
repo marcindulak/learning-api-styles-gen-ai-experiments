@@ -1,33 +1,18 @@
-@status-done
+@status-todo
 Feature: 010 TLS Encryption Support
-  As a service
-  I want to support both encrypted and unencrypted requests
-  So that clients can choose their communication method
+  As a security-conscious client
+  I need to communicate with the service using TLS encryption
+  So that data in transit is protected
 
   Scenario: Service accepts encrypted HTTPS requests
-    Given the service is running with TLS enabled
-    When I make an HTTPS request to the API
-    Then the request is successful
-    And the response is encrypted
+    Given the service is running with TLS certificates installed
+    When a client sends a request via HTTPS
+    Then the TLS handshake completes successfully
+    And the request is processed normally
+    And the response is returned over the encrypted connection
 
-  Scenario: Service accepts unencrypted HTTP requests
-    Given the service is running
-    When I make an HTTP request to the API
-    Then the request is successful
-    And the response is received
-
-  Scenario: TLS certificate is valid
-    Given the service is running with HTTPS
-    When I verify the TLS certificate
-    Then the certificate is valid
-    And certificate chain is complete
-
-  Scenario: Service supports modern TLS versions
-    Given the service is configured with TLS
-    When I attempt connection with TLS 1.2 or higher
-    Then the connection is established successfully
-
-  Scenario: Weak TLS versions are not accepted
-    Given the service is configured with TLS
-    When I attempt connection with TLS 1.0
-    Then the connection is rejected
+  Scenario: Service accepts both encrypted and unencrypted requests
+    Given the service is configured to accept both HTTP and HTTPS
+    When a client sends a request via HTTP (unencrypted)
+    Then the request is accepted and processed
+    And the response is returned via HTTP

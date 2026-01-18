@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 012 Docker Deployment
   As an operator
   I want to deploy the service using Docker

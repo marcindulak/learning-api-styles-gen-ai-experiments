@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -19,12 +19,29 @@ class WeatherViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = 'uuid'
 
     def get_queryset(self):
-        """Filter weather data by city if city_uuid is provided."""
+        """Filter weather data by city if city_uuid or city name is provided."""
         queryset = Weather.objects.all()
         city_uuid = self.request.query_params.get('city_uuid')
+        city_name = self.request.query_params.get('city')
+
         if city_uuid:
             queryset = queryset.filter(city__uuid=city_uuid)
+        elif city_name:
+            queryset = queryset.filter(city__name=city_name)
+
         return queryset
+
+    def list(self, request, *args, **kwargs):
+        """
+        List weather data. If city parameter is provided and city doesn't exist, return 404.
+        """
+        city_name = request.query_params.get('city')
+
+        # If city parameter is provided, verify the city exists
+        if city_name:
+            city = get_object_or_404(City, name=city_name)
+
+        return super().list(request, *args, **kwargs)
 
     @action(detail=False, methods=['get'])
     def current(self, request):

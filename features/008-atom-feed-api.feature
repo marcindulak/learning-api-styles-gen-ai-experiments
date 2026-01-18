@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 008 Atom Feed API
   As an API consumer
   I want to access weather forecast data via Atom feed

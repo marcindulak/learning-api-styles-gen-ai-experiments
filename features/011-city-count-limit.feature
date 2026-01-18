@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 011 City Count Limitation
   As a service
   I want to limit weather data to the 5 biggest cities

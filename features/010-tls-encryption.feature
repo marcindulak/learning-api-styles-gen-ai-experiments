@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 010 TLS Encryption Support
   As a service
   I want to support both encrypted and unencrypted requests

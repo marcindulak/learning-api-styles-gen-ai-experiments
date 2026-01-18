@@ -16,6 +16,9 @@ urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
 
+    # GraphQL
+    path('graphql/', include('apps.graphql.urls')),
+
     # API
     path('api/', include('apps.api.urls')),
 ]

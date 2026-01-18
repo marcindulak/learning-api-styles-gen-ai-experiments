@@ -1,4 +1,4 @@
-@status-todo
+@status-active
 Feature: 005 GraphQL API Weather Indicators
   As an API consumer
   I want to access weather indicators via GraphQL API

@@ -17,7 +17,7 @@ if APP_DIR not in sys.path:
     sys.path.insert(0, APP_DIR)
 
 # Set Django settings module
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.postgres')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.base')
 
 # Avoid errors when no database is configured yet
 if not settings.configured:
@@ -56,6 +56,9 @@ def before_all(context):
     context.full_weather = {}
     context.historical_weather = {}
     context.query_results = None
+    context.graphql_response = None
+    context.graphql_response_status = None
+    context.graphql_response_data = None
 
     # Create default test users
     create_test_users(context)
@@ -87,6 +90,9 @@ def before_scenario(context, scenario):
     context.full_weather = {}
     context.historical_weather = {}
     context.query_results = None
+    context.graphql_response = None
+    context.graphql_response_status = None
+    context.graphql_response_data = None
 
 
 def after_scenario(context, scenario):

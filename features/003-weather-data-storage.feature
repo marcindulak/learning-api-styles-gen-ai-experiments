@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 003 Weather Data Storage
   As a service
   I want to store weather data in a database

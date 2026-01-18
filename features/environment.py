@@ -51,6 +51,11 @@ def before_all(context):
     context.users = {}
     context.cities = {}
     context.weather_data = {}
+    context.last_weather = {}
+    context.multiple_weather = {}
+    context.full_weather = {}
+    context.historical_weather = {}
+    context.query_results = None
 
     # Create default test users
     create_test_users(context)
@@ -77,6 +82,11 @@ def before_scenario(context, scenario):
     context.response = None
     context.response_data = None
     context.response_json = None
+    context.last_weather = {}
+    context.multiple_weather = {}
+    context.full_weather = {}
+    context.historical_weather = {}
+    context.query_results = None
 
 
 def after_scenario(context, scenario):

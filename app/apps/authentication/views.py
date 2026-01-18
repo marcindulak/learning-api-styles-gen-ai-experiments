@@ -3,11 +3,14 @@ from rest_framework_simplejwt.views import TokenRefreshView as BaseTokenRefreshV
 from rest_framework_simplejwt.views import TokenVerifyView as BaseTokenVerifyView
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import UserSerializer
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class TokenObtainPairView(BaseTokenObtainPairView):
     """
     Takes a set of user credentials and returns an access and refresh JSON web
@@ -25,9 +28,10 @@ class TokenObtainPairView(BaseTokenObtainPairView):
         "access": "eyJ0eXAiOiJKV1QiLCJhbGc..."
     }
     """
-    pass
+    permission_classes = [AllowAny]
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class TokenRefreshView(BaseTokenRefreshView):
     """
     Takes a refresh type JSON web token and returns an access type JSON web
@@ -43,9 +47,10 @@ class TokenRefreshView(BaseTokenRefreshView):
         "access": "eyJ0eXAiOiJKV1QiLCJhbGc..."
     }
     """
-    pass
+    permission_classes = [AllowAny]
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class TokenVerifyView(BaseTokenVerifyView):
     """
     Takes a token and indicates if it is valid. This view provides no
@@ -59,7 +64,7 @@ class TokenVerifyView(BaseTokenVerifyView):
     Returns:
     {} (200 OK if valid, 401 if invalid)
     """
-    pass
+    permission_classes = [AllowAny]
 
 
 class MeView(APIView):

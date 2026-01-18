@@ -27,16 +27,21 @@ def before_all(context):
     """
     Setup before any scenarios run.
     """
-    # Ensure Django is setup
-    django.setup()
 
     # Configure test settings
     TestRunner = get_runner(settings)
     context.test_runner = TestRunner(verbosity=0, interactive=False, keepdb=False)
 
-    # Setup test environment and database
-    context.test_runner.setup_test_environment()
-    context.old_db = context.test_runner.setup_databases()
+    # Setup test environment and database only if not already setup
+    try:
+        context.test_runner.setup_test_environment()
+        context.old_db = context.test_runner.setup_databases()
+    except RuntimeError as e:
+        if "setup_test_environment() was already called" in str(e):
+            # Already setup by Django's test runner
+            pass
+        else:
+            raise
 
     # Initialize HTTP client
     context.client = Client()
@@ -73,9 +78,13 @@ def after_all(context):
     """
     Cleanup after all scenarios.
     """
-    if hasattr(context, 'test_runner'):
-        context.test_runner.teardown_databases(context.old_db)
-        context.test_runner.teardown_test_environment()
+    if hasattr(context, 'test_runner') and hasattr(context, 'old_db'):
+        try:
+            context.test_runner.teardown_databases(context.old_db)
+            context.test_runner.teardown_test_environment()
+        except Exception as e:
+            # Ignore cleanup errors
+            pass
 
 
 def before_scenario(context, scenario):
@@ -100,6 +109,9 @@ def before_scenario(context, scenario):
     context.forecast_response = None
     context.forecast_response_status = None
     context.forecast_response_data = None
+
+    # Ensure users exist for this scenario
+    create_test_users(context)
 
 
 def after_scenario(context, scenario):

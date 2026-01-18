@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 002 City Management
   As a service
   I need to store and manage cities

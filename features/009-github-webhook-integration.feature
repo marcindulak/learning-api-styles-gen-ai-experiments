@@ -1,4 +1,4 @@
-@status-active
+@status-done
 Feature: 009 GitHub Webhook Integration
   As a service
   I want to receive and process GitHub webhooks

@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 004 REST API Weather Indicators
   As an API consumer
   I want to access current weather indicators via REST API

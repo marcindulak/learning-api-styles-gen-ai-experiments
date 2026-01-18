@@ -187,3 +187,4 @@ LOGGING = {
 
 # Webhook Secret
 WEBHOOK_SECRET = 'dev-webhook-secret'
+GITHUB_WEBHOOK_SECRET = 'test-webhook-secret'

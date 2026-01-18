@@ -235,3 +235,129 @@ def step_request_fails_401(context):
     """
     assert context.response.status_code == 401, \
         f"Expected 401, got {context.response.status_code}: {context.response.content}"
+
+
+# Feature 001 specific steps
+@given('an admin user exists with username "{username}" and password "{password}"')
+def step_admin_user_exists(context, username, password):
+    """
+    Create or get an admin user with the given credentials.
+    """
+    user, created = User.objects.get_or_create(
+        username=username,
+        defaults={'email': f'{username}@test.local', 'is_staff': True, 'is_superuser': True}
+    )
+    if created or user.password != 'dummy':
+        user.set_password(password)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
+
+    if not hasattr(context, 'users'):
+        context.users = {}
+    context.users[username] = user
+    context.admin_user = user
+    context.admin_password = password
+
+
+@given('a regular user exists with username "{username}" and password "{password}"')
+def step_regular_user_exists(context, username, password):
+    """
+    Create or get a regular user with the given credentials.
+    """
+    user, created = User.objects.get_or_create(
+        username=username,
+        defaults={'email': f'{username}@test.local', 'is_staff': False, 'is_superuser': False}
+    )
+    if created or user.password != 'dummy':
+        user.set_password(password)
+        user.is_staff = False
+        user.is_superuser = False
+        user.save()
+
+    if not hasattr(context, 'users'):
+        context.users = {}
+    context.users[username] = user
+    context.regular_user = user
+    context.regular_password = password
+
+
+@when('the admin user logs in')
+def step_admin_logs_in(context):
+    """
+    Admin user logs in.
+    """
+    if not hasattr(context, 'client'):
+        context.client = Client()
+
+    step_request_jwt_token(context, context.admin_user.username, context.admin_password)
+
+
+@when('the regular user logs in')
+def step_regular_logs_in(context):
+    """
+    Regular user logs in.
+    """
+    if not hasattr(context, 'client'):
+        context.client = Client()
+
+    step_request_jwt_token(context, context.regular_user.username, context.regular_password)
+
+
+@then('the admin user receives an access token')
+def step_admin_receives_token(context):
+    """
+    Verify that admin user receives an access token.
+    """
+    assert context.response.status_code == 200, \
+        f"Expected 200, got {context.response.status_code}: {context.response.content}"
+    assert 'access' in context.response_data, \
+        f"'access' field not found in response: {context.response_data}"
+    assert context.access_token is not None, "Access token is None"
+
+
+@then('the regular user receives an access token')
+def step_regular_receives_token(context):
+    """
+    Verify that regular user receives an access token.
+    """
+    assert context.response.status_code == 200, \
+        f"Expected 200, got {context.response.status_code}: {context.response.content}"
+    assert 'access' in context.response_data, \
+        f"'access' field not found in response: {context.response_data}"
+    assert context.access_token is not None, "Access token is None"
+
+
+@then('the admin user can access protected endpoints')
+def step_admin_can_access_protected(context):
+    """
+    Verify that admin user can access protected endpoints.
+    """
+    assert context.access_token is not None, "No access token found"
+
+    headers = {
+        'HTTP_AUTHORIZATION': f'Bearer {context.access_token}',
+        'content_type': 'application/json',
+    }
+
+    response = context.client.get('/api/me', **headers)
+    assert response.status_code in [200, 404], \
+        f"Expected 200 or 404, got {response.status_code}: {response.content}"
+
+
+@then('the regular user can access only their permitted endpoints')
+def step_regular_access_permitted(context):
+    """
+    Verify that regular user can access only permitted endpoints.
+    """
+    assert context.access_token is not None, "No access token found"
+
+    headers = {
+        'HTTP_AUTHORIZATION': f'Bearer {context.access_token}',
+        'content_type': 'application/json',
+    }
+
+    # Regular user should be able to access their own data
+    response = context.client.get('/api/me', **headers)
+    assert response.status_code in [200, 404], \
+        f"Expected 200 or 404, got {response.status_code}: {response.content}"

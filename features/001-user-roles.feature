@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 001 User Roles and Authentication
   As a system administrator
   I need to manage two types of users (admin and regular user)

@@ -1,4 +1,4 @@
-@status-active
+@status-done
 Feature: 002 User Authentication
   As a service
   I want to authenticate users with JWT tokens

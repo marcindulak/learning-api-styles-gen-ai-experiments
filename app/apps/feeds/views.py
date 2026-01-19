@@ -14,7 +14,8 @@ class AtomFeedView(View):
 
     def get(self, request):
         """
-        Generate and return Atom feed for all weather forecasts.
+        Generate and return Atom feed for weather forecasts.
+        Optional query parameter: city (city name to filter forecasts)
         """
         # Create Atom feed
         feed = Atom1Feed(
@@ -24,11 +25,17 @@ class AtomFeedView(View):
             language='en'
         )
 
+        # Get city filter from query parameters
+        city_filter = request.GET.get('city')
+
         # Get all latest forecasts grouped by city
-        cities = City.objects.all()
+        if city_filter:
+            cities = City.objects.filter(name=city_filter)
+        else:
+            cities = City.objects.all()
 
         for city in cities:
-            # Get the latest 7 forecasts for each city
+            # Get the latest 7 forecasts for each city (enforce 7-day limit)
             forecasts = Forecast.objects.filter(city=city).order_by('forecast_date')[:7]
 
             for forecast in forecasts:

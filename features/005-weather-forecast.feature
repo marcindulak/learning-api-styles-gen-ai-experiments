@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 005 Weather Forecast Feed (Atom API)
   As a client application
   I need to subscribe to weather forecast updates via Atom feed

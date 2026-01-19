@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 008 GitHub Webhook Integration
   As a system administrator
   I need to integrate with GitHub via webhooks

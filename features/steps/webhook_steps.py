@@ -1,5 +1,5 @@
 """
-Step definitions for Feature 009: GitHub Webhook Integration
+Step definitions for Feature 008: GitHub Webhook Integration
 """
 import json
 import hmac

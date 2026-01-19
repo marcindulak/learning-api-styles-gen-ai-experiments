@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 013 Third-Party Weather API Integration
   As a system
   I need to integrate with a third-party weather API

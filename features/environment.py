@@ -97,6 +97,7 @@ def before_scenario(context, scenario):
     context.response = None
     context.response_data = None
     context.response_json = None
+    context.cities = {}
     context.last_weather = {}
     context.multiple_weather = {}
     context.full_weather = {}
@@ -109,6 +110,32 @@ def before_scenario(context, scenario):
     context.forecast_response = None
     context.forecast_response_status = None
     context.forecast_response_data = None
+
+    # Clear database collections between scenarios to ensure clean state
+    # This is important for scenarios that share database state
+    try:
+        from apps.cities.models import City
+        from apps.weather.models import WeatherData, Forecast
+
+        City.objects.all().delete()
+        WeatherData.objects.all().delete()
+        Forecast.objects.all().delete()
+    except Exception:
+        pass  # Models might not be imported yet
+
+    # Clear alerts if they exist
+    try:
+        from apps.alerts.models import Alert
+        Alert.objects.all().delete()
+    except Exception:
+        pass
+
+    # Clear webhooks if they exist
+    try:
+        from apps.webhooks.models import WebhookEvent
+        WebhookEvent.objects.all().delete()
+    except Exception:
+        pass
 
     # Ensure users exist for this scenario
     create_test_users(context)

@@ -44,7 +44,7 @@ def before_all(context):
             raise
 
     # Initialize HTTP client
-    context.client = Client()
+    context.client = Client(enforce_csrf_checks=False)
 
     # Store for access tokens and other state
     context.access_token = None

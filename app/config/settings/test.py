@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'behave_django',
+    'graphene_django',
 
     # Local apps
     'apps.authentication.apps.AuthenticationConfig',
@@ -183,6 +184,11 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'INFO',
     },
+}
+
+# GraphQL Configuration
+GRAPHENE = {
+    'SCHEMA': 'apps.graphql.schema.schema',
 }
 
 # Webhook Secret

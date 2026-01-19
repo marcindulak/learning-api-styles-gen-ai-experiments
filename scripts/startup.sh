@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-cd /app
+cd /app/app/app
 
 echo "Running database migrations..."
 python manage.py migrate

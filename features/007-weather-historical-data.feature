@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 007 Weather Historical Data
   As an analyst
   I need to query historical weather data

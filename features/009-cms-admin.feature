@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 009 Content Management System
   As an admin user
   I need a content management system

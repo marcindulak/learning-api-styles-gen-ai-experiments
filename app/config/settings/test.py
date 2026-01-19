@@ -77,6 +77,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# Channels Configuration - Use in-memory channel layer for testing
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
+
 # Database - Use SQLite for tests
 DATABASES = {
     'default': {

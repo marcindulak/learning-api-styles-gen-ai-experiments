@@ -21,16 +21,31 @@ class AlertConsumer(AsyncWebsocketConsumer):
 
         # Accept the connection
         self.user = user
+
+        # Extract query parameters
+        query_string = self.scope.get('query_string', b'').decode()
+        self.query_params = {}
+        if query_string:
+            for param in query_string.split('&'):
+                if '=' in param:
+                    key, value = param.split('=', 1)
+                    self.query_params[key] = value
+
+        # Get city name from query parameters
+        self.city_name = self.query_params.get('city', None)
+
         await self.accept()
 
         # Add this consumer to the alerts group
-        await self.channel_layer.group_add("weather_alerts", self.channel_name)
+        group_name = f"weather_alerts_{self.city_name}" if self.city_name else "weather_alerts"
+        await self.channel_layer.group_add(group_name, self.channel_name)
+        self.group_name = group_name
 
     async def disconnect(self, close_code):
         """Handle WebSocket disconnection."""
         # Remove this consumer from the alerts group
-        if hasattr(self, 'channel_layer'):
-            await self.channel_layer.group_discard("weather_alerts", self.channel_name)
+        if hasattr(self, 'group_name') and hasattr(self, 'channel_layer'):
+            await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
     async def receive(self, text_data):
         """Handle incoming messages from the client."""

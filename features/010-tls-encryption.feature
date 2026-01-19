@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 010 TLS Encryption Support
   As a security-conscious client
   I need to communicate with the service using TLS encryption

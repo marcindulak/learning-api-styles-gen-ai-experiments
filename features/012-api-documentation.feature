@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 012 API Documentation
   As a client developer
   I need API documentation

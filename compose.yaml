@@ -12,8 +12,8 @@ services:
       - 127.0.0.1:8000:8000
       - 127.0.0.1:8001:8001
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
     environment:
       - DEBUG=False
       - DJANGO_SETTINGS_MODULE=config.postgres
@@ -27,9 +27,6 @@ services:
       - POSTGRES_HOST=postgres
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - POSTGRES_USER=postgres
-    volumes:
-       - ./app:/app
-       - ./docs:/app/docs
 
   postgres:
     image: postgres:17-alpine

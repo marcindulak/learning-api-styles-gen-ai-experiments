@@ -7,26 +7,30 @@ Therefore we'll design an application--the Weather Forecast Service (WFS)--by tr
 We chose the weather because everyone can intuitively relate to it.
 
 Functional Requirements
-| Feature (FR) | Designer's Note
-| Service exposes common weather indicators via various web APIs | Research common weather indicators; REST, GraphQL
-| Service integrates with GitHub via webhooks | Webhooks API
-| Service provides weather forecast feed | Atom as API
-| Service provides weather alerts | Websocket API
-| Service provides weather historical data | Model domain
-| Service has a content management system for admin user | Custom CMS?
-| Weather records contain actual data | Find 3rd party weather API
-| Weather data is limited to the 5 biggest cities in the world | What are they?
-| Weather forecast is limited to up to 7 days | Model domain
-| Service has two users: admin, and regular user | Object level permission
+
+| Feature (FR) | Designer's Note |
+|--------------|-----------------|
+| Service exposes common weather indicators via various web APIs | Research common weather indicators; REST, GraphQL |
+| Service integrates with GitHub via webhooks | Webhooks API |
+| Service provides weather forecast feed | Atom as API |
+| Service provides weather alerts | Websocket API |
+| Service provides weather historical data | Model domain |
+| Service has a content management system for admin user | Custom CMS? |
+| Weather records contain actual data | Find 3rd party weather API |
+| Weather data is limited to the 5 biggest cities in the world | What are they? |
+| Weather forecast is limited to up to 7 days | Model domain |
+| Service has two users: admin, and regular user | Object level permission |
 
 Non-Functional Requirements
-| Feature (NFR) | Quality Attribute | Designer's Note
-| Service operates in a local environment | Portability | Containers
-| Service requests can be encrypted or unencrypted | Security | TLS
-| Service is deployed as one unit | Deployability | Monolith
-| Service is testable | Testability | End-to-end testings, integration testings
-| Service APIs are documented | Documentability | OpenAPI Spec, AsyncAPI Spec
-| Service is runnable by a majority of book readers | Deployability | Containers, GitHub Codespaces
+
+| Feature (NFR) | Quality Attribute | Designer's Note |
+|---------------|-------------------|-----------------|
+| Service operates in a local environment | Portability | Containers |
+| Service requests can be encrypted or unencrypted | Security | TLS |
+| Service is deployed as one unit | Deployability | Monolith |
+| Service is testable | Testability | End-to-end testings, integration testings |
+| Service APIs are documented | Documentability | OpenAPI Spec, AsyncAPI Spec |
+| Service is runnable by a majority of book readers | Deployability | Containers, GitHub Codespaces |
 
 The first decision is what programming language to use.
 We chose Python--one of the most popular programming languages according to https://survey.stackoverflow.co/2023/#most-popular-technologies-language-other[stackoverflow's survey 2023].

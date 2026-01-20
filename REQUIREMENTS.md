@@ -33,17 +33,17 @@ Non-Functional Requirements
 | Service is runnable by a majority of book readers | Deployability | Containers, GitHub Codespaces |
 
 The first decision is what programming language to use.
-We chose Python--one of the most popular programming languages according to https://survey.stackoverflow.co/2023/#most-popular-technologies-language-other[stackoverflow's survey 2023].
+We chose Python--one of the most popular programming languages according to stackoverflow's survey 2023.
 
 The next decision is influenced by the _"Service has a content management system for admin user"_ requirement.
 This functional requirement comes as an exception since the section deals with NFRs.
 The question to answer was whether to use a framework or not.
-We chose the https://www.djangoproject.com/[Django] framework because of its built-in content and user management system.
+We chose the [Django](https://www.djangoproject.com/) framework because of its built-in content and user management system.
 One of our goals is that the code associated with the book is maintainable for a longer period of time, in addition to the general concepts, which are also expected to be valid during a long time.
 Furthermore, Django is actively developed, well supported, has many plugins, and a large community.
 
 We leaned towards using a database to fulfil the _"Service provides weather historical data"_ requirement.
-We chose the open-source https://www.postgresql.org/[PostgreSQL] database, due to its popularity and support in Django.
+We chose the open-source [PostgreSQL](https://www.postgresql.org/) database, due to its popularity and support in Django.
 
 Another decision is driven by the following NFRs:
 
@@ -51,7 +51,7 @@ Another decision is driven by the following NFRs:
 
 * Service is runnable by a majority of book readers.
 
-To satisfy these two requirements, we chose https://www.docker.com/[Docker] as a containerization solution, and https://github.com/features/codespaces[GitHub Codespaces] as runtime environment.
+To satisfy these two requirements, we chose [Docker](https://www.docker.com/) as a containerization solution, and [GitHub Codespaces](https://github.com/features/codespaces) as runtime environment.
 Making these decisions, we effectively tackled deployability and portability.
 To facilitate the implementation, `Dockerfile` and `compose.yaml` files are already present at the root of the project.
 
@@ -61,7 +61,7 @@ docker compose up --detach --wait
 ```
 
 The last requirement described in this section is _"Service is testable"_.
-For testing, we chose native to the framework test library, supplemented by https://behave-django.readthedocs.io/en/stable/[django-behave].
+For testing, we chose native to the framework test library, supplemented by [django-behave](https://behave-django.readthedocs.io/en/stable/).
 
 Here is how `behave-django` can be used inside of the running container:
 

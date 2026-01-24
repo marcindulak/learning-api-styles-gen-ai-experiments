@@ -13,17 +13,7 @@ end
 
 Vagrant.configure(2) do |config|
   config.vm.define "agent" do |machine|
-    # machine.vm.box = "almalinux/10"
-    # ...
-    #     agent: SSH auth method: private key
-    # Timed out while waiting for the machine to boot.
-    # And the console started with GUI=1 vagrant up shows:
-    # Fatal glibc error: CPU does not support x86_64-v3
-    # Check your CPU features https://rfc.archlinux.page/0002-x86-64-v3-microarchitecture/
-    # for f in AVX AVX2 BMI1 BMI2 F16C FMA LZCNT MOVBE XSAVE; do lscpu | sed -n 's/^Flags:[[:space:]]*//p' | tr ' ' '\n' | grep -iqx "$f" || echo "missing: $f"; done
-    # If any flags are missing, even --cpu-profile host won't help
-    # p.customize ["modifyvm", :id, "--cpu-profile", "host"]
-    machine.vm.box = "almalinux/10-x86_64_v2"
+    machine.vm.box = "almalinux/9"
     machine.vm.box_url = machine.vm.box
     # claude install is slow, due to large memory usage https://github.com/anthropics/claude-code/issues/12987
     config.vm.boot_timeout = 1800
@@ -45,8 +35,8 @@ Vagrant.configure(2) do |config|
     machine.vm.provision :shell, :inline => "echo '/swapfile swap swap defaults 0 0' >> /etc/fstab"
     machine.vm.provision :shell, :inline => "swapon --show", run: "always"
     machine.vm.provision :shell, :inline => "dnf install -y epel-release"
-    machine.vm.provision :shell, :inline => "dnf -y install curl dnf-plugins-core git podman podman-compose"
-    machine.vm.provision :shell, :inline => "dnf -y install python-unversioned-command"
+    machine.vm.provision :shell, :inline => "dnf -y install --setopt=install_weak_deps=False curl dnf-plugins-core git podman podman-compose"
+    machine.vm.provision :shell, :inline => "dnf -y install --setopt=install_weak_deps=False python-unversioned-command"
     machine.vm.provision :shell, :inline => "dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo"
     machine.vm.provision :shell, :inline => "dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin"
     machine.vm.provision :shell, :inline => "systemctl enable docker"
@@ -55,7 +45,7 @@ Vagrant.configure(2) do |config|
     machine.vm.provision :shell, :inline => "echo '[user]' > ~vagrant/.gitconfig"
     machine.vm.provision :shell, :inline => "echo 'email = marcindulak@users.noreply.github.com' >> ~vagrant/.gitconfig"
     machine.vm.provision :shell, :inline => "echo 'name = Marcin Dulak' >> ~vagrant/.gitconfig"
-    machine.vm.provision :shell, :inline => "echo '[core]' > ~vagrant/.gitconfig"
+    machine.vm.provision :shell, :inline => "echo '[core]' >> ~vagrant/.gitconfig"
     machine.vm.provision :shell, :inline => "echo 'pager = cat' >> ~vagrant/.gitconfig"
     machine.vm.provision :shell, :inline => "echo 'export TERM=xterm-256color' >> ~vagrant/.bashrc"
     machine.vm.provision :shell, :inline => "echo 'alias cp=\"cp -i\"' >> ~vagrant/.bashrc"

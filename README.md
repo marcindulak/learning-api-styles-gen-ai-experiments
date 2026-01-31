@@ -1,37 +1,122 @@
-A set of experiments to determine whether generative AI, based on vague [REQUIREMENTS.md](REQUIREMENTS.md), is capable of generating Django code for the [Learning API Styles](https://github.com/ldynia/learning-api-styles) book.
+# Weather Forecast Service
 
-The source code for book was made public on GitHub on [July 17, 2025](https://github.com/ldynia/learning-api-styles/commit/35c31d369e6bef548eaf8dff7407969ef63efb21).
-The initial implementation (design, code, and tests) took a human developer about 200 hours.
+A Django-based weather forecast application that exposes weather data through multiple API styles including REST, GraphQL, Atom feeds, and WebSockets.
 
-For safety, and to establish somewhat controllable conditions, experiments are run in a Virtual machine started with `vagrant up` using [Vagrantfile](Vagrantfile).
+## Features
 
-# Experiments
+| Feature | Description |
+|---------|-------------|
+| JWT Authentication | Secure API access using JSON Web Tokens |
+| City Management | CRUD operations for cities (limited to 5 biggest cities) |
+| Weather Forecast | Up to 7-day weather forecasts with common indicators |
+| Historical Data | Access past weather records by date |
+| User Roles | Admin and regular user permissions |
+| REST API | Weather indicators via RESTful endpoints |
+| GraphQL API | Flexible weather data queries |
+| GitHub Webhooks | Integration for repository event notifications |
+| Atom Feed | Subscribe to weather forecasts via feed readers |
+| WebSocket Alerts | Real-time severe weather notifications |
 
-| Date | Outcome | PR | Tool / Version | Agent | Model | Knowledge cutoff | Duration | Cost | AGENTS.md | Human guidance |
-|------|---------|----|----------------|-------|-------|------------------|----------|------|-----------|----------------|
-| 2026-01-18 |Poor | [1](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/1) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / Experimental | 2.1.9 (Claude Code) | claude-haiku-4-5-20251001 | Feb 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 11 hours clock time (about 7 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | Yes
+## Tech Stack
 
-## 2026-01-18
+- **Framework**: Django
+- **Database**: PostgreSQL
+- **Authentication**: JWT (JSON Web Tokens)
+- **Containerization**: Docker
+- **Testing**: django-behave (BDD)
 
-Summary: poor outcome, despite occasional human help in interactive mode.
+## Quick Start
 
-The agent focused on writing code instead of setting up the infrastructure (Docker, database, test runner).
-Claimed success after silently skipping tests.
+Build and start the containers:
 
-The agent claimed successful implementation of all features without running any tests.
-It turned out that `.claude/settings.json` was blocking Docker commands, and the agent decided to silently skip tests.
-The agent randomly kept discovering logical inconsistencies in [REQUIREMENTS.md](REQUIREMENTS.md).
-After human in interactive mode correcting the Docker access, and instructing the agent to use Docker, the agent started using Docker, but claimed success again, despite failing to handle database cleanup during tests.
-The agent kept git committing the `.cache` directory, containing Python packages, until instructed by human in interactive mode to stop.
-The agent decided to use end-of-life libraries, like [Django 5.0.1](https://docs.djangoproject.com/en/6.0/releases/5.0.1/) (2024), [Daphne 4.0.0](https://pypi.org/project/daphne/4.0.0/) (2022), or an unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) library.
-The agent used different Docker commands than those present in [REQUIREMENTS.md](REQUIREMENTS.md), and created the project README.md with the commands it didn't use.
-The agent left temporary files git committed (e.g., test_graphql_simple.py).
-The agent was wasting time on spinning up unnecessary containers and waiting for them with sleep, because [podman compose does not support --wait](https://github.com/containers/podman-compose/issues/710).
+```bash
+docker compose build --build-arg UID=$(id -u) --build-arg GID=$(id -g)
+docker compose up --detach --wait
+```
 
-See the screen recording of the session.
-It's split into two due to Claude Code large memory use ([anthropics/claude-code/issues/11315](https://github.com/anthropics/claude-code/issues/11315)).
-The videos don't represent the clock time, the long period when there are no changes on the terminal are trimmed away.
+Run the test suite:
 
-[![Watch Video 2026-01-18 Part1](images/2026-01-18-01.png)](https://www.youtube.com/watch?v=9Dog71hr3yk)
+```bash
+docker compose exec app python manage.py behave --no-input
+```
 
-[![Watch Video 2026-01-18 Part2](images/2026-01-18-02.png)](https://www.youtube.com/watch?v=JsmNmM1K4sA)
+## API Usage
+
+### Obtain JWT Token
+
+```bash
+CREDENTIALS_PAYLOAD='{"username":"admin","password":"admin"}'
+ACCESS_TOKEN=$(docker compose exec app bash -c \
+  "curl \
+  --data '$CREDENTIALS_PAYLOAD' \
+  --header 'Content-Type: application/json' \
+  --request 'POST' \
+  --silent 'http://localhost:8000/api/jwt/obtain' | \
+  jq --raw-output '.access'")
+```
+
+### Create a City
+
+```bash
+CREATE_CITY_PAYLOAD='{"name":"Tokyo",
+  "country":"Japan",
+  "region":"Asia",
+  "timezone":"Asia/Tokyo",
+  "latitude":35.689500,
+  "longitude":139.691700}'
+docker compose exec app bash -c \
+  "curl \
+  --data '$CREATE_CITY_PAYLOAD' \
+  --header 'Authorization: Bearer $ACCESS_TOKEN' \
+  --header 'Content-Type: application/json' \
+  --request 'POST' \
+  --silent \
+  'http://localhost:8000/api/cities' | \
+  jq"
+```
+
+### Get City by UUID
+
+```bash
+CITY_UUID=$(docker compose exec app bash -c \
+  "curl --request 'GET' --silent 'http://localhost:8000/api/cities?search_name=Tokyo' | \
+  jq --raw-output '.results[0].uuid'")
+docker compose exec app bash -c \
+  "curl \
+  --request 'GET' \
+  --silent \
+  'http://localhost:8000/api/cities/$CITY_UUID' | \
+  jq"
+```
+
+## API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/jwt/obtain` | POST | Obtain JWT access token |
+| `/api/cities` | GET, POST | List/create cities |
+| `/api/cities/{uuid}` | GET, PUT, DELETE | City operations |
+| `/api/cities/{uuid}/forecast` | GET | Weather forecast |
+| `/api/cities/{uuid}/weather` | GET | Current weather |
+| `/api/cities/{uuid}/historical` | GET | Historical weather data |
+| `/api/graphql` | POST | GraphQL endpoint |
+| `/api/webhooks/github` | POST | GitHub webhook receiver |
+| `/feeds/{uuid}/feed.atom` | GET | Atom feed for city |
+| `/ws/alerts/{uuid}/` | WebSocket | Real-time weather alerts |
+
+## Weather Indicators
+
+The service provides the following weather data:
+
+- Temperature (Celsius)
+- Humidity (percentage)
+- Wind speed (meters per second)
+- Atmospheric pressure
+- Weather condition code and description
+
+## Constraints
+
+- Maximum of 5 cities in the system
+- Weather forecasts limited to 7 days
+- Admin users can create, update, and delete cities
+- Regular users have read-only access to weather data

@@ -13,7 +13,6 @@ services:
       - 127.0.0.1:8001:8001
     depends_on:
       - postgres
-      - redis
     environment:
       - DEBUG=False
       - DJANGO_SETTINGS_MODULE=config.postgres
@@ -28,8 +27,10 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - POSTGRES_USER=postgres
     volumes:
-       - ./app:/app
+       - ./src/app:/app
        - ./docs:/app/docs
+       - ./features:/app/features
+       - ./.behaverc:/app/.behaverc
 
   postgres:
     image: postgres:17-alpine

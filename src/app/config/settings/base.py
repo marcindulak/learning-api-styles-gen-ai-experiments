@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'apps.weather.apps.WeatherConfig',
     'apps.api.apps.ApiConfig',
     'apps.graphql_api.apps.GraphqlApiConfig',
+    'apps.webhooks.apps.WebhooksConfig',
 ]
 
 # Graphene Django Configuration

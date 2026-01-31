@@ -17,4 +17,7 @@ urlpatterns = [
 
     # Weather
     path('cities', include('apps.weather.urls')),
+
+    # Webhooks
+    path('webhooks/github', include('apps.webhooks.urls')),
 ]

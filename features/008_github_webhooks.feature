@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 008 - GitHub Webhooks Integration
 
   As an admin of the Weather Forecast Service

@@ -11,4 +11,7 @@ urlpatterns = [
 
     # Forecast
     path('cities', include('apps.forecast.urls')),
+
+    # Historical
+    path('cities', include('apps.historical.urls')),
 ]

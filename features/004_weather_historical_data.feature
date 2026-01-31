@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 004 - Weather Historical Data
 
   As a user of the Weather Forecast Service
@@ -7,6 +7,7 @@ Feature: 004 - Weather Historical Data
 
   Background:
     Given the Weather Forecast Service is running
+    And I have obtained a JWT access token for user "admin"
     And a city "Tokyo" exists in the system
 
   Scenario: Retrieve historical weather data for a city

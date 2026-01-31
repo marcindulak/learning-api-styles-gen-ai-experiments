@@ -23,4 +23,7 @@ urlpatterns = [
 
     # GraphQL
     path('graphql', include('apps.graphql_api.urls')),
+
+    # Feeds
+    path('feeds/', include('apps.feeds.urls')),
 ]

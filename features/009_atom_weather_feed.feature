@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 009 - Weather Forecast Atom Feed
 
   As a user of the Weather Forecast Service

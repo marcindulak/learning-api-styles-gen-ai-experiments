@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 001 - JWT Authentication
 
   As a user of the Weather Forecast Service

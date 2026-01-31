@@ -101,6 +101,6 @@ RUN test $(python -c 'import sys; version=sys.version_info[:2]; print(f"{version
 EXPOSE ${APP_PORT_HTTP} ${APP_PORT_WS}
 VOLUME ${WORKDIR}
 
-HEALTHCHECK CMD ${WORKDIR}/scripts/healthcheck.sh || exit 1
+HEALTHCHECK CMD /app/scripts/healthcheck.sh || exit 1
 
-ENTRYPOINT /bin/sh -c "${WORKDIR}/scripts/startup.sh"
+ENTRYPOINT /bin/sh -c "/app/scripts/startup.sh"

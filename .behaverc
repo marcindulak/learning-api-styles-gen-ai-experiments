@@ -1,0 +1,4 @@
+[behave]
+paths = features
+steps_dir = features/steps
+environment_file = features/environment.py

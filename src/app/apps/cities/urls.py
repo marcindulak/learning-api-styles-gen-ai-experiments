@@ -1,12 +1,22 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path, re_path
 from .views import CityViewSet
 
 app_name = 'cities'
 
-router = DefaultRouter(trailing_slash=False)
-router.register(r'', CityViewSet, basename='city')
+# Create viewset instance
+city_list = CityViewSet.as_view({
+    'get': 'list',
+    'post': 'create'
+})
+
+city_detail = CityViewSet.as_view({
+    'get': 'retrieve',
+    'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy'
+})
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', city_list, name='city-list'),
+    path('/<uuid:uuid>', city_detail, name='city-detail'),
 ]

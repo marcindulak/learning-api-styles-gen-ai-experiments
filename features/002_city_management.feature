@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 002 - City Management
 
   As an admin user of the Weather Forecast Service

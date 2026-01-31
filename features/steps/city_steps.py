@@ -156,6 +156,19 @@ def step_response_contains_field(context, field):
     assert field in context.response_data, f"'{field}' field not found in response: {context.response_data}"
 
 
+def get_admin_token(context):
+    """Helper to get an admin token for setup operations."""
+    from features.steps.authentication_steps import request_jwt_token
+    # Save current token
+    saved_token = getattr(context, 'access_token', None)
+    # Get admin token
+    request_jwt_token(context, 'admin', 'admin')
+    admin_token = context.access_token
+    # Restore original token
+    context.access_token = saved_token
+    return admin_token
+
+
 @given('a city "{city_name}" exists in the system')
 def step_city_exists(context, city_name):
     """Ensure a city exists in the system by creating it via the API."""
@@ -175,10 +188,13 @@ def step_city_exists(context, city_name):
     if not hasattr(context, 'city_uuids'):
         context.city_uuids = {}
 
+    # Get admin token for city creation (setup operations need admin privileges)
+    admin_token = get_admin_token(context)
+
     # Check if city already exists via API search
     search_response = context.client.get(
         f'/api/cities?search={city_name}',
-        HTTP_AUTHORIZATION=f'Bearer {context.access_token}',
+        HTTP_AUTHORIZATION=f'Bearer {admin_token}',
     )
     if search_response.status_code == 200:
         search_data = json.loads(search_response.content)
@@ -187,12 +203,12 @@ def step_city_exists(context, city_name):
                 context.city_uuids[city_name] = city.get('uuid')
                 return
 
-    # Create city via API
+    # Create city via API using admin token
     response = context.client.post(
         '/api/cities',
         data=json.dumps(city_data),
         content_type='application/json',
-        HTTP_AUTHORIZATION=f'Bearer {context.access_token}',
+        HTTP_AUTHORIZATION=f'Bearer {admin_token}',
     )
 
     if response.status_code == 201:
@@ -203,7 +219,7 @@ def step_city_exists(context, city_name):
         # This can happen if a previous scenario created it
         search_response = context.client.get(
             f'/api/cities?search={city_name}',
-            HTTP_AUTHORIZATION=f'Bearer {context.access_token}',
+            HTTP_AUTHORIZATION=f'Bearer {admin_token}',
         )
         if search_response.status_code == 200:
             search_data = json.loads(search_response.content)

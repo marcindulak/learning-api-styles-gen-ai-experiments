@@ -59,6 +59,11 @@ def step_regular_user_exists(context, username, password):
         context.users = {}
     context.users[username] = user
 
+    # Store the password for later use when obtaining JWT token
+    if not hasattr(context, 'user_passwords'):
+        context.user_passwords = {}
+    context.user_passwords[username] = password
+
 
 def request_jwt_token(context, username, password):
     """
@@ -107,6 +112,8 @@ def step_have_access_token(context, username):
     # Get the password for this user from context or use defaults
     if username == 'admin':
         password = getattr(context, 'admin_password', 'admin')
+    elif hasattr(context, 'user_passwords') and username in context.user_passwords:
+        password = context.user_passwords[username]
     else:
         password = 'password'  # Default password for test users
 

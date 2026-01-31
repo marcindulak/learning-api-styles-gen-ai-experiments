@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 010 - WebSocket Weather Alerts
 
   As a user of the Weather Forecast Service

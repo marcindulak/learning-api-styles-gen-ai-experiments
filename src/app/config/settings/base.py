@@ -20,6 +20,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 INSTALLED_APPS = [
     # Django
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -34,6 +35,7 @@ INSTALLED_APPS = [
     'django_filters',
     'behave_django',
     'graphene_django',
+    'channels',
 
     # Local apps
     'apps.authentication.apps.AuthenticationConfig',
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
     'apps.graphql_api.apps.GraphqlApiConfig',
     'apps.webhooks.apps.WebhooksConfig',
     'apps.feeds.apps.FeedsConfig',
+    'apps.alerts.apps.AlertsConfig',
 ]
 
 # Graphene Django Configuration
@@ -192,5 +195,15 @@ LOGGING = {
     'root': {
         'handlers': ['console'],
         'level': 'INFO',
+    },
+}
+
+# ASGI Application
+ASGI_APPLICATION = 'config.asgi.application'
+
+# Channels Configuration
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }

@@ -97,7 +97,29 @@ def after_scenario(context, scenario):
     """
     Cleanup after each scenario.
     """
-    pass
+    # Close any open WebSocket connections and event loop
+    if hasattr(context, 'websocket_communicator'):
+        try:
+            if hasattr(context, '_ws_event_loop') and context._ws_event_loop and not context._ws_event_loop.is_closed():
+                context._ws_event_loop.run_until_complete(context.websocket_communicator.disconnect())
+        except Exception:
+            pass  # Ignore cleanup errors
+
+    # Close the WebSocket event loop
+    if hasattr(context, '_ws_event_loop') and context._ws_event_loop:
+        try:
+            if not context._ws_event_loop.is_closed():
+                context._ws_event_loop.close()
+        except Exception:
+            pass
+        context._ws_event_loop = None
+
+    # Clean up alerts
+    try:
+        from apps.alerts.models import WeatherAlert
+        WeatherAlert.objects.all().delete()
+    except Exception:
+        pass  # Models might not be imported yet
 
 
 def create_test_users(context):

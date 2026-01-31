@@ -20,6 +20,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 INSTALLED_APPS = [
     # Django
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -33,11 +34,20 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'behave_django',
+    'graphene_django',
+    'channels',
 
     # Local apps
     'apps.authentication.apps.AuthenticationConfig',
     'apps.cities.apps.CitiesConfig',
+    'apps.forecast.apps.ForecastConfig',
+    'apps.historical.apps.HistoricalConfig',
+    'apps.weather.apps.WeatherConfig',
     'apps.api.apps.ApiConfig',
+    'apps.graphql_api.apps.GraphqlApiConfig',
+    'apps.webhooks.apps.WebhooksConfig',
+    'apps.feeds.apps.FeedsConfig',
+    'apps.alerts.apps.AlertsConfig',
 ]
 
 MIDDLEWARE = [
@@ -177,4 +187,19 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'INFO',
     },
+}
+
+# ASGI Application
+ASGI_APPLICATION = 'config.asgi.application'
+
+# Channels Configuration
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+
+# Graphene Django Configuration
+GRAPHENE = {
+    'SCHEMA': 'apps.graphql_api.schema.schema',
 }

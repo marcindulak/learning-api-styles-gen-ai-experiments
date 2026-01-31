@@ -14,4 +14,7 @@ urlpatterns = [
 
     # Historical
     path('cities', include('apps.historical.urls')),
+
+    # Weather
+    path('cities', include('apps.weather.urls')),
 ]

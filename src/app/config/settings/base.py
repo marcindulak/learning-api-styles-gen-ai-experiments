@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'apps.cities.apps.CitiesConfig',
     'apps.forecast.apps.ForecastConfig',
     'apps.historical.apps.HistoricalConfig',
+    'apps.weather.apps.WeatherConfig',
     'apps.api.apps.ApiConfig',
 ]
 

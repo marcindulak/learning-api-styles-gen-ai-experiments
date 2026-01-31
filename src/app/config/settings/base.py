@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'behave_django',
+    'graphene_django',
 
     # Local apps
     'apps.authentication.apps.AuthenticationConfig',
@@ -41,7 +42,13 @@ INSTALLED_APPS = [
     'apps.historical.apps.HistoricalConfig',
     'apps.weather.apps.WeatherConfig',
     'apps.api.apps.ApiConfig',
+    'apps.graphql_api.apps.GraphqlApiConfig',
 ]
+
+# Graphene Django Configuration
+GRAPHENE = {
+    'SCHEMA': 'apps.graphql_api.schema.schema',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

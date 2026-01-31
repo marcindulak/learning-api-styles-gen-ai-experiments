@@ -20,4 +20,7 @@ urlpatterns = [
 
     # API
     path('api/', include('apps.api.urls')),
+
+    # GraphQL
+    path('graphql', include('apps.graphql_api.urls')),
 ]

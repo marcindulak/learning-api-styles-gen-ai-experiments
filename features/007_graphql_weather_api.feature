@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 007 - GraphQL Weather API
 
   As a user of the Weather Forecast Service

@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     # Local apps
     'apps.authentication.apps.AuthenticationConfig',
     'apps.cities.apps.CitiesConfig',
+    'apps.forecast.apps.ForecastConfig',
     'apps.api.apps.ApiConfig',
 ]
 

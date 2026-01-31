@@ -8,4 +8,7 @@ urlpatterns = [
 
     # Cities
     path('cities', include('apps.cities.urls')),
+
+    # Forecast
+    path('cities', include('apps.forecast.urls')),
 ]

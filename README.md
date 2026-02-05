@@ -3,7 +3,56 @@ A set of experiments to determine whether generative AI, based on vague [REQUIRE
 The source code for book was made public on GitHub on [July 17, 2025](https://github.com/ldynia/learning-api-styles/commit/35c31d369e6bef548eaf8dff7407969ef63efb21).
 The initial implementation (design, code, and tests) took a human developer about 200 hours.
 
-For safety, and to establish somewhat controllable conditions, experiments are run in a Virtual machine started with `vagrant up` using [Vagrantfile](Vagrantfile).
+> [!WARNING]
+> For safety, and to establish somewhat controllable conditions, experiments are recommended to be run in a virtual machine.
+
+# Adding an experiment
+
+> [!NOTE]
+> If you are on a Linux system, for convenience consider using the included [Vagrantfile](Vagrantfile):
+> 
+> 1. Install [Vagrant](https://developer.hashicorp.com/vagrant/install).
+> 
+> 2. Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads).
+> 
+> 3. Run `vagrant up`
+> 
+> 4. Exec into the virtual machine with `vagrant ssh`, and then `cd /vagrant`.
+
+1. To create a new experiment first make a branch named by the current date:
+
+   ```
+   git checkout main
+   git pull
+   git checkout -b YYYY-MM-DD
+   ```
+
+2. Clear the existing README.md file so the agent does not try to peek into it.
+
+   ```
+   echo > README.md
+   git add README.md
+   git commit -m"Clear README.md"
+   ```
+
+3. One of the conditions for an experiment to be valid is the presence of the full screencast of the session.
+   Consider using [asciinema](https://asciinema.org/)
+
+   ```
+   asciinema rec /tmp/demo.cast
+   ```
+
+   You can convert the cast into a 1080p mp4 video with:
+   
+   ```
+   docker run --rm -v "$PWD:/data" ghcr.io/asciinema/agg /data/demo.cast /data/demo.gif
+   ffmpeg -y -i demo.gif -vf "scale=1920:-2:flags=lanczos+accurate_rnd+full_chroma_int,format=yuv420p" -c:v libx264 -crf 18 -preset slow -movflags +faststart demo.mp4
+   ```
+
+4. Create a *Draft* pull request to this repo. It will never get merged.
+
+5. Create a pull request to this repo that describes the outcome of the experiment.
+   See examples below.
 
 # Experiments
 

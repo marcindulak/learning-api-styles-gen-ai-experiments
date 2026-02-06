@@ -27,6 +27,14 @@ INSTALLED_APPS = [
     "weather_service",
 ]
 
+if os.environ.get("TLS_ENABLE", "0") == "1":
+    try:
+        import sslserver
+
+        INSTALLED_APPS.append("sslserver")
+    except ImportError:
+        pass
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",

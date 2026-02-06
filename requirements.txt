@@ -1,6 +1,7 @@
 Django==5.1.5
 behave-django==1.4.0
 behave==1.2.6
+django-sslserver==0.22
 djangorestframework-simplejwt==5.4.0
 djangorestframework==3.15.2
 drf-spectacular==0.28.0

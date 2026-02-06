@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 011 TLS Security
   Service requests can be encrypted or unencrypted
   The service supports both HTTP and HTTPS connections

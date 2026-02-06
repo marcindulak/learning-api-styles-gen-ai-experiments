@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 001 User Management
   The service must support two types of users: admin and regular user
   with object-level permissions to control access to resources

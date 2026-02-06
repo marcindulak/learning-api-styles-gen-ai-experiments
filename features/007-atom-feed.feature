@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 007 Weather Forecast Feed (Atom)
   The service provides weather forecast feed using Atom format
   allowing users to subscribe to weather updates

@@ -10,7 +10,12 @@ from graphene_django.views import GraphQLView
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from weather_service.views import CityViewSet, WeatherForecastViewSet, WeatherRecordViewSet
+from weather_service.views import (
+    CityViewSet,
+    WeatherForecastAtomFeedView,
+    WeatherForecastViewSet,
+    WeatherRecordViewSet,
+)
 
 
 def health_check(request):
@@ -27,6 +32,7 @@ urlpatterns = [
     path("", health_check),
     path("api/", include(router.urls)),
     path("api/docs", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+    path("api/feed/forecast", WeatherForecastAtomFeedView.as_view(), name="atom-feed"),
     path("api/graphql", csrf_exempt(GraphQLView.as_view(graphiql=True)), name="graphql"),
     path("api/jwt/obtain", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/jwt/refresh", TokenRefreshView.as_view(), name="token_refresh"),

@@ -12,6 +12,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from weather_service.views import (
     CityViewSet,
+    GitHubWebhookView,
     WeatherForecastAtomFeedView,
     WeatherForecastViewSet,
     WeatherRecordViewSet,
@@ -37,4 +38,5 @@ urlpatterns = [
     path("api/jwt/obtain", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/jwt/refresh", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/schema", SpectacularAPIView.as_view(), name="schema"),
+    path("api/webhooks/github", GitHubWebhookView.as_view(), name="github-webhook"),
 ]

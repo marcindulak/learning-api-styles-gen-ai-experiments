@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 013 Third-Party Weather API Integration
   Weather records contain actual data from a third-party weather API
   The service fetches real weather data from external sources

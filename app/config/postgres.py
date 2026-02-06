@@ -117,3 +117,9 @@ SPECTACULAR_SETTINGS = {
 GRAPHENE = {
     "SCHEMA": "weather_service.schema.schema",
 }
+
+WEATHER_API_KEY = os.environ.get("WEATHER_API_KEY", "test")
+WEATHER_API_BASE_URL = os.environ.get(
+    "WEATHER_API_BASE_URL", "https://api.openweathermap.org/data/2.5"
+)
+WEATHER_API_RATE_LIMIT = int(os.environ.get("WEATHER_API_RATE_LIMIT", "60"))

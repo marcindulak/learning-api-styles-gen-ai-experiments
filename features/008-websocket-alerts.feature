@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 008 Weather Alerts via WebSocket
   The service provides real-time weather alerts using WebSocket API
   allowing clients to receive instant notifications

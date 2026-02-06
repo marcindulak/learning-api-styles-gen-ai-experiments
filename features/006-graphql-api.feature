@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 006 GraphQL API for Weather Indicators
   The service exposes common weather indicators via GraphQL API
   allowing flexible queries and mutations

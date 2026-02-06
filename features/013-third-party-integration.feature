@@ -16,8 +16,7 @@ Feature: 013 Third-Party Weather API Integration
     And a third-party weather API is configured
     And the third-party API is unavailable
     When requesting current weather data for "Delhi"
-    Then the service returns a cached weather record if available
-    Or the service returns an error indicating API unavailability
+    Then the service returns a cached weather record or an error indicating API unavailability
 
   Scenario: Update weather data periodically
     Given the service is running

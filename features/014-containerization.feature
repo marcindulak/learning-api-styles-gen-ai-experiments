@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 014 Containerization and Deployment
   Service operates in a local environment using containers
   Service is deployed as one unit (monolith)

@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 002 City Management
   Weather data is limited to the 5 biggest cities in the world
   Cities must be manageable through the system

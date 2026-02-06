@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 015 Testing Framework
   The service is testable using behave-django
   Tests can be executed within the running container

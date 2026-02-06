@@ -35,7 +35,8 @@ The initial implementation (design, code, and tests) took a human developer abou
    git commit -m"Clear README.md"
    ```
 
-3. One of the conditions for an experiment to be valid is the presence of the full screencast of the session.
+3. One of the conditions for an experiment to be valid is the presence of the terminal recording of the session.
+   The reason is not so much to have a proof of agent's work, but to allow to review the agent actions later.
    Consider using [asciinema](https://asciinema.org/)
 
    ```
@@ -49,9 +50,11 @@ The initial implementation (design, code, and tests) took a human developer abou
    ffmpeg -y -i demo.gif -vf "scale=1920:-2:flags=lanczos+accurate_rnd+full_chroma_int,format=yuv420p" -c:v libx264 -crf 18 -preset slow -movflags +faststart demo.mp4
    ```
 
-4. Create a *Draft* pull request to this repo. It will never get merged.
+4. When you decide to stop the experiment, ask the agent to "Create project's README.md, and commit also all pending changes."
 
-5. Create a pull request to this repo that describes the outcome of the experiment.
+5. Create a *Draft* pull request to this repo. It will never get merged.
+
+6. Create a pull request to this repo that describes the outcome of the experiment.
    See examples below.
 
 # Experiments
@@ -70,13 +73,13 @@ Claimed success after silently skipping tests.
 
 The agent claimed successful implementation of all features without running any tests.
 It turned out that `.claude/settings.json` was blocking Docker commands, and the agent decided to silently skip tests.
-The agent randomly kept discovering logical inconsistencies in [REQUIREMENTS.md](REQUIREMENTS.md).
-After human in interactive mode correcting the Docker access, and instructing the agent to use Docker, the agent started using Docker, but claimed success again, despite failing to handle database cleanup during tests.
-The agent kept git committing the `.cache` directory, containing Python packages, until instructed by human in interactive mode to stop.
+The agent when starting new iterations, was randomly discovering logical inconsistencies in [REQUIREMENTS.md](REQUIREMENTS.md).
+After human correcting the Docker access, and instructing the agent to use Docker, the agent started using Docker, but claimed success again, despite failing to handle database cleanup during tests.
+The agent also kept git committing the `.cache` directory, containing Python packages, until instructed by human in interactive mode to stop, and left temporary files git committed (e.g., test_graphql_simple.py).
+
 The agent decided to use end-of-life libraries, like [Django 5.0.1](https://docs.djangoproject.com/en/6.0/releases/5.0.1/) (2024), [Daphne 4.0.0](https://pypi.org/project/daphne/4.0.0/) (2022), or an unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) library.
-The agent used different Docker commands than those present in [REQUIREMENTS.md](REQUIREMENTS.md), and created the project README.md with the commands it didn't use.
-The agent left temporary files git committed (e.g., test_graphql_simple.py).
-The agent was wasting time on spinning up unnecessary containers and waiting for them with sleep, because [podman compose does not support --wait](https://github.com/containers/podman-compose/issues/710).
+It used different Docker commands than those present in [REQUIREMENTS.md](REQUIREMENTS.md), and was wasting time on spinning up unnecessary containers and waiting for them with sleep, because [podman compose does not support --wait](https://github.com/containers/podman-compose/issues/710).
+At the end the agent created the project's README.md listing Docker commands it didn't use.
 
 See the screen recording of the session.
 It's split into two due to Claude Code large memory use ([anthropics/claude-code/issues/11315](https://github.com/anthropics/claude-code/issues/11315)).

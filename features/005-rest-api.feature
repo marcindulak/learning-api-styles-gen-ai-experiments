@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 005 REST API for Weather Indicators
   The service exposes common weather indicators via REST API
   Authentication is performed using JWT tokens
@@ -29,7 +29,7 @@ Feature: 005 REST API for Weather Indicators
   Scenario: Search cities via REST API
     Given the service is running
     And a city "Copenhagen" exists
-    When searching cities via GET from "/api/cities?search_name=Copenhagen"
+    When searching cities via GET from "/api/cities?search=Copenhagen"
     Then the response status is 200
     And the results contain city "Copenhagen"
 

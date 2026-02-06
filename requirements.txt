@@ -1,4 +1,6 @@
 Django==5.1.5
 behave==1.2.6
 behave-django==1.4.0
+djangorestframework==3.15.2
+djangorestframework-simplejwt==5.4.0
 psycopg[binary]==3.2.3

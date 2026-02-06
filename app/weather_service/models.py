@@ -45,3 +45,24 @@ class WeatherRecord(models.Model):
 
     def __str__(self) -> str:
         return f"{self.city.name} - {self.timestamp}"
+
+
+class WeatherForecast(models.Model):
+    """
+    Model representing a weather forecast for a city.
+    Forecasts are limited to a maximum of 7 days.
+    """
+
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="forecasts")
+    forecast_date = models.DateField(help_text="Date for which the forecast is made")
+    temperature = models.DecimalField(max_digits=5, decimal_places=2, help_text="Forecasted temperature in Celsius")
+    humidity = models.IntegerField(help_text="Forecasted humidity percentage (0-100)")
+    pressure = models.IntegerField(help_text="Forecasted atmospheric pressure in hPa")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["forecast_date"]
+        unique_together = ["city", "forecast_date"]
+
+    def __str__(self) -> str:
+        return f"{self.city.name} - {self.forecast_date}"

@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 004 Weather Forecast
   Weather forecast is limited to up to 7 days
   The service provides weather forecast data for cities

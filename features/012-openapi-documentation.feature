@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 012 API Documentation
   Service APIs are documented using OpenAPI specification
   allowing developers to understand and consume the APIs

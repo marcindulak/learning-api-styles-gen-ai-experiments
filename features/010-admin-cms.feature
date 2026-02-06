@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 010 Admin Content Management System
   The service has a content management system for admin users
   using Django's built-in admin interface

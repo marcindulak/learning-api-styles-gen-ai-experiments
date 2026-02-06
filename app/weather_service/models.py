@@ -23,3 +23,25 @@ class City(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name}, {self.country}"
+
+
+class WeatherRecord(models.Model):
+    """
+    Model representing a weather record for a city.
+    Contains common weather indicators including temperature, humidity, pressure,
+    wind speed, and precipitation.
+    """
+
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="weather_records")
+    timestamp = models.DateTimeField(auto_now_add=True)
+    temperature = models.DecimalField(max_digits=5, decimal_places=2, help_text="Temperature in Celsius")
+    humidity = models.IntegerField(help_text="Humidity percentage (0-100)")
+    pressure = models.IntegerField(help_text="Atmospheric pressure in hPa")
+    wind_speed = models.DecimalField(max_digits=5, decimal_places=2, help_text="Wind speed in km/h")
+    precipitation = models.DecimalField(max_digits=5, decimal_places=2, help_text="Precipitation in mm")
+
+    class Meta:
+        ordering = ["-timestamp"]
+
+    def __str__(self) -> str:
+        return f"{self.city.name} - {self.timestamp}"

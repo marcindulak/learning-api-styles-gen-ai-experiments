@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 003 Weather Data Storage
   The service provides weather historical data
   Weather records contain actual data from a third-party weather API

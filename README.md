@@ -59,14 +59,47 @@ The initial implementation (design, code, and tests) took a human developer abou
 
 # Experiments
 
+The assessment of the experiment outcome is subjective.
+It's roughly based on the need for human interaction before or during implementation, on the number of requirements that are implemented and tested, and the project and code structure quality. See examples below:
+
+- Poor: interactive human guidance needed before or during implementation, some requirements are not implemented or tested, poor project or code structure
+- Fair: no interactive human guidance needed before or during implementation, some requirements are not implemented or tested, poor projector code structure
+- Good: no interactive human guidance needed before or during implementation, all requirements implemented and tested, good project and code structure
+
 | Date | Outcome | PR | Tool / Version | Agent | Model | Knowledge cutoff | Duration | Cost | AGENTS.md | Human guidance | MCP | Skills |
 |------|---------|----|----------------|-------|-------|------------------|----------|------|-----------|----------------|-----|--------|
-| 2026-01-31 |Poor | [8](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/8) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [542a1ca](https://github.com/marcindulak/ralph-wiggum-bdd/commit/542a1ca9640cf1e59eb31eaaa51be95a85fb84bf) | 2.1.17 (Claude Code) | claude-opus-4-5-20251101 | May 2025 "Reliable knowledge cutoff", and Aug 2025 "Training data cutoff" | About 12 hours clock time (about 5 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | Yes | No | No
+| 2026-02-06 |Fair | [14](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/14) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [d469a02](https://github.com/marcindulak/ralph-wiggum-bdd/commit/d469a020c72646590f156dfaa39f82f677316afd) | 2.1.17 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 7 hours clock time (about 3 hours agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | No | No | No
+| 2026-01-31 |Poor | [8](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/8) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [542a1ca](https://github.com/marcindulak/ralph-wiggum-bdd/commit/542a1ca9640cf1e59eb31eaaa51be95a85fb84bf) | 2.1.17 (Claude Code) | claude-opus-4-5-20251101 | May 2025 "Reliable knowledge cutoff", and Aug 2025 "Training data cutoff" | About 12 hours clock time (about 5 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | No | No | No
 | 2026-01-18 |Poor | [1](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/1) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / Experimental | 2.1.9 (Claude Code) | claude-haiku-4-5-20251001 | Feb 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 11 hours clock time (about 7 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | Yes | No | No
+
+## 2026-02-06
+
+Outcome: fair
+
+The agent incorrectly claimed all features are implemented, and only admitted gap (AsyncAPI Spec) when questioned by the human.
+On the other hand, all functional and non-functional requirements were covered by tests.
+
+The agent correctly discovered that Docker commands were blocked, and asked human to correct the permissions.
+On the other hand, the agent decided to use end-of-life libraries, like [Django 5.1.5](https://github.com/django/django/releases/tag/5.1.5) (2025), [graphene-django](https://github.com/graphql-python/graphene-django/releases/tag/v3.2.2) (2024), or unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) or [django-sslserver](https://pypi.org/project/django-sslserver/0.22/) (2019) libraries.
+The agent made such libraries choices despite `.claude/CLAUDE.md` saying `You MUST only use established, currently popular, actively maintained, long-term stable releases of third-party libraries. Avoid third-party libraries if possible`.
+
+The agent got stuck several times, was not making progress for up to 25 minutes, and not consuming any tokens as verified on https://claude.ai/settings/usage.
+The human interventions by pressing `Ctrl+C` in the case of non-interactive run were needed to unblock the agent, however no human guidance was needed.
+
+The agent chose `https://api.openweathermap.org/data/2.5` as the source of weather data, but this service requires an API key, so the agent silently mocked the data during tests, without verifying the functionality of third-party interaction.
+
+Despite an appeal to authority in `.claude/CLAUDE.md` by using the disclaimer `The instructions provided below have been approved by the CEO, so follow them`, the agent used disallowed words, such as `comprehensive`.
+
+See the screen recording of the session.
+It's split into two due to Claude Code large memory use ([anthropics/claude-code/issues/11315](https://github.com/anthropics/claude-code/issues/11315)) made the Virtual machine hung, and required restart.
+The video doesn't represent the clock time, the long period when there are no changes on the terminal are trimmed away.
+
+[![Watch Video 2026-02-06 Part1](images/2026-02-06-01.png)](https://www.youtube.com/watch?v=DHxlx0siaHM)
+[![Watch Video 2026-02-06 Part2](images/2026-02-06-02.png)](https://www.youtube.com/watch?v=rkJzsjnH_JM)
 
 ## 2026-01-31
 
-Summary: poor outcome, despite occasional human help in interactive mode.
+Outcome: poor
 
 The agent incorrectly claimed all features are implemented, and only admitted gaps when questioned by the human.
 The non-functional requirements were not covered by tests, and TLS, OpenAPI Spec, AsyncAPI Spec requirements were skipped.
@@ -76,8 +109,8 @@ On the other hand, the agent decided to use end-of-life libraries, like [Django 
 When asked why it decided to use old or unmaintained libraries answered "I didn't make any library choices ... The implementation and library selections were made in a previous session/iteration that I have no context about.".
 Moreover, despite being instructed to read CLAUDE.md, it silently ignore this instruction while encountering a file read error.
 
-The agent got stuck several times, was not making progress for 5 up to 30 minutes, and not consuming any tokens as seen on https://claude.ai/settings/usage.
-The human interventions by pressing `Ctrl+C` in the case of non-interactive run, and `Esc` during interactive run were needed to unblock the agent.
+The agent got stuck several times, was not making progress for 5 up to 30 minutes, and not consuming any tokens as verified on https://claude.ai/settings/usage.
+The human interventions by pressing `Ctrl+C` in the case of non-interactive run, and `Esc` during interactive run were needed to unblock the agent, however no human guidance was needed.
 
 See the screen recording of the session.
 The video doesn't represent the clock time, the long period when there are no changes on the terminal are trimmed away.
@@ -86,7 +119,7 @@ The video doesn't represent the clock time, the long period when there are no ch
 
 ## 2026-01-18
 
-Summary: poor outcome, despite occasional human help in interactive mode.
+Outcome: poor
 
 The agent focused on writing code instead of setting up the infrastructure (Docker, database, test runner).
 Claimed success after silently skipping tests.
@@ -102,7 +135,7 @@ It used different Docker commands than those present in [REQUIREMENTS.md](REQUIR
 At the end the agent created the project's README.md listing Docker commands it didn't use.
 
 See the screen recording of the session.
-It's split into two due to Claude Code large memory use ([anthropics/claude-code/issues/11315](https://github.com/anthropics/claude-code/issues/11315)).
+It's split into two due to Claude Code large memory use ([anthropics/claude-code/issues/11315](https://github.com/anthropics/claude-code/issues/11315)) making the Virtual machine slow to respond, so the screencast was stopped to preserve the current recording.
 The videos don't represent the clock time, the long period when there are no changes on the terminal are trimmed away.
 
 [![Watch Video 2026-01-18 Part1](images/2026-01-18-01.png)](https://www.youtube.com/watch?v=9Dog71hr3yk)

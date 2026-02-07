@@ -1,110 +1,304 @@
-A set of experiments to determine whether generative AI, based on vague [REQUIREMENTS.md](REQUIREMENTS.md), is capable of generating Django code for the [Learning API Styles](https://github.com/ldynia/learning-api-styles) book.
+# Weather Forecast Service
 
-The source code for book was made public on GitHub on [July 17, 2025](https://github.com/ldynia/learning-api-styles/commit/35c31d369e6bef548eaf8dff7407969ef63efb21).
-The initial implementation (design, code, and tests) took a human developer about 200 hours.
+A Django-based weather forecast service demonstrating multiple web API patterns including REST, GraphQL, WebSocket, Atom feeds, and GitHub webhooks integration.
 
-> [!WARNING]
-> For safety, and to establish somewhat controllable conditions, experiments are recommended to be run in a virtual machine.
+## Architecture
 
-# Adding an experiment
+- **Framework**: Django 5.1.5 with PostgreSQL 16
+- **Deployment**: Docker containers (monolith architecture)
+- **Testing**: Behave BDD framework with behave-django
+- **APIs**: REST (DRF), GraphQL (graphene-django), WebSocket (Django Channels), Atom feeds
+- **Authentication**: JWT tokens (djangorestframework-simplejwt)
+- **Documentation**: OpenAPI 3.0 specification via drf-spectacular
 
-> [!NOTE]
-> If you are on a Linux system, for convenience consider using the included [Vagrantfile](Vagrantfile):
-> 
-> 1. Install [Vagrant](https://developer.hashicorp.com/vagrant/install).
-> 
-> 2. Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads).
-> 
-> 3. Run `vagrant up`
-> 
-> 4. Exec into the virtual machine with `vagrant ssh`, and then `cd /vagrant`.
+## Features
 
-1. To create a new experiment first make a branch named by the current date:
+### Functional Requirements
 
-   ```
-   git checkout main
-   git pull
-   git checkout -b YYYY-MM-DD
-   ```
+- User management with admin and regular user roles
+- City management (limited to 5 biggest cities in the world)
+- Weather data storage with historical records
+- Weather forecasts (up to 7 days)
+- REST API for weather indicators with JWT authentication
+- GraphQL API for flexible queries
+- Atom feed for weather forecast subscriptions
+- WebSocket API for real-time weather alerts
+- GitHub webhooks integration
+- Django admin CMS for content management
+- Third-party weather API integration (OpenWeatherMap)
 
-2. Clear the existing README.md file so the agent does not try to peek into it.
+### Non-Functional Requirements
 
-   ```
-   echo > README.md
-   git add README.md
-   git commit -m"Clear README.md"
-   ```
+- Containerized deployment using Docker
+- Optional TLS security (HTTP/HTTPS support)
+- Monolith deployment architecture
+- End-to-end testable via behave and curl
+- OpenAPI documentation
 
-3. One of the conditions for an experiment to be valid is the presence of the terminal recording of the session.
-   The reason is not so much to have a proof of agent's work, but to allow to review the agent actions later.
-   Consider using [asciinema](https://asciinema.org/)
+## Prerequisites
 
-   ```
-   asciinema rec /tmp/demo.cast
-   ```
+- Docker
+- Docker Compose
 
-   You can convert the cast into a 1080p mp4 video with:
-   
-   ```
-   docker run --rm -v "$PWD:/data" ghcr.io/asciinema/agg /data/demo.cast /data/demo.gif
-   ffmpeg -y -i demo.gif -vf "scale=1920:-2:flags=lanczos+accurate_rnd+full_chroma_int,format=yuv420p" -c:v libx264 -crf 18 -preset slow -movflags +faststart demo.mp4
-   ```
+## Quick Start
 
-4. When you decide to stop the experiment, ask the agent to "Create project's README.md, and commit also all pending changes."
+### 1. Build the containers
 
-5. Create a *Draft* pull request to this repo. It will never get merged.
+```bash
+docker compose build --build-arg UID=$(id -u) --build-arg GID=$(id -g)
+```
 
-6. Create a pull request to this repo that describes the outcome of the experiment.
-   See examples below.
+### 2. Start the service
 
-# Experiments
+```bash
+docker compose up --detach --wait
+```
 
-| Date | Outcome | PR | Tool / Version | Agent | Model | Knowledge cutoff | Duration | Cost | AGENTS.md | Human guidance | MCP | Skills |
-|------|---------|----|----------------|-------|-------|------------------|----------|------|-----------|----------------|-----|--------|
-| 2026-01-31 |Poor | [8](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/8) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [542a1ca](https://github.com/marcindulak/ralph-wiggum-bdd/commit/542a1ca9640cf1e59eb31eaaa51be95a85fb84bf) | 2.1.17 (Claude Code) | claude-opus-4-5-20251101 | May 2025 "Reliable knowledge cutoff", and Aug 2025 "Training data cutoff" | About 12 hours clock time (about 5 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | Yes | No | No
-| 2026-01-18 |Poor | [1](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/1) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / Experimental | 2.1.9 (Claude Code) | claude-haiku-4-5-20251001 | Feb 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 11 hours clock time (about 7 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | Yes | No | No
+The service will be available at `http://localhost:8000`
 
-## 2026-01-31
+### 3. Run tests
 
-Summary: poor outcome, despite occasional human help in interactive mode.
+```bash
+docker compose exec app python manage.py behave --no-input
+```
 
-The agent incorrectly claimed all features are implemented, and only admitted gaps when questioned by the human.
-The non-functional requirements were not covered by tests, and TLS, OpenAPI Spec, AsyncAPI Spec requirements were skipped.
+### 4. Stop the service
 
-The agent correctly discovered that Docker commands were blocked, and correctly refused to mark the features as complete without running tests.
-On the other hand, the agent decided to use end-of-life libraries, like [Django 5.0.1](https://docs.djangoproject.com/en/6.0/releases/5.0.1/) (2024), [graphene-django](https://github.com/graphql-python/graphene-django/releases/tag/v3.2.0) (2023), or an unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) library.
-When asked why it decided to use old or unmaintained libraries answered "I didn't make any library choices ... The implementation and library selections were made in a previous session/iteration that I have no context about.".
-Moreover, despite being instructed to read CLAUDE.md, it silently ignore this instruction while encountering a file read error.
+```bash
+docker compose down
+```
 
-The agent got stuck several times, was not making progress for 5 up to 30 minutes, and not consuming any tokens as seen on https://claude.ai/settings/usage.
-The human interventions by pressing `Ctrl+C` in the case of non-interactive run, and `Esc` during interactive run were needed to unblock the agent.
+## API Endpoints
 
-See the screen recording of the session.
-The video doesn't represent the clock time, the long period when there are no changes on the terminal are trimmed away.
+### REST API
 
-[![Watch Video 2026-01-31 Part1](images/2026-01-31-01.png)](https://www.youtube.com/watch?v=ZkgFuE6g8d0)
+Base URL: `http://localhost:8000/api`
 
-## 2026-01-18
+#### Authentication
 
-Summary: poor outcome, despite occasional human help in interactive mode.
+Obtain JWT token:
 
-The agent focused on writing code instead of setting up the infrastructure (Docker, database, test runner).
-Claimed success after silently skipping tests.
+```bash
+CREDENTIALS_PAYLOAD='{"username":"admin","password":"admin"}'
+ACCESS_TOKEN=$(docker compose exec app bash -c \
+  "curl \
+  --data '$CREDENTIALS_PAYLOAD' \
+  --header 'Content-Type: application/json' \
+  --request 'POST' \
+  --silent 'http://localhost:8000/api/jwt/obtain' | \
+  jq --raw-output '.access'")
+```
 
-The agent claimed successful implementation of all features without running any tests.
-It turned out that `.claude/settings.json` was blocking Docker commands, and the agent decided to silently skip tests.
-The agent when starting new iterations, was randomly discovering logical inconsistencies in [REQUIREMENTS.md](REQUIREMENTS.md).
-After human correcting the Docker access, and instructing the agent to use Docker, the agent started using Docker, but claimed success again, despite failing to handle database cleanup during tests.
-The agent also kept git committing the `.cache` directory, containing Python packages, until instructed by human in interactive mode to stop, and left temporary files git committed (e.g., test_graphql_simple.py).
+#### Cities
 
-The agent decided to use end-of-life libraries, like [Django 5.0.1](https://docs.djangoproject.com/en/6.0/releases/5.0.1/) (2024), [Daphne 4.0.0](https://pypi.org/project/daphne/4.0.0/) (2022), or an unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) library.
-It used different Docker commands than those present in [REQUIREMENTS.md](REQUIREMENTS.md), and was wasting time on spinning up unnecessary containers and waiting for them with sleep, because [podman compose does not support --wait](https://github.com/containers/podman-compose/issues/710).
-At the end the agent created the project's README.md listing Docker commands it didn't use.
+Create city:
 
-See the screen recording of the session.
-It's split into two due to Claude Code large memory use ([anthropics/claude-code/issues/11315](https://github.com/anthropics/claude-code/issues/11315)).
-The videos don't represent the clock time, the long period when there are no changes on the terminal are trimmed away.
+```bash
+CREATE_CITY_PAYLOAD='{"name":"Copenhagen","country":"Denmark","region":"Europe","timezone":"Europe/Copenhagen","latitude":55.676100,"longitude":12.568300}'
+docker compose exec app bash -c \
+  "curl \
+  --data '$CREATE_CITY_PAYLOAD' \
+  --header 'Authorization: Bearer $ACCESS_TOKEN' \
+  --header 'Content-Type: application/json' \
+  --request 'POST' \
+  --silent \
+  'http://localhost:8000/api/cities' | \
+  jq"
+```
 
-[![Watch Video 2026-01-18 Part1](images/2026-01-18-01.png)](https://www.youtube.com/watch?v=9Dog71hr3yk)
+List cities:
 
-[![Watch Video 2026-01-18 Part2](images/2026-01-18-02.png)](https://www.youtube.com/watch?v=JsmNmM1K4sA)
+```bash
+docker compose exec app bash -c \
+  "curl --request 'GET' --silent 'http://localhost:8000/api/cities' | jq"
+```
+
+Search cities:
+
+```bash
+docker compose exec app bash -c \
+  "curl --request 'GET' --silent 'http://localhost:8000/api/cities?search=Copenhagen' | jq"
+```
+
+Get city by UUID:
+
+```bash
+CITY_UUID=$(docker compose exec app bash -c \
+  "curl --request 'GET' --silent 'http://localhost:8000/api/cities?search=Copenhagen' | \
+  jq --raw-output '.results[0].uuid'")
+docker compose exec app bash -c \
+  "curl \
+  --request 'GET' \
+  --silent \
+  'http://localhost:8000/api/cities/$CITY_UUID' | \
+  jq"
+```
+
+### GraphQL API
+
+Endpoint: `http://localhost:8000/api/graphql`
+
+Interactive GraphiQL interface available at the same URL in browser.
+
+Example query:
+
+```graphql
+{
+  cities {
+    name
+    country
+    latitude
+    longitude
+  }
+}
+```
+
+### Atom Feed
+
+Subscribe to weather forecasts:
+
+```bash
+curl http://localhost:8000/api/feed/forecast
+```
+
+### WebSocket API
+
+Connect to weather alerts:
+
+```
+ws://localhost:8000/ws/alerts
+```
+
+Subscribe to city alerts:
+
+```json
+{
+  "action": "subscribe",
+  "city": "Tokyo"
+}
+```
+
+### GitHub Webhooks
+
+Endpoint: `http://localhost:8000/api/webhooks/github`
+
+Configure in GitHub repository settings to receive push, issue, and pull request events.
+
+## Documentation
+
+### OpenAPI Specification
+
+- Schema (JSON): `http://localhost:8000/api/schema`
+- Swagger UI: `http://localhost:8000/api/docs`
+
+### Django Admin
+
+Access admin interface at `http://localhost:8000/admin`
+
+Default credentials:
+- Username: `admin`
+- Password: `admin`
+
+## TLS Support
+
+Enable HTTPS by setting environment variable:
+
+```bash
+TLS_ENABLE=1 docker compose up --detach --wait
+```
+
+HTTPS endpoint: `https://localhost:8443`
+
+## Project Structure
+
+```
+/vagrant
+├── app/                          # Django application
+│   ├── config/                   # Django project settings
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── asgi.py
+│   └── weather_service/          # Main application
+│       ├── models.py             # City, WeatherRecord, WeatherForecast
+│       ├── serializers.py        # DRF serializers
+│       ├── views.py              # REST API views
+│       ├── schema.py             # GraphQL schema
+│       ├── consumers.py          # WebSocket consumers
+│       ├── routing.py            # WebSocket routing
+│       ├── admin.py              # Django admin configuration
+│       └── weather_api.py        # Third-party API client
+├── features/                     # BDD feature files
+│   ├── *.feature                 # Gherkin scenarios
+│   ├── steps/                    # Step definitions
+│   └── environment.py            # Behave configuration
+├── Dockerfile
+├── compose.yaml
+├── requirements.txt
+├── REQUIREMENTS.md
+└── README.md
+```
+
+## Environment Variables
+
+- `WEATHER_API_KEY`: OpenWeatherMap API key (default: empty)
+- `WEATHER_API_BASE_URL`: Weather API base URL (default: https://api.openweathermap.org/data/2.5)
+- `WEATHER_API_RATE_LIMIT`: Requests per minute limit (default: 60)
+- `GITHUB_WEBHOOK_SECRET`: GitHub webhook secret for signature validation (optional)
+- `TLS_ENABLE`: Enable HTTPS (0 or 1, default: 0)
+
+## Development
+
+### Running migrations
+
+```bash
+docker compose exec app python manage.py makemigrations
+docker compose exec app python manage.py migrate
+```
+
+### Creating superuser
+
+```bash
+docker compose exec app python manage.py createsuperuser
+```
+
+### Running Django shell
+
+```bash
+docker compose exec app python manage.py shell
+```
+
+### Accessing PostgreSQL
+
+```bash
+docker compose exec db psql -U postgres -d weather_forecast_db
+```
+
+## Testing
+
+Run all BDD tests:
+
+```bash
+docker compose exec app python manage.py behave --no-input
+```
+
+Run specific feature:
+
+```bash
+docker compose exec app python manage.py behave --no-input features/005-rest-api.feature
+```
+
+Run with verbose output:
+
+```bash
+docker compose exec app python manage.py behave --no-input --verbose
+```
+
+## Known Limitations
+
+1. **AsyncAPI Documentation**: WebSocket API lacks AsyncAPI specification documentation (only OpenAPI for REST endpoints is implemented)
+2. **Third-party API Integration**: OpenWeatherMap integration uses mock data in test mode (api_key="test") and requires valid API key for production use
+3. **Library Versions**: Project uses behave 1.2.6 (outdated, latest is 1.3.3) for compatibility with behave-django 1.4.0
+
+## License
+
+Educational project for demonstrating web API patterns.

@@ -11,6 +11,7 @@ services:
     ports:
       - 127.0.0.1:8000:8000
       - 127.0.0.1:8001:8001
+      - 127.0.0.1:8443:8443
     depends_on:
       - postgres
       - redis
@@ -30,6 +31,7 @@ services:
     volumes:
        - ./app:/app
        - ./docs:/app/docs
+       - ./features:/app/features
 
   postgres:
     image: postgres:17-alpine
@@ -45,6 +47,20 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7-alpine
+    container_name: django-redis
+    hostname: django-redis
+    networks:
+      - django_internal
+    ports:
+      - 127.0.0.1:6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 30

@@ -55,7 +55,15 @@ The initial implementation (design, code, and tests) took a human developer abou
 5. Create a *Draft* pull request to this repo. It will never get merged.
 
 6. Create a pull request to this repo that describes the outcome of the experiment.
-   See examples below.
+   See examples below. Measure characteristics like the number of lines of code and code complexity:
+
+   ```
+   tokei --types='Python,Gherkin (Cucumber)' .
+   ```
+
+   ```
+   ruff check . --select C90 --output-format=concise
+   ```
 
 # Experiments
 
@@ -75,6 +83,21 @@ It's roughly based on the need for human interaction before or during implementa
 ## 2026-02-06
 
 Outcome: fair
+
+```
+tokei --types='Python,Gherkin (Cucumber)' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Gherkin (Cucumber)       15          498          441            0           57
+ Python                   37         3225         2531           76          618
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    52         3723         2972           76          675
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ruff check . --select C90 --output-format=concise
+All checks passed!
+```
 
 The agent incorrectly claimed all features are implemented, and only admitted gap (AsyncAPI Spec) when questioned by the human.
 On the other hand, all functional and non-functional requirements were covered by tests.
@@ -101,6 +124,22 @@ The video doesn't represent the clock time, the long period when there are no ch
 
 Outcome: poor
 
+```
+tokei --types='Python,Gherkin (Cucumber)' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Gherkin (Cucumber)       10          412          342            0           70
+ Python                   99         4474         3516          192          766
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                   109         4886         3858          192          836
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ruff check . --select C90 --output-format=concise
+features/steps/feed_steps.py:94:5: C901 `step_entry_contains_temperature` is too complex (11 > 10)
+Found 1 error.
+```
+
 The agent incorrectly claimed all features are implemented, and only admitted gaps when questioned by the human.
 The non-functional requirements were not covered by tests, and TLS, OpenAPI Spec, AsyncAPI Spec requirements were skipped.
 
@@ -120,6 +159,22 @@ The video doesn't represent the clock time, the long period when there are no ch
 ## 2026-01-18
 
 Outcome: poor
+
+```
+tokei --types='Python,Gherkin (Cucumber)' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Gherkin (Cucumber)       13          249          222            0           27
+ Python                  108         7289         5600          402         1287
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                   121         7538         5822          402         1314
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ruff check . --select C90 --output-format=concise
+app/apps/webhooks/views.py:69:5: C901 `github_webhook` is too complex (12 > 10)
+Found 1 error.
+```
 
 The agent focused on writing code instead of setting up the infrastructure (Docker, database, test runner).
 Claimed success after silently skipping tests.

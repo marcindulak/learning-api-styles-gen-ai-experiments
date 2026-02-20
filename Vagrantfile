@@ -16,7 +16,9 @@ Vagrant.configure(2) do |config|
     machine.vm.box = "almalinux/9"
     machine.vm.box_url = machine.vm.box
     # claude install is slow, due to large memory usage https://github.com/anthropics/claude-code/issues/12987
-    config.vm.boot_timeout = 1800
+    machine.vm.boot_timeout = 1800
+    # https://github.com/AlmaLinux/cloud-images/issues/295
+    machine.vm.disk :disk, size: "40GB", primary: true
     machine.vm.provider "virtualbox" do |p|
       p.memory = 12288
       p.cpus = 1
@@ -34,6 +36,10 @@ Vagrant.configure(2) do |config|
     machine.vm.provision :shell, :inline => "mkswap /swapfile"
     machine.vm.provision :shell, :inline => "echo '/swapfile swap swap defaults 0 0' >> /etc/fstab"
     machine.vm.provision :shell, :inline => "swapon --show", run: "always"
+    # https://github.com/AlmaLinux/cloud-images/issues/295
+    machine.vm.provision :shell, :inline => "dnf -y install --setopt=install_weak_deps=False cloud-utils-growpart"
+    machine.vm.provision :shell, :inline => "growpart /dev/sda 4"
+    machine.vm.provision :shell, :inline => "xfs_growfs /"
     machine.vm.provision :shell, :inline => "dnf install -y epel-release"
     machine.vm.provision :shell, :inline => "dnf -y install --setopt=install_weak_deps=False curl dnf-plugins-core git podman podman-compose"
     machine.vm.provision :shell, :inline => "dnf -y install --setopt=install_weak_deps=False python-unversioned-command"

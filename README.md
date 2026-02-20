@@ -76,13 +76,13 @@ It's roughly based on the need for human interaction before or during implementa
 
 | Date | Outcome | PR | Tool / Version | Agent | Model | Knowledge cutoff | Duration | Cost | AGENTS.md | Human guidance | MCP | Skills |
 |------|---------|----|----------------|-------|-------|------------------|----------|------|-----------|----------------|-----|--------|
-| 2026-02-06 |Fair | [14](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/14) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [d469a02](https://github.com/marcindulak/ralph-wiggum-bdd/commit/d469a020c72646590f156dfaa39f82f677316afd) | 2.1.17 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 7 hours clock time (about 3 hours agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | No | No | No
+| 2026-02-06 |Poor | [14](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/14) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [d469a02](https://github.com/marcindulak/ralph-wiggum-bdd/commit/d469a020c72646590f156dfaa39f82f677316afd) | 2.1.17 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 7 hours clock time (about 3 hours agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | No | No | No
 | 2026-01-31 |Poor | [8](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/8) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [542a1ca](https://github.com/marcindulak/ralph-wiggum-bdd/commit/542a1ca9640cf1e59eb31eaaa51be95a85fb84bf) | 2.1.17 (Claude Code) | claude-opus-4-5-20251101 | May 2025 "Reliable knowledge cutoff", and Aug 2025 "Training data cutoff" | About 12 hours clock time (about 5 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | No | No | No
 | 2026-01-18 |Poor | [1](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/1) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / Experimental | 2.1.9 (Claude Code) | claude-haiku-4-5-20251001 | Feb 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 11 hours clock time (about 7 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | Yes | No | No
 
 ## 2026-02-06
 
-Outcome: fair
+Outcome: poor, almost fair due to the small amount of generated code
 
 ```
 tokei --types='Python,Gherkin (Cucumber)' .
@@ -97,6 +97,36 @@ tokei --types='Python,Gherkin (Cucumber)' .
 
 ruff check . --select C90 --output-format=concise
 All checks passed!
+```
+
+The code organization puts models, REST views, GraphQL schema, websocket consumers, and feed generation in a single weather_service/ app.
+Data storage and data access are not separated, making maintenance harder.
+
+```
+tree -L 2 app/
+app/
+├── config
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── postgres.py
+│   ├── urls.py
+│   └── wsgi.py
+├── manage.py
+├── scripts
+│   ├── healthcheck.sh
+│   └── startup.sh
+└── weather_service
+    ├── __init__.py
+    ├── admin.py
+    ├── apps.py
+    ├── consumers.py
+    ├── migrations
+    ├── models.py
+    ├── routing.py
+    ├── schema.py
+    ├── serializers.py
+    ├── views.py
+    └── weather_api.py
 ```
 
 The agent incorrectly claimed all features are implemented, and only admitted gap (AsyncAPI Spec) when questioned by the human.
@@ -140,6 +170,38 @@ features/steps/feed_steps.py:94:5: C901 `step_entry_contains_temperature` is too
 Found 1 error.
 ```
 
+The code organization puts api/, feeds/, and graphql_api/ inside apps/ alongside data apps like alerts/, cities/, forecast/, and weather/.
+Data storage and access are not separated—data apps and presentation layers are mixed, making responsibility unclear.
+
+```
+tree -L 3 src/
+src/
+└── app
+    ├── apps
+    │   ├── __init__.py
+    │   ├── alerts
+    │   ├── api
+    │   ├── authentication
+    │   ├── cities
+    │   ├── feeds
+    │   ├── forecast
+    │   ├── graphql_api
+    │   ├── historical
+    │   ├── weather
+    │   └── webhooks
+    ├── config
+    │   ├── __init__.py
+    │   ├── asgi.py
+    │   ├── postgres.py
+    │   ├── settings
+    │   ├── urls.py
+    │   └── wsgi.py
+    ├── manage.py
+    └── scripts
+        ├── healthcheck.sh
+        └── startup.sh
+```
+
 The agent incorrectly claimed all features are implemented, and only admitted gaps when questioned by the human.
 The non-functional requirements were not covered by tests, and TLS, OpenAPI Spec, AsyncAPI Spec requirements were skipped.
 
@@ -174,6 +236,32 @@ tokei --types='Python,Gherkin (Cucumber)' .
 ruff check . --select C90 --output-format=concise
 app/apps/webhooks/views.py:69:5: C901 `github_webhook` is too complex (12 > 10)
 Found 1 error.
+```
+
+The code organization puts api/, feeds/, and graphql/ inside apps/ alongside data apps like alerts/, cities/, and weather/.
+Data storage and access are not separated—data apps and presentation layers are mixed, making responsibility unclear.
+
+```
+tree -L 2 app/
+app/
+├── apps
+│   ├── __init__.py
+│   ├── alerts
+│   ├── api
+│   ├── authentication
+│   ├── cities
+│   ├── feeds
+│   ├── graphql
+│   ├── weather
+│   └── webhooks
+├── config
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── postgres.py
+│   ├── settings
+│   ├── urls.py
+│   └── wsgi.py
+└── manage.py
 ```
 
 The agent focused on writing code instead of setting up the infrastructure (Docker, database, test runner).

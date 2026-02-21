@@ -1,0 +1,122 @@
+asyncapi: '2.6.0'
+
+info:
+  title: Weather Forecast Service WebSocket API
+  version: 1.0.0
+  description: |
+    Real-time weather alert notifications via WebSocket.
+    Alerts are broadcast to connected clients when new WeatherAlert objects are created.
+  contact:
+    name: API Support
+  license:
+    name: MIT
+
+servers:
+  production:
+    url: 'wss://localhost:8001'
+    protocol: wss
+    description: Production WebSocket server (TLS enabled)
+  development:
+    url: 'ws://localhost:8001'
+    protocol: ws
+    description: Development WebSocket server (no TLS)
+
+defaultContentType: application/json
+
+channels:
+  /ws/alerts/:
+    description: |
+      General weather alerts channel.
+      Receives all weather alerts from all cities.
+    subscribe:
+      description: Subscribe to weather alerts from all cities
+      message:
+        $ref: '#/components/messages/WeatherAlert'
+
+  /ws/alerts/{city_uuid}:
+    description: |
+      City-specific weather alerts channel.
+      Receives weather alerts for a specific city only.
+    parameters:
+      city_uuid:
+        description: UUID of the city to receive alerts for
+        schema:
+          type: string
+          format: uuid
+    subscribe:
+      description: Subscribe to weather alerts for a specific city
+      message:
+        $ref: '#/components/messages/WeatherAlert'
+
+components:
+  messages:
+    WeatherAlert:
+      contentType: application/json
+      description: Weather alert notification message
+      payload:
+        type: object
+        properties:
+          type:
+            type: string
+            enum: ['alert']
+            description: Message type identifier
+          city:
+            type: string
+            description: Name of the city where alert is issued
+          city_uuid:
+            type: string
+            format: uuid
+            description: UUID of the city
+          alert_type:
+            type: string
+            enum: ['storm', 'heat', 'cold', 'flood', 'wind']
+            description: Type of weather alert
+          severity:
+            type: string
+            enum: ['advisory', 'watch', 'warning']
+            description: Severity level of the alert
+          title:
+            type: string
+            description: Alert title
+          description:
+            type: string
+            description: Detailed description of the alert
+          issued_at:
+            type: string
+            format: date-time
+            description: ISO 8601 timestamp when alert was issued
+        required:
+          - type
+          - city
+          - city_uuid
+          - alert_type
+          - severity
+          - title
+          - description
+          - issued_at
+      examples:
+        - name: StormAlert
+          payload:
+            type: alert
+            city: Tokyo
+            city_uuid: 550e8400-e29b-41d4-a716-446655440000
+            alert_type: storm
+            severity: warning
+            title: Thunderstorm Alert
+            description: Severe thunderstorm expected with strong winds and heavy rain
+            issued_at: '2026-02-20T14:30:00Z'
+
+        - name: HeatAlert
+          payload:
+            type: alert
+            city: Delhi
+            city_uuid: 550e8400-e29b-41d4-a716-446655440001
+            alert_type: heat
+            severity: advisory
+            title: Heat Advisory
+            description: Excessive heat expected. Temperatures may reach 45°C or higher.
+            issued_at: '2026-02-20T10:00:00Z'
+
+tags:
+  - name: RealTime
+    description: Real-time notifications via WebSocket

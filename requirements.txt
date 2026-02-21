@@ -1,0 +1,10 @@
+Django>=5.0,<5.2
+djangorestframework>=3.14.0
+djangorestframework-simplejwt>=5.3.0
+strawberry-graphql-django>=0.46.0
+channels>=4.0.0
+daphne>=4.0.0
+drf-spectacular>=0.27.0
+behave-django>=1.9.0
+gunicorn>=21.2.0
+psycopg2-binary>=2.9.9

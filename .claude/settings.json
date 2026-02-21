@@ -14,8 +14,11 @@
   "model": "haiku",
   "permissions": {
     "allow": [
+      "Bash",
       "Bash(behave *)",
       "Bash(cat *)",
+      "Bash(docker *)",
+      "Bash(docker-compose *)",
       "Bash(find *)",
       "Bash(grep *)",
       "Bash(ls *)",
@@ -25,7 +28,6 @@
     "ask": [],
     "defaultMode": "default",
     "deny": [
-      "Bash(docker *)",
       "Bash(git config *)",
       "Bash(git push *)",
       "Bash(sudo *)",

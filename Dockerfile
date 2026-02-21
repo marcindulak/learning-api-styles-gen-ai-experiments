@@ -4,7 +4,7 @@ FROM python:${PY_VER}-slim-trixie
 ARG PY_VER
 
 ARG APP_TLS_CERTS_DIR=/etc/wfs/ssl/certs \
-    APP_TLS_PRICATE_DIR=/etc/wfs/ssl/private \
+    APP_TLS_PRIVATE_DIR=/etc/wfs/ssl/private \
     APP_PORT_HTTP=8000 \
     APP_PORT_WS=8001 \
     ENVIRONMENT=development \
@@ -16,7 +16,7 @@ ARG APP_TLS_CERTS_DIR=/etc/wfs/ssl/certs \
     WORKDIR=app
 
 ENV APP_TLS_CERTS_DIR=$APP_TLS_CERTS_DIR \
-    APP_TLS_PRICATE_DIR=$APP_TLS_PRICATE_DIR \
+    APP_TLS_PRIVATE_DIR=$APP_TLS_PRIVATE_DIR \
     APP_PORT_HTTP=$APP_PORT_HTTP \
     APP_PORT_WS=$APP_PORT_WS \
     ENVIRONMENT=$ENVIRONMENT \
@@ -59,7 +59,8 @@ RUN apt-get update && \
     libc6-dev \
     libpq-dev \
     newsboat \
-    openssl && \
+    openssl \
+    postgresql-client && \
     rm -rf /var/lib/apt/lists/*
 
 # Debugging packages
@@ -88,8 +89,8 @@ RUN apt-get update && \
 WORKDIR ${WORKDIR}
 COPY . ${WORKDIR}
 
-RUN mkdir -p ${APP_TLS_CERTS_DIR} ${APP_TLS_PRICATE_DIR}
-RUN chown -R ${USER}:${GROUP} ${APP_TLS_CERTS_DIR} ${APP_TLS_PRICATE_DIR} ${WORKDIR}
+RUN mkdir -p ${APP_TLS_CERTS_DIR} ${APP_TLS_PRIVATE_DIR}
+RUN chown -R ${USER}:${GROUP} ${APP_TLS_CERTS_DIR} ${APP_TLS_PRIVATE_DIR} ${WORKDIR}
 
 USER ${USER}:${GROUP}
 ENV PATH=/home/${USER}/.local/bin:${PATH}
@@ -103,4 +104,4 @@ VOLUME ${WORKDIR}
 
 HEALTHCHECK CMD ${WORKDIR}/scripts/healthcheck.sh || exit 1
 
-ENTRYPOINT /bin/sh -c "${WORKDIR}/scripts/startup.sh"
+ENTRYPOINT ["/bin/sh", "-c", "/app/scripts/startup.sh"]

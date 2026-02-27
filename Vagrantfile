@@ -54,7 +54,7 @@ Vagrant.configure(2) do |config|
     machine.vm.provision :shell, :inline => "snap wait system seed.loaded"
     machine.vm.provision :shell, :inline => "snap install asciinema --classic"
     machine.vm.provision :shell, :inline => "snap install ruff"
-    machine.vm.provision :shell, :inline => "dnf install -y --setopt=install_weak_deps=False tokei"
+    machine.vm.provision :shell, :inline => "dnf install -y --setopt=install_weak_deps=False tokei tree"
     machine.vm.provision :shell, :inline => "echo '[user]' > ~vagrant/.gitconfig"
     machine.vm.provision :shell, :inline => "echo 'email = marcindulak@users.noreply.github.com' >> ~vagrant/.gitconfig"
     machine.vm.provision :shell, :inline => "echo 'name = Marcin Dulak' >> ~vagrant/.gitconfig"

@@ -65,23 +65,9 @@ RUN apt-get update && \
 # Debugging packages
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
-    arping \
-    bind9-dnsutils \
-    dnsmasq \
-    graphviz \
-    iproute2 \
-    iptables \
-    iputils-ping \
     jq \
-    libgraphviz-dev \
-    libxml2-utils \
-    net-tools \
-    netcat-traditional \
-    nmap \
     node-ws \
-    procps \
     tcpdump \
-    tshark \
     vim && \
     rm -rf /var/lib/apt/lists/*
 

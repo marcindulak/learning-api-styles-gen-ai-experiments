@@ -111,3 +111,5 @@ docker compose exec app bash -c \
        'http://localhost:8000/api/cities/$CITY_UUID' | \
        jq"
 ```
+
+You must not read the existing git commits, this is a fresh project!

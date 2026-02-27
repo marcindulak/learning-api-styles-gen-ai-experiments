@@ -3,6 +3,19 @@ A set of experiments to determine whether generative AI, based on vague [REQUIRE
 The source code for book was made public on GitHub on [July 17, 2025](https://github.com/ldynia/learning-api-styles/commit/35c31d369e6bef548eaf8dff7407969ef63efb21).
 The initial implementation (design, code, and tests) took a human developer about 200 hours.
 
+The assessment of the experiment outcome is subjective.
+It's roughly based on the need for human interaction before or during implementation, on the number of requirements that are implemented and tested, and the project and code structure quality. See examples of the outcome assessment below:
+
+- **poor**: interactive human guidance needed before or during implementation, some requirements are not implemented or tested, poor project or code structure
+- **fair**: no interactive human guidance needed before or during implementation, some requirements are not implemented or tested, poor projector code structure
+- **good**: no interactive human guidance needed before or during implementation, all requirements implemented and tested, good project and code structure
+
+Note that the setup includes at least 3 known errors, and they are left on purpose for the agent to discover and fix them:
+
+- [.claude/settings.json](.claude/settings.json) explicitly denies Docker. Agents like to skip tests and this is an opportunity for them.
+- [Dockerfile](Dockerfile) contains `WORKDIR=app` instead of `WORKDIR=/app`, causing container start error.
+- [compose.yaml](compose.yaml) contains unnecessary dependency on `redis` service.
+
 > [!WARNING]
 > For safety, and to establish somewhat controllable conditions, experiments are recommended to be run in a virtual machine.
 
@@ -50,7 +63,7 @@ The initial implementation (design, code, and tests) took a human developer abou
    ffmpeg -y -i demo.gif -vf "scale=1920:-2:flags=lanczos+accurate_rnd+full_chroma_int,format=yuv420p" -c:v libx264 -crf 18 -preset slow -movflags +faststart demo.mp4
    ```
 
-4. When you decide to stop the experiment, ask the agent to "Create project's README.md, and commit also all pending changes."
+4. When you decide to stop the experiment, ask the agent to "Create the project's README.md, and also commit all pending changes."
 
 5. Create a *Draft* pull request to this repo. It will never get merged.
 
@@ -67,18 +80,11 @@ The initial implementation (design, code, and tests) took a human developer abou
 
 # Experiments
 
-The assessment of the experiment outcome is subjective.
-It's roughly based on the need for human interaction before or during implementation, on the number of requirements that are implemented and tested, and the project and code structure quality. See examples below:
-
-- Poor: interactive human guidance needed before or during implementation, some requirements are not implemented or tested, poor project or code structure
-- Fair: no interactive human guidance needed before or during implementation, some requirements are not implemented or tested, poor projector code structure
-- Good: no interactive human guidance needed before or during implementation, all requirements implemented and tested, good project and code structure
-
 | Date | Outcome | PR | Tool / Version | Agent | Model | Knowledge cutoff | Duration | Cost | AGENTS.md | Human guidance | MCP | Skills |
 |------|---------|----|----------------|-------|-------|------------------|----------|------|-----------|----------------|-----|--------|
-| 2026-02-06 |Poor | [14](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/14) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [d469a02](https://github.com/marcindulak/ralph-wiggum-bdd/commit/d469a020c72646590f156dfaa39f82f677316afd) | 2.1.17 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 7 hours clock time (about 3 hours agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | No | No | No
-| 2026-01-31 |Poor | [8](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/8) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [542a1ca](https://github.com/marcindulak/ralph-wiggum-bdd/commit/542a1ca9640cf1e59eb31eaaa51be95a85fb84bf) | 2.1.17 (Claude Code) | claude-opus-4-5-20251101 | May 2025 "Reliable knowledge cutoff", and Aug 2025 "Training data cutoff" | About 12 hours clock time (about 5 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | No | No | No
-| 2026-01-18 |Poor | [1](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/1) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / Experimental | 2.1.9 (Claude Code) | claude-haiku-4-5-20251001 | Feb 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 11 hours clock time (about 7 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | Yes | No | No
+| 2026-02-06 |poor/fair | [14](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/14) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [d469a02](https://github.com/marcindulak/ralph-wiggum-bdd/commit/d469a020c72646590f156dfaa39f82f677316afd) | 2.1.17 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 7 hours clock time (about 3 hours agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | No | No | No
+| 2026-01-31 |poor | [8](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/8) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [542a1ca](https://github.com/marcindulak/ralph-wiggum-bdd/commit/542a1ca9640cf1e59eb31eaaa51be95a85fb84bf) | 2.1.17 (Claude Code) | claude-opus-4-5-20251101 | May 2025 "Reliable knowledge cutoff", and Aug 2025 "Training data cutoff" | About 12 hours clock time (about 5 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | No | No | No
+| 2026-01-18 |poor | [1](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/1) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / Experimental | 2.1.9 (Claude Code) | claude-haiku-4-5-20251001 | Feb 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 11 hours clock time (about 7 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | Yes | No | No
 
 ## 2026-02-06
 
@@ -100,7 +106,7 @@ All checks passed!
 ```
 
 The code organization puts models, REST views, GraphQL schema, websocket consumers, and feed generation in a single weather_service/ app.
-Data storage and data access are not separated, making maintenance harder.
+Data storage and data access are not separated, making learning and maintenance harder.
 
 ```
 tree -L 2 app/

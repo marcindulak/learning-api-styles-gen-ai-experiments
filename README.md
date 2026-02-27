@@ -4,7 +4,11 @@ The source code for book was made public on GitHub on [July 17, 2025](https://gi
 The initial implementation (design, code, and tests) took a human developer about 200 hours.
 
 The assessment of the experiment outcome is subjective.
-It's roughly based on the need for human interaction before or during implementation, on the number of requirements that are implemented and tested, and the project and code structure quality. See examples of the outcome assessment below:
+Note that due to the nondeterminism of the agents, it's infeasible to draw conclusions about the influence of the framework, model, or other factors on the quality of the generated code.
+Only the rough, qualitative impression of the performance can be described.
+
+The assessment of the experiment outcome is roughly based on the need for human interaction before or during implementation, on the number of requirements that are implemented and tested, and the project and code structure quality.
+See examples of the outcome assessment below:
 
 - **poor**: interactive human guidance needed before or during implementation, some requirements are not implemented or tested, poor project or code structure
 - **fair**: no interactive human guidance needed before or during implementation, some requirements are not implemented or tested, poor projector code structure
@@ -80,11 +84,97 @@ Note that the setup includes at least 3 known errors, and they are left on purpo
 
 # Experiments
 
-| Date | Outcome | PR | Tool / Version | Agent | Model | Knowledge cutoff | Duration | Cost | AGENTS.md | Human guidance | MCP | Skills |
+| Date | Outcome | PR | Tool / Version | Agent | Top model | Knowledge cutoff | Duration | Cost | AGENTS.md / rules | Human guidance | MCP | Skills |
 |------|---------|----|----------------|-------|-------|------------------|----------|------|-----------|----------------|-----|--------|
+| 2026-02-20 |poor/fair | [19](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/19) | [pilot-shell](https://github.com/maxritter/pilot-shell) / [6.9.2](https://github.com/maxritter/pilot-shell/releases/tag/v6.9.2) | 2.1.39 (Claude Code) | claude-opus-4-6 | Aug 2025 "Reliable knowledge cutoff", and Jan 2026 "Training data cutoff" | About 11 hours clock time (about 2 hours agent time) | $10 USD (about 40% of Pro weekly plan) | Yes | Yes | Yes | Yes
 | 2026-02-06 |poor/fair | [14](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/14) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [d469a02](https://github.com/marcindulak/ralph-wiggum-bdd/commit/d469a020c72646590f156dfaa39f82f677316afd) | 2.1.17 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 7 hours clock time (about 3 hours agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | No | No | No
 | 2026-01-31 |poor | [8](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/8) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [542a1ca](https://github.com/marcindulak/ralph-wiggum-bdd/commit/542a1ca9640cf1e59eb31eaaa51be95a85fb84bf) | 2.1.17 (Claude Code) | claude-opus-4-5-20251101 | May 2025 "Reliable knowledge cutoff", and Aug 2025 "Training data cutoff" | About 12 hours clock time (about 5 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | No | No | No
 | 2026-01-18 |poor | [1](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/1) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / Experimental | 2.1.9 (Claude Code) | claude-haiku-4-5-20251001 | Feb 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 11 hours clock time (about 7 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | Yes | No | No
+
+## 2026-02-20
+
+Outcome: poor, almost fair due to the small amount of generated code
+
+```
+tokei --types='Python,Gherkin (Cucumber)' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Gherkin (Cucumber)        2          103           84            4           15
+ Python                   34         3379         2777          123          479
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    36         3482         2861          127          494
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ruff check . --select C90 --output-format=concise
+All checks passed!
+```
+
+The code organization puts models, REST views, GraphQL schema, websocket consumers, and feed generation in a single weather_service/ app.
+Data storage and data access are not separated, making learning and maintenance harder.
+
+```
+tree -L 2 app/
+app/
+├── config
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── postgres.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── docs
+│   └── asyncapi.yaml
+├── features
+│   ├── __init__.py
+│   ├── cities.feature
+│   ├── steps
+│   └── weather.feature
+├── manage.py
+├── scripts
+│   ├── e2e_test.sh
+│   ├── generate_certs.sh
+│   ├── healthcheck.sh
+│   └── startup.sh
+├── staticfiles
+│   ├── admin
+│   └── rest_framework
+└── weather
+    ├── __init__.py
+    ├── admin.py
+    ├── apps.py
+    ├── consumers.py
+    ├── feeds.py
+    ├── management
+    ├── models.py
+    ├── permissions.py
+    ├── routing.py
+    ├── schema.py
+    ├── serializers.py
+    ├── signals.py
+    ├── urls.py
+    ├── views.py
+    └── webhooks.py
+```
+
+The agent incorrectly claimed all requirements are implemented.
+
+The agent correctly discovered that Docker commands were blocked.
+However, it skipped running tests in Docker, claiming that "Docker build verification will happen in the verification phase" ([see video](https://www.youtube.com/watch?v=tFff1v84kKY#t=24m02s)), but has not run these tests, and had to be explicitly reminded about this by the human ([see video](https://www.youtube.com/watch?v=tFff1v84kKY#t=56m30s)).
+On the other hand, the agent created a script with end-to-end tests using curl, but has not used Docker as required.
+
+When correcting Docker permissions, the agent edited the global `~/.claude/settings.json` instead of project's `.claude/settings.json` affecting safety of other projects ([see video](https://www.youtube.com/watch?v=tFff1v84kKY#t=58m40s)).
+It also started reading `~/.claude/pilot` files, which if modified could further compromise the safety.
+
+On the other hand, the agent offered the human a choice between [graphene-django](https://github.com/graphql-python/graphene-django) and [strawberry-django](https://github.com/strawberry-graphql/strawberry-django), but decided to use end-of-life [Django 5.1](https://www.djangoproject.com/download/) (2025) library.
+The agent also offered the choice of mocking the weather data API, and the choice of removal of Redis dependency as expected.
+
+The agent committed `app/staticfiles/rest_framework/fonts/fontawesome-webfont.ttf` to git without adding ttf to .gitattributes file.
+
+See the screen recording of the session.
+The video doesn't represent the clock time, the long periods when there are no changes on the terminal are trimmed away.
+
+[![Watch Video 2026-02-20 Part1](images/2026-02-20-01.png)](https://www.youtube.com/watch?v=tFff1v84kKY)
 
 ## 2026-02-06
 
@@ -151,7 +241,7 @@ Despite an appeal to authority in `.claude/CLAUDE.md` by using the disclaimer `T
 
 See the screen recording of the session.
 It's split into two due to Claude Code large memory use ([anthropics/claude-code/issues/11315](https://github.com/anthropics/claude-code/issues/11315)) made the Virtual machine hung, and required restart.
-The video doesn't represent the clock time, the long period when there are no changes on the terminal are trimmed away.
+The video doesn't represent the clock time, the long periods when there are no changes on the terminal are trimmed away.
 
 [![Watch Video 2026-02-06 Part1](images/2026-02-06-01.png)](https://www.youtube.com/watch?v=DHxlx0siaHM)
 [![Watch Video 2026-02-06 Part2](images/2026-02-06-02.png)](https://www.youtube.com/watch?v=rkJzsjnH_JM)
@@ -220,7 +310,7 @@ The agent got stuck several times, was not making progress for 5 up to 30 minute
 The human interventions by pressing `Ctrl+C` in the case of non-interactive run, and `Esc` during interactive run were needed to unblock the agent, however no human guidance was needed.
 
 See the screen recording of the session.
-The video doesn't represent the clock time, the long period when there are no changes on the terminal are trimmed away.
+The video doesn't represent the clock time, the long periods when there are no changes on the terminal are trimmed away.
 
 [![Watch Video 2026-01-31 Part1](images/2026-01-31-01.png)](https://www.youtube.com/watch?v=ZkgFuE6g8d0)
 
@@ -285,7 +375,7 @@ At the end the agent created the project's README.md listing Docker commands it 
 
 See the screen recording of the session.
 It's split into two due to Claude Code large memory use ([anthropics/claude-code/issues/11315](https://github.com/anthropics/claude-code/issues/11315)) making the Virtual machine slow to respond, so the screencast was stopped to preserve the current recording.
-The videos don't represent the clock time, the long period when there are no changes on the terminal are trimmed away.
+The videos don't represent the clock time, the long periods when there are no changes on the terminal are trimmed away.
 
 [![Watch Video 2026-01-18 Part1](images/2026-01-18-01.png)](https://www.youtube.com/watch?v=9Dog71hr3yk)
 

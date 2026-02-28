@@ -86,14 +86,14 @@ Note that the setup includes at least 3 known errors, and they are left on purpo
 
 | Date | Outcome | PR | Tool / Version | Agent | Top model | Knowledge cutoff | Duration | Cost | AGENTS.md / rules | Human guidance | MCP | Skills |
 |------|---------|----|----------------|-------|-------|------------------|----------|------|-----------|----------------|-----|--------|
-| 2026-02-20 |poor/fair | [19](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/19) | [pilot-shell](https://github.com/maxritter/pilot-shell) / [6.9.2](https://github.com/maxritter/pilot-shell/releases/tag/v6.9.2) | 2.1.39 (Claude Code) | claude-opus-4-6 | Aug 2025 "Reliable knowledge cutoff", and Jan 2026 "Training data cutoff" | About 11 hours clock time (about 2 hours agent time) | $10 USD (about 40% of Pro weekly plan) | Yes | Yes | Yes | Yes
+| 2026-02-20 |poor | [19](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/19) | [pilot-shell](https://github.com/maxritter/pilot-shell) / [6.9.2](https://github.com/maxritter/pilot-shell/releases/tag/v6.9.2) | 2.1.39 (Claude Code) | claude-opus-4-6 | Aug 2025 "Reliable knowledge cutoff", and Jan 2026 "Training data cutoff" | About 11 hours clock time (about 2 hours agent time) | $10 USD (about 40% of Pro weekly plan) | Yes | Yes | Yes | Yes
 | 2026-02-06 |poor/fair | [14](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/14) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [d469a02](https://github.com/marcindulak/ralph-wiggum-bdd/commit/d469a020c72646590f156dfaa39f82f677316afd) | 2.1.17 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 7 hours clock time (about 3 hours agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | No | No | No
 | 2026-01-31 |poor | [8](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/8) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [542a1ca](https://github.com/marcindulak/ralph-wiggum-bdd/commit/542a1ca9640cf1e59eb31eaaa51be95a85fb84bf) | 2.1.17 (Claude Code) | claude-opus-4-5-20251101 | May 2025 "Reliable knowledge cutoff", and Aug 2025 "Training data cutoff" | About 12 hours clock time (about 5 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | No | No | No
 | 2026-01-18 |poor | [1](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/1) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / Experimental | 2.1.9 (Claude Code) | claude-haiku-4-5-20251001 | Feb 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 11 hours clock time (about 7 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | Yes | No | No
 
 ## 2026-02-20
 
-Outcome: poor, almost fair due to the small amount of generated code
+Outcome: poor
 
 ```
 tokei --types='Python,Gherkin (Cucumber)' .
@@ -158,6 +158,7 @@ app/
 ```
 
 The agent incorrectly claimed all requirements are implemented.
+Behave tests failed.
 
 The agent correctly discovered that Docker commands were blocked.
 However, it skipped running tests in Docker, claiming that "Docker build verification will happen in the verification phase" ([see video](https://www.youtube.com/watch?v=tFff1v84kKY#t=24m02s)), but has not run these tests, and had to be explicitly reminded about this by the human ([see video](https://www.youtube.com/watch?v=tFff1v84kKY#t=56m30s)).
@@ -227,6 +228,7 @@ app/
 
 The agent incorrectly claimed all features are implemented, and only admitted gap (AsyncAPI Spec) when questioned by the human.
 On the other hand, all functional and non-functional requirements were covered by tests.
+Behave tests passed.
 
 The agent correctly discovered that Docker commands were blocked, and asked human to correct the permissions.
 On the other hand, the agent decided to use end-of-life libraries, like [Django 5.1.5](https://github.com/django/django/releases/tag/5.1.5) (2025), [graphene-django](https://github.com/graphql-python/graphene-django/releases/tag/v3.2.2) (2024), or unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) or [django-sslserver](https://pypi.org/project/django-sslserver/0.22/) (2019) libraries.
@@ -300,6 +302,7 @@ src/
 
 The agent incorrectly claimed all features are implemented, and only admitted gaps when questioned by the human.
 The non-functional requirements were not covered by tests, and TLS, OpenAPI Spec, AsyncAPI Spec requirements were skipped.
+Behave tests passed.
 
 The agent correctly discovered that Docker commands were blocked, and correctly refused to mark the features as complete without running tests.
 On the other hand, the agent decided to use end-of-life libraries, like [Django 5.0.1](https://docs.djangoproject.com/en/6.0/releases/5.0.1/) (2024), [graphene-django](https://github.com/graphql-python/graphene-django/releases/tag/v3.2.0) (2023), or an unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) library.
@@ -362,6 +365,7 @@ app/
 
 The agent focused on writing code instead of setting up the infrastructure (Docker, database, test runner).
 Claimed success after silently skipping tests.
+Behave tests failed.
 
 The agent claimed successful implementation of all features without running any tests.
 It turned out that `.claude/settings.json` was blocking Docker commands, and the agent decided to silently skip tests.

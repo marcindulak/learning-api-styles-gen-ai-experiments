@@ -3,10 +3,10 @@
 import asyncio
 import json
 
-from channels.generic.websocket import AsyncWebSocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 
 
-class AlertConsumer(AsyncWebSocketConsumer):
+class AlertConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.subscribed_city = None
         await self.channel_layer.group_add("alerts", self.channel_name)

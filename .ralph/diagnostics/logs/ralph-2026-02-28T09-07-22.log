@@ -42,3 +42,7 @@
 2026-02-28T09:40:28.287232Z  INFO ralph::loop_runner: Completion event LOOP_COMPLETE detected.
 2026-02-28T09:40:28.287343Z  INFO ralph_core::event_loop: Wrapping up: completed. 7 iterations in 33m 5s. reason=completed iterations=7 duration=33m 5s
 2026-02-28T09:40:28.302525Z  INFO ralph_core::landing: Beginning landing sequence loop_id=primary
+2026-02-28T09:40:28.413158Z  INFO ralph_core::landing: Auto-committed changes during landing loop_id=primary commit=Some("ca616c5ba0f6a9b4f0bfd27fee651aa0d3481a00") files=13
+2026-02-28T09:40:29.268676Z  INFO ralph_core::landing: Generated handoff file loop_id=primary path=/vagrant/.ralph/agent/handoff.md completed=11 open=0
+2026-02-28T09:40:29.293247Z  INFO ralph_core::loop_completion: Landing completed with auto-commit commit=Some("ca616c5ba0f6a9b4f0bfd27fee651aa0d3481a00") handoff=/vagrant/.ralph/agent/handoff.md
+2026-02-28T09:40:29.293334Z  INFO ralph::loop_runner: Primary loop landed successfully committed=true handoff=/vagrant/.ralph/agent/handoff.md open_tasks=0

@@ -1,8 +1,8 @@
 # Loop Summary
 
 **Status:** Completed successfully
-**Iterations:** 7
-**Duration:** 33m 5s
+**Iterations:** 5
+**Duration:** 17m 34s
 
 ## Tasks
 
@@ -14,4 +14,4 @@ _No events recorded._
 
 ## Final Commit
 
-e7d724f: Fix spec violations: GraphQL validation, WebSocket pong, compose healthchecks
+ca616c5: chore: auto-commit before merge (loop primary)

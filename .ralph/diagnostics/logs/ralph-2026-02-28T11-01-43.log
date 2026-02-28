@@ -1,0 +1,5 @@
+2026-02-28T11:01:44.011664Z  INFO ralph_core::event_loop: Memory injection check: enabled=true, inject=Auto, workspace_root="/vagrant"
+2026-02-28T11:01:44.012214Z  INFO ralph_core::event_loop: Looking for memories at: "/vagrant/.ralph/agent/memories.md" (exists: false)
+2026-02-28T11:01:44.012421Z  INFO ralph_core::event_loop: Successfully loaded 0 memories from store
+2026-02-28T11:01:44.012647Z  INFO ralph_core::event_loop: Memory store is empty - no memories to inject
+2026-02-28T11:01:44.015081Z  INFO ralph_core::event_loop: Injecting ready tasks (0 ready, 0 open, 11 closed) into prompt

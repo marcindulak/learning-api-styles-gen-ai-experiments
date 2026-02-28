@@ -1,8 +1,8 @@
 # Loop Summary
 
-**Status:** Completed successfully
+**Status:** Failed: too many consecutive failures
 **Iterations:** 5
-**Duration:** 17m 34s
+**Duration:** 41s
 
 ## Tasks
 
@@ -14,4 +14,4 @@ _No events recorded._
 
 ## Final Commit
 
-ca616c5: chore: auto-commit before merge (loop primary)
+2c06951: chore: auto-commit before merge (loop primary)

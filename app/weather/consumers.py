@@ -29,7 +29,18 @@ class AlertConsumer(AsyncWebSocketConsumer):
         except json.JSONDecodeError:
             return
 
-        if data.get("type") == "subscribe" and "city_uuid" in data:
+        msg_type = data.get("type")
+
+        if msg_type == "pong":
+            # Client responded to our ping; no action needed
+            return
+
+        if msg_type == "ping":
+            # Client sent a ping; respond with pong
+            await self.send(text_data=json.dumps({"type": "pong"}))
+            return
+
+        if msg_type == "subscribe" and "city_uuid" in data:
             city_uuid = data["city_uuid"]
             if self.subscribed_city:
                 await self.channel_layer.group_discard(

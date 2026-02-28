@@ -1,17 +1,23 @@
 """GraphQL schema using Strawberry."""
 
 import uuid as _uuid
-from datetime import datetime
+from datetime import date, datetime
 from typing import Optional
 
 import strawberry
 import strawberry_django
+from rest_framework import serializers as drf_serializers
 from strawberry.types import Info
 
 from .models import City as CityModel
 from .models import WeatherAlert as AlertModel
 from .models import WeatherForecast as ForecastModel
 from .models import WeatherRecord as RecordModel
+from .serializers import (
+    WeatherAlertSerializer,
+    WeatherForecastSerializer,
+    WeatherRecordSerializer,
+)
 
 
 @strawberry_django.type(CityModel)
@@ -73,6 +79,18 @@ def _check_admin(info: Info):
         raise PermissionError("Permission denied")
 
 
+def _validate_with_serializer(serializer_class, data):
+    """Run DRF serializer validation and raise on errors."""
+    serializer = serializer_class(data=data)
+    if not serializer.is_valid():
+        errors = serializer.errors
+        messages = []
+        for field, field_errors in errors.items():
+            for err in field_errors:
+                messages.append(f"{field}: {err}")
+        raise ValueError("; ".join(messages))
+
+
 @strawberry.input
 class CityInput:
     name: str
@@ -101,7 +119,7 @@ class WeatherRecordInput:
 
 @strawberry.input
 class ForecastInput:
-    forecast_date: strawberry.auto
+    forecast_date: date
     temperature_high: float
     temperature_low: float
     humidity: int
@@ -194,7 +212,11 @@ class Mutation:
     ) -> WeatherRecordType:
         _check_admin(info)
         city = CityModel.objects.get(uuid=city_uuid)
-        return RecordModel.objects.create(city=city, **strawberry.asdict(input))
+        data = strawberry.asdict(input)
+        data["city"] = city.pk
+        _validate_with_serializer(WeatherRecordSerializer, data)
+        data.pop("city")
+        return RecordModel.objects.create(city=city, **data)
 
     @strawberry.mutation
     def create_forecast(
@@ -202,7 +224,11 @@ class Mutation:
     ) -> ForecastType:
         _check_admin(info)
         city = CityModel.objects.get(uuid=city_uuid)
-        return ForecastModel.objects.create(city=city, **strawberry.asdict(input))
+        data = strawberry.asdict(input)
+        data["city"] = city.pk
+        _validate_with_serializer(WeatherForecastSerializer, data)
+        data.pop("city")
+        return ForecastModel.objects.create(city=city, **data)
 
     @strawberry.mutation
     def create_alert(self, input: AlertInput, info: Info) -> AlertType:
@@ -210,6 +236,9 @@ class Mutation:
         data = strawberry.asdict(input)
         city_uuid = data.pop("city_uuid")
         city = CityModel.objects.get(uuid=city_uuid)
+        data["city"] = city.pk
+        _validate_with_serializer(WeatherAlertSerializer, data)
+        data.pop("city")
         return AlertModel.objects.create(city=city, **data)
 
 

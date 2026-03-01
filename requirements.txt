@@ -1,0 +1,11 @@
+behave
+channels[daphne]
+channels-redis
+Django
+django-behave
+djangorestframework
+djangorestframework-simplejwt
+drf-spectacular
+graphene-django
+psycopg
+PyYAML

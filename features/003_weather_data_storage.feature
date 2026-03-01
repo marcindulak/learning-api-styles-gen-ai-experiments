@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 003 Weather Data Storage
   The Weather Forecast Service stores historical weather data and forecasts.
   Weather records contain common weather indicators: temperature, humidity, pressure, wind speed, and conditions.
@@ -46,10 +46,9 @@ Feature: 003 Weather Data Storage
     Given the service is running
     And I am authenticated as admin
     And a city "Copenhagen" exists
-    And today is "2024-01-15"
     When I send a POST request to "/api/weather/forecast" with data:
       | city_name   | Copenhagen  |
-      | forecast_date | 2024-01-23 |
+      | forecast_date | 2026-03-10 |
       | temperature | 10.0        |
       | humidity    | 75          |
       | pressure    | 1008        |

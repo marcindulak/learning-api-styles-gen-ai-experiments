@@ -59,7 +59,8 @@ RUN apt-get update && \
     libc6-dev \
     libpq-dev \
     newsboat \
-    openssl && \
+    openssl \
+    postgresql-client && \
     rm -rf /var/lib/apt/lists/*
 
 # Debugging packages
@@ -72,21 +73,21 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR ${WORKDIR}
-COPY . ${WORKDIR}
+COPY . .
 
 RUN mkdir -p ${APP_TLS_CERTS_DIR} ${APP_TLS_PRICATE_DIR}
-RUN chown -R ${USER}:${GROUP} ${APP_TLS_CERTS_DIR} ${APP_TLS_PRICATE_DIR} ${WORKDIR}
+RUN chown -R ${USER}:${GROUP} ${APP_TLS_CERTS_DIR} ${APP_TLS_PRICATE_DIR} .
 
 USER ${USER}:${GROUP}
 ENV PATH=/home/${USER}/.local/bin:${PATH}
-RUN python -m pip install --upgrade pip -r ${WORKDIR}/requirements.txt --no-cache-dir
+RUN python -m pip install --upgrade pip -r requirements.txt --no-cache-dir
 
 # Assert the expected python version
 RUN test $(python -c 'import sys; version=sys.version_info[:2]; print(f"{version[0]}.{version[1]}")') = ${PY_VER}
 
 EXPOSE ${APP_PORT_HTTP} ${APP_PORT_WS}
-VOLUME ${WORKDIR}
+VOLUME /app
 
-HEALTHCHECK CMD ${WORKDIR}/scripts/healthcheck.sh || exit 1
+HEALTHCHECK CMD /app/scripts/healthcheck.sh || exit 1
 
-ENTRYPOINT /bin/sh -c "${WORKDIR}/scripts/startup.sh"
+ENTRYPOINT ["/app/scripts/startup.sh"]

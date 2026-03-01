@@ -1,0 +1,225 @@
+asyncapi: 3.0.0
+info:
+  title: Weather Forecast Service WebSocket API
+  version: 1.0.0
+  description: |
+    WebSocket API for real-time weather alerts and notifications.
+
+    This API provides real-time weather alert updates for cities around the world.
+    Clients can connect to receive alerts as they are generated.
+
+  contact:
+    name: Weather Forecast Service
+    url: https://example.com
+
+servers:
+  production:
+    host: localhost:8001
+    protocol: ws
+    description: Local development WebSocket server
+
+channels:
+  weatherAlerts:
+    address: /ws/alerts
+    messages:
+      connectionEstablished:
+        $ref: '#/components/messages/ConnectionEstablished'
+      weatherAlert:
+        $ref: '#/components/messages/WeatherAlert'
+      ping:
+        $ref: '#/components/messages/Ping'
+      pong:
+        $ref: '#/components/messages/Pong'
+      error:
+        $ref: '#/components/messages/Error'
+    description: |
+      Channel for receiving real-time weather alerts.
+
+      After connecting, clients will receive a connection_established message.
+      Weather alerts are broadcast to all connected clients when new alerts are created.
+      Clients can send ping messages and will receive pong responses.
+
+operations:
+  receiveAlerts:
+    action: receive
+    channel:
+      $ref: '#/channels/weatherAlerts'
+    summary: Receive weather alerts
+    description: Listen for weather alert broadcasts
+    messages:
+      - $ref: '#/components/messages/ConnectionEstablished'
+      - $ref: '#/components/messages/WeatherAlert'
+      - $ref: '#/components/messages/Pong'
+      - $ref: '#/components/messages/Error'
+
+  sendPing:
+    action: send
+    channel:
+      $ref: '#/channels/weatherAlerts'
+    summary: Send ping message
+    description: Send a ping message to verify connection is alive
+    messages:
+      - $ref: '#/components/messages/Ping'
+
+components:
+  messages:
+    ConnectionEstablished:
+      name: ConnectionEstablished
+      title: Connection Established
+      summary: Sent when WebSocket connection is successfully established
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ConnectionEstablishedPayload'
+
+    WeatherAlert:
+      name: WeatherAlert
+      title: Weather Alert
+      summary: Real-time weather alert notification
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/WeatherAlertPayload'
+
+    Ping:
+      name: Ping
+      title: Ping
+      summary: Client ping message
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/PingPayload'
+
+    Pong:
+      name: Pong
+      title: Pong
+      summary: Server pong response
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/PongPayload'
+
+    Error:
+      name: Error
+      title: Error
+      summary: Error message
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ErrorPayload'
+
+  schemas:
+    ConnectionEstablishedPayload:
+      type: object
+      properties:
+        type:
+          type: string
+          const: connection_established
+        message:
+          type: string
+          example: Connected to weather alerts
+      required:
+        - type
+        - message
+
+    WeatherAlertPayload:
+      type: object
+      properties:
+        type:
+          type: string
+          const: weather_alert
+        alert:
+          type: object
+          properties:
+            uuid:
+              type: string
+              format: uuid
+              description: Unique identifier for the alert
+            city:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+                country:
+                  type: string
+              required:
+                - uuid
+                - name
+                - country
+            alert_type:
+              type: string
+              description: Type of weather alert
+              example: Heavy Rain
+            severity:
+              type: string
+              enum:
+                - info
+                - minor
+                - moderate
+                - severe
+                - extreme
+              description: Severity level of the alert
+            title:
+              type: string
+              description: Short title of the alert
+              example: Heavy Rainfall Advisory
+            description:
+              type: string
+              description: Detailed description of the alert
+            start_time:
+              type: string
+              format: date-time
+              description: When the alert becomes active
+            end_time:
+              type: string
+              format: date-time
+              description: When the alert expires
+            is_active:
+              type: boolean
+              description: Whether the alert is currently active
+          required:
+            - uuid
+            - city
+            - alert_type
+            - severity
+            - title
+            - description
+            - start_time
+            - end_time
+            - is_active
+      required:
+        - type
+        - alert
+
+    PingPayload:
+      type: object
+      properties:
+        type:
+          type: string
+          const: ping
+      required:
+        - type
+
+    PongPayload:
+      type: object
+      properties:
+        type:
+          type: string
+          const: pong
+        message:
+          type: string
+          example: pong
+      required:
+        - type
+        - message
+
+    ErrorPayload:
+      type: object
+      properties:
+        type:
+          type: string
+          const: error
+        message:
+          type: string
+          description: Error message
+      required:
+        - type
+        - message

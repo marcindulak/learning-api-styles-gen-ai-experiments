@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 001 User Management
   The Weather Forecast Service supports two types of users: admin and regular user.
   Admin users can manage content, while regular users can only view public data.

@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 002 City Management
   The Weather Forecast Service limits weather data to the 5 biggest cities in the world.
   Cities have geographic information including name, country, region, timezone, latitude, and longitude.

@@ -5,9 +5,11 @@ from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from src.weather.models import City, CurrentWeather, WeatherForecast
 from src.weather.serializers import CitySerializer, CurrentWeatherSerializer, WeatherForecastSerializer
+from src.weather.services import WeatherAPIException, weather_api_service
 
 
 class IsAdminUser(IsAuthenticated):
@@ -142,3 +144,68 @@ class WeatherForecastViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class SetTestModeView(APIView):
+    """Internal endpoint to set weather API test mode."""
+    permission_classes = []
+
+    def post(self, request):
+        import os
+        test_mode = request.data.get('test_mode')
+        if test_mode:
+            os.environ['WEATHER_API_TEST_MODE'] = test_mode
+            return Response({'message': f'Test mode set to {test_mode}'}, status=status.HTTP_200_OK)
+        else:
+            os.environ.pop('WEATHER_API_TEST_MODE', None)
+            return Response({'message': 'Test mode cleared'}, status=status.HTTP_200_OK)
+
+
+class FetchWeatherView(APIView):
+    """Admin endpoint to fetch weather data from third-party API."""
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        city_name = request.data.get('city_name')
+        data_type = request.data.get('data_type')
+
+        if not city_name or not data_type:
+            return Response(
+                {'error': 'city_name and data_type are required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            city = City.objects.get(name=city_name)
+        except City.DoesNotExist:
+            return Response(
+                {'error': f'City {city_name} not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            if data_type == 'current':
+                weather = weather_api_service.fetch_current_weather(city)
+                weather.save()
+                return Response(
+                    {'message': f'Current weather data fetched for {city_name}'},
+                    status=status.HTTP_200_OK
+                )
+            elif data_type == 'forecast':
+                forecasts = weather_api_service.fetch_forecast(city)
+                for forecast in forecasts:
+                    forecast.save()
+                return Response(
+                    {'message': f'Forecast data fetched for {city_name}'},
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    {'error': 'data_type must be "current" or "forecast"'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except WeatherAPIException as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )

@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 006 Third Party Weather API Integration
   The Weather Forecast Service integrates with a third-party weather API to populate actual weather data.
   Data is fetched and stored for the configured cities.

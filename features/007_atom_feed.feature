@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 007 Weather Forecast Atom Feed
   The Weather Forecast Service provides weather forecast data as an Atom feed.
   Users can subscribe to feeds for specific cities.

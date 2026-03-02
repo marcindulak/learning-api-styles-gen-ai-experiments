@@ -168,7 +168,7 @@ def step_get_request(context, endpoint: str):
         'curl',
         '--request', 'GET',
         '--silent',
-        '--write-out', '\\n%{http_code}',
+        '--write-out', '\\n%{http_code}\\n%{content_type}',
         f'http://localhost:8000{endpoint}'
     ]
 
@@ -180,8 +180,9 @@ def step_get_request(context, endpoint: str):
     )
 
     lines = result.stdout.strip().split('\n')
-    context.response_status_code = int(lines[-1])
-    context.response_body = '\n'.join(lines[:-1]) if len(lines) > 1 else ''
+    context.response_status_code = int(lines[-2])
+    context.response_content_type = lines[-1] if len(lines) >= 2 else ''
+    context.response_body = '\n'.join(lines[:-2]) if len(lines) > 2 else ''
 
     try:
         context.response_json = json.loads(context.response_body) if context.response_body else {}

@@ -1,6 +1,10 @@
 from datetime import datetime
 
+from django.contrib.syndication.views import Feed
+from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
+from django.utils.feedgenerator import Atom1Feed
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -209,3 +213,44 @@ class FetchWeatherView(APIView):
                 {'error': str(e)},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE
             )
+
+
+class ForecastAtomFeed(Feed):
+    """Atom feed for weather forecasts for a specific city."""
+    feed_type = Atom1Feed
+
+    def get_object(self, request, city_name):
+        try:
+            return City.objects.get(name=city_name)
+        except City.DoesNotExist:
+            raise Http404(f"City '{city_name}' not found")
+
+    def title(self, obj):
+        return f"Weather Forecast for {obj.name}"
+
+    def link(self, obj):
+        return f"/feeds/forecast/{obj.name}"
+
+    def description(self, obj):
+        return f"7-day weather forecast for {obj.name}, {obj.country}"
+
+    def items(self, obj):
+        return WeatherForecast.objects.filter(city=obj).order_by('forecast_date')[:7]
+
+    def item_title(self, item):
+        return f"Weather forecast for {item.city.name} on {item.forecast_date}"
+
+    def item_description(self, item):
+        return (
+            f"Temperature: {item.temperature}°C, "
+            f"Humidity: {item.humidity}%, "
+            f"Pressure: {item.pressure} hPa, "
+            f"Wind Speed: {item.wind_speed} m/s, "
+            f"Conditions: {item.conditions}"
+        )
+
+    def item_link(self, item):
+        return f"/api/weather/forecast/{item.city.name}"
+
+    def item_updateddate(self, item):
+        return item.created_at

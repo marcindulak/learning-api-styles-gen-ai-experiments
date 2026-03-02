@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 013 Containerized Deployment
   The Weather Forecast Service operates in a local containerized environment.
   The service is deployed as a monolithic unit using Docker containers.

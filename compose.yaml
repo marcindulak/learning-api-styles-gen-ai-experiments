@@ -10,41 +10,32 @@ services:
       - django_internal
     ports:
       - 127.0.0.1:8000:8000
-      - 127.0.0.1:8001:8001
+      - 127.0.0.1:8443:8443
     depends_on:
-      - postgres
-      - redis
+      db:
+        condition: service_healthy
     environment:
-      - DEBUG=False
-      - DJANGO_SETTINGS_MODULE=config.postgres
-      # Avoid special characters since this value is not base64 encoded
-      - SECRET_KEY=${SECRET_KEY:-VKnroLzyyjvUk316fuyY2vO8jnrP6obbEjH75PGESQpf2Zwu2SJkGUme1cRj67Hz}
-      # Enable TLS by setting TLS_ENABLE=1
-      - TLS_ENABLE=0
-      # Avoid special characters since this value is not base64 encoded
-      - WEBHOOK_SECRET=${WEBHOOK_SECRET:-a0tObtQBvNhQjRSbPRZrIkXiooIH2ucIZJeESrRcIFyYOtSV8FKWrAri8djp3CQd}
-      - POSTGRES_DB=weather_forecast_service
-      - POSTGRES_HOST=postgres
+      - ENVIRONMENT=development
+      - POSTGRES_DB=wfs
+      - POSTGRES_HOST=db
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_PORT=5432
       - POSTGRES_USER=postgres
-    volumes:
-       - ./app:/app
-       - ./docs:/app/docs
 
-  postgres:
+  db:
     image: postgres:17-alpine
-    container_name: django-postgres
-    hostname: django-postgres
+    container_name: wfs-db
+    hostname: wfs-db
     networks:
       - django_internal
     ports:
       - 127.0.0.1:5432:5432
     environment:
-      - POSTGRES_DB=weather_forecast_service
+      - POSTGRES_DB=wfs
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 3s
       retries: 30

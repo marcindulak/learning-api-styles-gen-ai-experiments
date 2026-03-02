@@ -11,7 +11,7 @@
     "XDG_CACHE_HOME": ".cache",
     "npm_config_cache": ".cache/npm"
   },
-  "model": "haiku",
+  "model": "sonnet",
   "permissions": {
     "allow": [
       "Bash(behave *)",
@@ -25,7 +25,6 @@
     "ask": [],
     "defaultMode": "default",
     "deny": [
-      "Bash(docker *)",
       "Bash(git config *)",
       "Bash(git push *)",
       "Bash(sudo *)",

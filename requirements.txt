@@ -1,0 +1,13 @@
+Django==5.1.5
+beautifulsoup4==4.14.3
+behave-django==1.5.0
+channels==4.1.0
+channels-redis==4.2.0
+daphne==4.1.2
+drf-spectacular==0.28.0
+djangorestframework==3.15.2
+djangorestframework-simplejwt==5.4.0
+graphene-django==3.2.2
+lxml==5.3.0
+psycopg2-binary==2.9.10
+websocket-client==1.8.0

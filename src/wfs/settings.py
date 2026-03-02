@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
+    'drf_spectacular',
     'graphene_django',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -109,8 +110,16 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 GRAPHENE = {
     'SCHEMA': 'src.weather.schema.schema'
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Weather Forecast Service API',
+    'DESCRIPTION': 'API for accessing weather data, forecasts, and city information',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }

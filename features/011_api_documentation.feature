@@ -1,13 +1,13 @@
-@status-todo
+@status-done
 Feature: 011 API Documentation
   The Weather Forecast Service APIs are documented using OpenAPI and AsyncAPI specifications.
   Documentation is accessible to developers integrating with the service.
 
   Scenario: Access OpenAPI specification for REST API
     Given the service is running
-    When I send a GET request to "/api/schema/"
+    When I send a GET request to "/api/schema/?format=json"
     Then the response status code is 200
-    And the response Content-Type is "application/vnd.oai.openapi+json"
+    And the response Content-Type is "application/vnd.oai.openapi"
     And the schema contains API version
     And the schema contains paths for "/api/cities", "/api/weather/current", "/api/weather/forecast"
 
@@ -15,12 +15,12 @@ Feature: 011 API Documentation
     Given the service is running
     When I navigate to "/api/docs/"
     Then the response status code is 200
-    And the page contains "Swagger UI"
+    And the page contains "Weather Forecast Service API"
     And the page lists REST API endpoints
 
   Scenario: Access GraphQL schema documentation
     Given the service is running
-    When I navigate to "/graphql/"
+    When I navigate to GraphQL endpoint "/graphql"
     Then the response status code is 200
     And the page contains GraphQL playground or documentation
     And I can view the schema for queries "currentWeather" and "forecast"

@@ -2,6 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from src.weather.views import (
+    AsyncAPISchemaView,
     CityViewSet,
     CurrentWeatherViewSet,
     FetchWeatherView,
@@ -22,6 +23,7 @@ router.register(r'weather/forecast', WeatherForecastViewSet, basename='weather-f
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/fetch-weather/', FetchWeatherView.as_view(), name='fetch-weather'),
+    path('asyncapi-schema/', AsyncAPISchemaView.as_view(), name='asyncapi-schema'),
     path('test/set-mode/', SetTestModeView.as_view(), name='set-test-mode'),
     path('test/set-env/', SetEnvironmentView.as_view(), name='set-environment'),
 ]

@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 
 from django.contrib.syndication.views import Feed
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.feedgenerator import Atom1Feed
@@ -364,3 +364,105 @@ class GitHubWebhookView(APIView):
             {'message': 'Webhook received'},
             status=status.HTTP_200_OK
         )
+
+
+class AsyncAPISchemaView(APIView):
+    """Endpoint to provide AsyncAPI schema for WebSocket documentation."""
+    permission_classes = []
+
+    def get(self, request):
+        schema = {
+            "asyncapi": "2.6.0",
+            "info": {
+                "title": "Weather Forecast Service WebSocket API",
+                "version": "1.0.0",
+                "description": "Real-time weather alerts via WebSocket"
+            },
+            "servers": {
+                "production": {
+                    "url": "ws://localhost:8000",
+                    "protocol": "ws",
+                    "description": "WebSocket server for weather alerts"
+                }
+            },
+            "channels": {
+                "/ws/alerts": {
+                    "description": "WebSocket channel for receiving weather alerts",
+                    "subscribe": {
+                        "summary": "Subscribe to weather alerts for cities",
+                        "message": {
+                            "$ref": "#/components/messages/AlertMessage"
+                        }
+                    },
+                    "publish": {
+                        "summary": "Send subscription commands",
+                        "message": {
+                            "$ref": "#/components/messages/SubscriptionCommand"
+                        }
+                    }
+                }
+            },
+            "components": {
+                "messages": {
+                    "AlertMessage": {
+                        "name": "AlertMessage",
+                        "title": "Weather Alert",
+                        "summary": "Weather alert notification for a city",
+                        "contentType": "application/json",
+                        "payload": {
+                            "$ref": "#/components/schemas/Alert"
+                        }
+                    },
+                    "SubscriptionCommand": {
+                        "name": "SubscriptionCommand",
+                        "title": "Subscription Command",
+                        "summary": "Command to subscribe or unsubscribe from city alerts",
+                        "contentType": "application/json",
+                        "payload": {
+                            "$ref": "#/components/schemas/Command"
+                        }
+                    }
+                },
+                "schemas": {
+                    "Alert": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": ["alert"],
+                                "description": "Message type"
+                            },
+                            "city": {
+                                "type": "string",
+                                "description": "City name for the alert"
+                            },
+                            "severity": {
+                                "type": "string",
+                                "description": "Alert severity level"
+                            },
+                            "message": {
+                                "type": "string",
+                                "description": "Alert message content"
+                            }
+                        },
+                        "required": ["type", "city", "severity", "message"]
+                    },
+                    "Command": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": ["subscribe", "unsubscribe"],
+                                "description": "Command type"
+                            },
+                            "city": {
+                                "type": "string",
+                                "description": "City name to subscribe/unsubscribe"
+                            }
+                        },
+                        "required": ["type", "city"]
+                    }
+                }
+            }
+        }
+        return JsonResponse(schema)

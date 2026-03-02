@@ -12,7 +12,7 @@ from src.weather.models import City, CurrentWeather, WeatherForecast
 @given('cities "{city_list}" exist')
 def step_multiple_cities_exist(context, city_list: str):
     """Create multiple cities in the database."""
-    city_names = [name.strip() for name in city_list.split(',')]
+    city_names = [name.strip().strip('"') for name in city_list.split(',')]
     for city_name in city_names:
         if not City.objects.filter(name=city_name).exists():
             City.objects.create(
@@ -69,6 +69,7 @@ def step_forecast_data_exists(context, city_name: str):
 def step_current_weather_exists_all_cities(context):
     """Create current weather data for all cities."""
     cities = City.objects.all()
+    created_count = 0
     for city in cities:
         if not CurrentWeather.objects.filter(city=city).exists():
             CurrentWeather.objects.create(
@@ -80,15 +81,12 @@ def step_current_weather_exists_all_cities(context):
                 conditions='Clear',
                 timestamp='2026-03-01T12:00:00Z'
             )
+            created_count += 1
+    # Verify data was created
+    total_weather = CurrentWeather.objects.count()
+    assert total_weather > 0, f"No weather data created. Cities: {cities.count()}, Created: {created_count}"
 
 
-@then('the response contains field "{field}"')
-def step_response_contains_field(context, field: str):
-    """Verify the response contains the specified field."""
-    assert field in context.response_json, \
-        f"Expected field '{field}' in response, got: {context.response_json}"
-    assert context.response_json[field] is not None, \
-        f"Field '{field}' should not be None"
 
 
 @then('the response contains a list with {count:d} items')

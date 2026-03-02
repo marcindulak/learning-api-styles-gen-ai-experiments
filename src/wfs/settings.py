@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'graphene_django',
     'rest_framework',
     'rest_framework_simplejwt',
     'behave_django',
@@ -98,4 +99,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+}
+
+GRAPHENE = {
+    'SCHEMA': 'src.weather.schema.schema'
 }

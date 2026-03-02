@@ -73,3 +73,18 @@ class WeatherAlert(models.Model):
 
     def __str__(self) -> str:
         return f"{self.city.name} - {self.severity}"
+
+
+class WebhookEvent(models.Model):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    event_type = models.CharField(max_length=100)
+    payload = models.JSONField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    processed = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'webhook_events'
+        ordering = ['-timestamp']
+
+    def __str__(self) -> str:
+        return f"{self.event_type} - {self.timestamp}"

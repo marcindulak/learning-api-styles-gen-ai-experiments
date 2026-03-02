@@ -10,7 +10,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from src.weather.views import ForecastAtomFeed
+from src.weather.views import ForecastAtomFeed, GitHubWebhookView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -19,4 +19,5 @@ urlpatterns = [
     path('api/', include('src.weather.urls')),
     path('graphql', csrf_exempt(GraphQLView.as_view(graphiql=True)), name='graphql'),
     path('feeds/forecast/<str:city_name>/', ForecastAtomFeed(), name='forecast_feed'),
+    path('webhooks/github', csrf_exempt(GitHubWebhookView.as_view()), name='github_webhook'),
 ]

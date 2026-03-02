@@ -1,3 +1,7 @@
+import hashlib
+import hmac
+import json
+import os
 from datetime import datetime
 
 from django.contrib.syndication.views import Feed
@@ -5,13 +9,14 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.feedgenerator import Atom1Feed
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from src.weather.models import City, CurrentWeather, WeatherAlert, WeatherForecast
+from src.weather.models import City, CurrentWeather, WeatherAlert, WebhookEvent, WeatherForecast
 from src.weather.serializers import CitySerializer, CurrentWeatherSerializer, WeatherAlertSerializer, WeatherForecastSerializer
 from src.weather.services import WeatherAPIException, weather_api_service
 
@@ -179,6 +184,20 @@ class SetTestModeView(APIView):
             return Response({'message': 'Test mode cleared'}, status=status.HTTP_200_OK)
 
 
+class SetEnvironmentView(APIView):
+    """Internal endpoint to set environment variables for testing."""
+    permission_classes = []
+
+    def post(self, request):
+        import os
+        for key, value in request.data.items():
+            if value:
+                os.environ[key] = value
+            else:
+                os.environ.pop(key, None)
+        return Response({'message': 'Environment variables set'}, status=status.HTTP_200_OK)
+
+
 class FetchWeatherView(APIView):
     """Admin endpoint to fetch weather data from third-party API."""
     permission_classes = [IsAdminUser]
@@ -268,3 +287,80 @@ class ForecastAtomFeed(Feed):
 
     def item_updateddate(self, item):
         return item.created_at
+
+
+class GitHubWebhookView(APIView):
+    """Endpoint to receive GitHub webhook events."""
+    permission_classes = []
+
+    def _verify_signature(self, payload_body: bytes, signature_header: str) -> bool:
+        """Verify the GitHub webhook signature using HMAC-SHA256."""
+        webhook_secret = os.environ.get('GITHUB_WEBHOOK_SECRET', '')
+        if not webhook_secret:
+            return True
+
+        if not signature_header or not signature_header.startswith('sha256='):
+            return False
+
+        expected_signature = signature_header[7:]
+        computed_signature = hmac.new(
+            webhook_secret.encode(),
+            payload_body,
+            hashlib.sha256
+        ).hexdigest()
+
+        return hmac.compare_digest(computed_signature, expected_signature)
+
+    def _trigger_data_refresh(self):
+        """Trigger weather data fetch for all cities."""
+        cities = City.objects.all()
+        for city in cities:
+            try:
+                current_weather = weather_api_service.fetch_current_weather(city)
+                current_weather.save()
+                forecasts = weather_api_service.fetch_forecast(city)
+                for forecast in forecasts:
+                    forecast.save()
+            except WeatherAPIException:
+                pass
+
+    def post(self, request):
+        payload_body = request.body
+        signature_header = request.META.get('HTTP_X_HUB_SIGNATURE_256', '')
+
+        webhook_secret = os.environ.get('GITHUB_WEBHOOK_SECRET', '')
+        if webhook_secret:
+            if not self._verify_signature(payload_body, signature_header):
+                return Response(
+                    {'error': 'Invalid signature'},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+
+        try:
+            payload = json.loads(payload_body.decode('utf-8'))
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            return Response(
+                {'error': 'Invalid JSON payload'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        event_type = request.META.get('HTTP_X_GITHUB_EVENT', 'push')
+
+        webhook_event = WebhookEvent(
+            event_type=event_type,
+            payload=payload,
+            processed=False
+        )
+        webhook_event.save()
+
+        ref = payload.get('ref', '')
+        if 'data-refresh' in ref or payload.get('head_commit', {}).get('message', '').startswith('[data-refresh]'):
+            self._trigger_data_refresh()
+
+        webhook_event.processed = True
+        webhook_event.save()
+
+        return Response(
+            {'message': 'Webhook received'},
+            status=status.HTTP_200_OK
+        )

@@ -6,6 +6,7 @@ from src.weather.views import (
     CurrentWeatherViewSet,
     FetchWeatherView,
     HistoricalWeatherViewSet,
+    SetEnvironmentView,
     SetTestModeView,
     WeatherAlertViewSet,
     WeatherForecastViewSet,
@@ -22,4 +23,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('admin/fetch-weather/', FetchWeatherView.as_view(), name='fetch-weather'),
     path('test/set-mode/', SetTestModeView.as_view(), name='set-test-mode'),
+    path('test/set-env/', SetEnvironmentView.as_view(), name='set-environment'),
 ]

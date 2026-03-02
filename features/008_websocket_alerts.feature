@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 008 Weather Alerts via WebSocket
   The Weather Forecast Service provides real-time weather alerts via WebSocket.
   Users can subscribe to alerts for specific cities.

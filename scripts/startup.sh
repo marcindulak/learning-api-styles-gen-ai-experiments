@@ -25,6 +25,6 @@ else:
     print('Admin user already exists')
 EOF
 
-# Start Django development server
-echo "Starting Django server..."
-python manage.py runserver 0.0.0.0:8000
+# Start Daphne ASGI server for WebSocket support
+echo "Starting Daphne ASGI server..."
+daphne --bind 0.0.0.0 --port 8000 src.wfs.asgi:application

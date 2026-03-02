@@ -58,3 +58,18 @@ class WeatherForecast(models.Model):
 
     def __str__(self) -> str:
         return f"{self.city.name} - {self.forecast_date}"
+
+
+class WeatherAlert(models.Model):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='alerts')
+    severity = models.CharField(max_length=50)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'weather_alerts'
+        ordering = ['-created_at']
+
+    def __str__(self) -> str:
+        return f"{self.city.name} - {self.severity}"

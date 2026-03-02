@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 from rest_framework import serializers
 
-from src.weather.models import City, CurrentWeather, WeatherForecast
+from src.weather.models import City, CurrentWeather, WeatherAlert, WeatherForecast
 
 
 class CitySerializer(serializers.ModelSerializer):
@@ -55,6 +55,26 @@ class WeatherForecastSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
     def to_representation(self, instance: WeatherForecast) -> dict:
+        representation = super().to_representation(instance)
+        representation['city_name'] = instance.city.name
+        return representation
+
+
+class WeatherAlertSerializer(serializers.ModelSerializer):
+    city_name = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = WeatherAlert
+        fields = ['uuid', 'city_name', 'severity', 'message', 'created_at']
+        read_only_fields = ['uuid', 'created_at']
+
+    def create(self, validated_data: dict) -> WeatherAlert:
+        city_name = validated_data.pop('city_name')
+        city = City.objects.get(name=city_name)
+        validated_data['city'] = city
+        return super().create(validated_data)
+
+    def to_representation(self, instance: WeatherAlert) -> dict:
         representation = super().to_representation(instance)
         representation['city_name'] = instance.city.name
         return representation

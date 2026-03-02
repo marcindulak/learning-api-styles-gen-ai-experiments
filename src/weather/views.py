@@ -11,8 +11,8 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from src.weather.models import City, CurrentWeather, WeatherForecast
-from src.weather.serializers import CitySerializer, CurrentWeatherSerializer, WeatherForecastSerializer
+from src.weather.models import City, CurrentWeather, WeatherAlert, WeatherForecast
+from src.weather.serializers import CitySerializer, CurrentWeatherSerializer, WeatherAlertSerializer, WeatherForecastSerializer
 from src.weather.services import WeatherAPIException, weather_api_service
 
 
@@ -142,6 +142,20 @@ class WeatherForecastViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(forecasts, many=True)
         return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class WeatherAlertViewSet(viewsets.ModelViewSet):
+    queryset = WeatherAlert.objects.all()
+    serializer_class = WeatherAlertSerializer
+
+    def get_permissions(self):
+        return []
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

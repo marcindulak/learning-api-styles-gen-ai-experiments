@@ -119,3 +119,10 @@ def step_each_forecast_contains_fields(context, fields: str):
         for field in field_list:
             assert field in forecast, \
                 f"Expected field '{field}' in forecast, got: {forecast}"
+
+
+@then('the response contains field "{field}"')
+def step_response_contains_field(context, field: str):
+    """Verify the response contains a specific field."""
+    assert field in context.response_json, \
+        f"Expected field '{field}' in response, got: {context.response_json}"

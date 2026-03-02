@@ -1,2 +1,2 @@
 #!/bin/bash
-curl --fail --silent http://localhost:8000/ >/dev/null 2>&1
+curl --fail --silent http://localhost:8000/admin/ >/dev/null 2>&1

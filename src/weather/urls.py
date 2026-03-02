@@ -7,11 +7,13 @@ from src.weather.views import (
     FetchWeatherView,
     HistoricalWeatherViewSet,
     SetTestModeView,
+    WeatherAlertViewSet,
     WeatherForecastViewSet,
 )
 
 router = DefaultRouter()
 router.register(r'cities', CityViewSet, basename='city')
+router.register(r'weather/alerts', WeatherAlertViewSet, basename='weather-alert')
 router.register(r'weather/current', CurrentWeatherViewSet, basename='current-weather')
 router.register(r'weather/historical', HistoricalWeatherViewSet, basename='historical-weather')
 router.register(r'weather/forecast', WeatherForecastViewSet, basename='weather-forecast')

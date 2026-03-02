@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 004 REST API for Weather Data
   The Weather Forecast Service exposes common weather indicators via REST API.
   The API provides access to current weather, forecasts, and historical data.

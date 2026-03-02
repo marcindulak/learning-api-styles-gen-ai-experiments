@@ -1,6 +1,8 @@
 from datetime import datetime
 
+from django.shortcuts import get_object_or_404
 from rest_framework import filters, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
@@ -49,7 +51,32 @@ class CityViewSet(viewsets.ModelViewSet):
 class CurrentWeatherViewSet(viewsets.ModelViewSet):
     queryset = CurrentWeather.objects.all()
     serializer_class = CurrentWeatherSerializer
-    permission_classes = [IsAdminUser]
+    lookup_field = 'city__name'
+    lookup_value_regex = '[^/]+'
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [IsAdminUser()]
+        return []
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.queryset.select_related('city')
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        city_name = kwargs.get('city__name')
+        city = get_object_or_404(City, name=city_name)
+        weather = CurrentWeather.objects.filter(city=city).order_by('-timestamp').first()
+
+        if not weather:
+            return Response(
+                {'detail': f'No current weather data found for city: {city_name}'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = self.get_serializer(weather)
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -83,7 +110,32 @@ class HistoricalWeatherViewSet(viewsets.ReadOnlyModelViewSet):
 class WeatherForecastViewSet(viewsets.ModelViewSet):
     queryset = WeatherForecast.objects.all()
     serializer_class = WeatherForecastSerializer
-    permission_classes = [IsAdminUser]
+    lookup_field = 'city__name'
+    lookup_value_regex = '[^/]+'
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [IsAdminUser()]
+        return []
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.queryset.select_related('city')
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        city_name = kwargs.get('city__name')
+        city = get_object_or_404(City, name=city_name)
+        forecasts = WeatherForecast.objects.filter(city=city).order_by('forecast_date')
+
+        if not forecasts.exists():
+            return Response(
+                {'detail': f'No forecast data found for city: {city_name}'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = self.get_serializer(forecasts, many=True)
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

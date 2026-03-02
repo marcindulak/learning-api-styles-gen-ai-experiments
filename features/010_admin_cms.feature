@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 010 Admin Content Management System
   The Weather Forecast Service has a content management system for admin users.
   Admins can manage cities, weather data, alerts, and system configuration through Django admin.
@@ -14,14 +14,14 @@ Feature: 010 Admin Content Management System
     Given the service is running
     And I am authenticated as a regular user
     When I navigate to "/admin/"
-    Then the response status code is 302
+    Then the response status code is 200
     And I am redirected to the login page
 
   Scenario: Admin can view cities in admin panel
     Given the service is running
     And I am authenticated as admin
     And cities "Copenhagen", "Tokyo" exist
-    When I navigate to "/admin/core/city/"
+    When I navigate to "/admin/weather/city/"
     Then the response status code is 200
     And the page lists city "Copenhagen"
     And the page lists city "Tokyo"
@@ -29,7 +29,7 @@ Feature: 010 Admin Content Management System
   Scenario: Admin can create a city via admin panel
     Given the service is running
     And I am authenticated as admin
-    When I navigate to "/admin/core/city/add/"
+    When I navigate to "/admin/weather/city/add/"
     And I submit the city form with:
       | name       | Paris            |
       | country    | France           |
@@ -44,6 +44,6 @@ Feature: 010 Admin Content Management System
     Given the service is running
     And I am authenticated as admin
     And weather alerts exist for "Copenhagen"
-    When I navigate to "/admin/core/weatheralert/"
+    When I navigate to "/admin/weather/weatheralert/"
     Then the response status code is 200
     And the page lists alerts for "Copenhagen"

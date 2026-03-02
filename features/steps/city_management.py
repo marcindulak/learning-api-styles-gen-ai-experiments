@@ -10,7 +10,16 @@ from src.weather.models import City
 
 @given('I am authenticated as admin')
 def step_authenticated_as_admin(context):
-    """Authenticate as admin user and store access token."""
+    """Authenticate as admin user and store access token and session cookie."""
+    from django.contrib.auth import get_user_model
+    import re
+    import tempfile
+
+    User = get_user_model()
+    admin_user = User.objects.filter(username='admin').first()
+    if not admin_user:
+        admin_user = User.objects.create_superuser('admin', 'admin@example.com', 'admin')
+
     payload = json.dumps({"username": "admin", "password": "admin"})
     result = subprocess.run(
         [
@@ -28,11 +37,54 @@ def step_authenticated_as_admin(context):
     response = json.loads(result.stdout)
     context.access_token = response['access']
 
+    with tempfile.NamedTemporaryFile(mode='w+', delete=False) as cookie_file:
+        cookie_path = cookie_file.name
+
+    result = subprocess.run(
+        [
+            'curl',
+            '--cookie', cookie_path,
+            '--cookie-jar', cookie_path,
+            '--silent',
+            'http://localhost:8000/admin/login/'
+        ],
+        capture_output=True,
+        text=True,
+        timeout=10
+    )
+
+    csrf_match = re.search(r'csrfmiddlewaretoken["\']?\s+value=["\']([^"\']+)["\']', result.stdout)
+    csrf_token = csrf_match.group(1) if csrf_match else ''
+
+    result = subprocess.run(
+        [
+            'curl',
+            '--cookie', cookie_path,
+            '--cookie-jar', cookie_path,
+            '--data', f'username=admin&password=admin&csrfmiddlewaretoken={csrf_token}',
+            '--header', 'Content-Type: application/x-www-form-urlencoded',
+            '--location',
+            '--request', 'POST',
+            '--silent',
+            'http://localhost:8000/admin/login/'
+        ],
+        capture_output=True,
+        text=True,
+        timeout=10
+    )
+
+    with open(cookie_path, 'r') as f:
+        cookies_content = f.read()
+
+    context.admin_cookie_file = cookie_path
+
 
 @given('I am authenticated as a regular user')
 def step_authenticated_as_regular_user(context):
-    """Authenticate as a regular user and store access token."""
+    """Authenticate as a regular user and store access token and session cookie."""
     from django.contrib.auth import get_user_model
+    import re
+    import tempfile
 
     User = get_user_model()
     if not User.objects.filter(username='user').exists():
@@ -54,6 +106,47 @@ def step_authenticated_as_regular_user(context):
     )
     response = json.loads(result.stdout)
     context.access_token = response['access']
+
+    with tempfile.NamedTemporaryFile(mode='w+', delete=False) as cookie_file:
+        cookie_path = cookie_file.name
+
+    result = subprocess.run(
+        [
+            'curl',
+            '--cookie', cookie_path,
+            '--cookie-jar', cookie_path,
+            '--silent',
+            'http://localhost:8000/admin/login/'
+        ],
+        capture_output=True,
+        text=True,
+        timeout=10
+    )
+
+    csrf_match = re.search(r'csrfmiddlewaretoken["\']?\s+value=["\']([^"\']+)["\']', result.stdout)
+    csrf_token = csrf_match.group(1) if csrf_match else ''
+
+    result = subprocess.run(
+        [
+            'curl',
+            '--cookie', cookie_path,
+            '--cookie-jar', cookie_path,
+            '--data', f'username=user&password=password&csrfmiddlewaretoken={csrf_token}',
+            '--header', 'Content-Type: application/x-www-form-urlencoded',
+            '--location',
+            '--request', 'POST',
+            '--silent',
+            'http://localhost:8000/admin/login/'
+        ],
+        capture_output=True,
+        text=True,
+        timeout=10
+    )
+
+    with open(cookie_path, 'r') as f:
+        cookies_content = f.read()
+
+    context.admin_cookie_file = cookie_path
 
 
 @given('a city "{city_name}" exists')

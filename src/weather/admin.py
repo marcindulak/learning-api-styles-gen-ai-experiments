@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from src.weather.models import City, CurrentWeather, WeatherForecast
+from src.weather.models import City, CurrentWeather, WeatherAlert, WeatherForecast
 
 
 @admin.register(City)
@@ -23,4 +23,12 @@ class WeatherForecastAdmin(admin.ModelAdmin):
     list_display = ['city', 'forecast_date', 'temperature', 'humidity', 'pressure', 'wind_speed', 'conditions']
     list_filter = ['city', 'forecast_date']
     search_fields = ['city__name', 'conditions']
+    readonly_fields = ['uuid', 'created_at']
+
+
+@admin.register(WeatherAlert)
+class WeatherAlertAdmin(admin.ModelAdmin):
+    list_display = ['city', 'severity', 'message', 'created_at']
+    list_filter = ['city', 'severity', 'created_at']
+    search_fields = ['city__name', 'severity', 'message']
     readonly_fields = ['uuid', 'created_at']

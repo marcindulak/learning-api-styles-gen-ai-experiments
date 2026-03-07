@@ -86,11 +86,102 @@ Note that the setup includes at least 3 known errors, and they are left on purpo
 
 | Date | Outcome | PR | Tool / Version | Agent | Top model | Knowledge cutoff | Duration | Cost | AGENTS.md / rules | Human guidance | MCP | Skills |
 |------|---------|----|----------------|-------|-------|------------------|----------|------|-----------|----------------|-----|--------|
+| 2026-03-01 |poor | [24](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/24) | None / None | 2.1.44 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 2 hours clock time (about 2 hours agent time) | $3 USD (about 15% of Pro weekly plan) | Yes | Yes | No | No
 | 2026-02-28 |poor | [22](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/22) | [ralph-orchestrator](https://github.com/mikeyobrien/ralph-orchestrator) / [2.6.0](https://github.com/mikeyobrien/ralph-orchestrator/releases/tag/v2.6.0) | 2.1.44 (Claude Code) | claude-opus-4-6 | Aug 2025 "Reliable knowledge cutoff", and Jan 2026 "Training data cutoff" | About 2 hours clock time (about 1 hour agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | Yes | No | Yes
 | 2026-02-20 |poor | [19](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/19) | [pilot-shell](https://github.com/maxritter/pilot-shell) / [6.9.2](https://github.com/maxritter/pilot-shell/releases/tag/v6.9.2) | 2.1.39 (Claude Code) | claude-opus-4-6 | Aug 2025 "Reliable knowledge cutoff", and Jan 2026 "Training data cutoff" | About 11 hours clock time (about 2 hours agent time) | $10 USD (about 40% of Pro weekly plan) | Yes | Yes | Yes | Yes
 | 2026-02-06 |poor/fair | [14](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/14) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [d469a02](https://github.com/marcindulak/ralph-wiggum-bdd/commit/d469a020c72646590f156dfaa39f82f677316afd) | 2.1.17 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 7 hours clock time (about 3 hours agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | No | No | No
 | 2026-01-31 |poor | [8](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/8) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [542a1ca](https://github.com/marcindulak/ralph-wiggum-bdd/commit/542a1ca9640cf1e59eb31eaaa51be95a85fb84bf) | 2.1.17 (Claude Code) | claude-opus-4-5-20251101 | May 2025 "Reliable knowledge cutoff", and Aug 2025 "Training data cutoff" | About 12 hours clock time (about 5 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | No | No | No
 | 2026-01-18 |poor | [1](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/1) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / Experimental | 2.1.9 (Claude Code) | claude-haiku-4-5-20251001 | Feb 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 11 hours clock time (about 7 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | Yes | No | No
+
+## 2026-03-01
+
+Outcome: poor
+
+```
+tokei --types='Python,Gherkin (Cucumber)' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Gherkin (Cucumber)        2           57           48            0            9
+ Python                   29         1685         1336           12          337
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    31         1742         1384           12          346
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ruff check . --select C90 --output-format=concise
+All checks passed!
+```
+
+The code is organized by layer in a single `weather/` app, with each API style in its own file (views.py for REST, schema.py for GraphQL, consumers.py for WebSocket, feeds.py for Atom, webhooks.py for webhooks).
+This follows Django conventions and allows studying each API style independently.
+Data generation is separated into its own module, but data access and presentation are mixed in views.
+There is limited test coverage.
+
+```
+tree -L 2 app/
+app/
+├── config
+│   ├── asgi.py
+│   ├── __init__.py
+│   ├── postgres.py
+│   ├── urls.py
+│   └── wsgi.py
+├── docs
+├── features
+│   ├── authentication.feature
+│   ├── cities.feature
+│   ├── environment.py
+│   └── steps
+├── manage.py
+├── scripts
+│   ├── healthcheck.sh
+│   └── startup.sh
+├── staticfiles
+│   ├── admin
+│   ├── graphene_django
+│   └── rest_framework
+└── weather
+    ├── admin.py
+    ├── apps.py
+    ├── consumers.py
+    ├── feeds.py
+    ├── __init__.py
+    ├── management
+    ├── migrations
+    ├── models.py
+    ├── routing.py
+    ├── schema.py
+    ├── serializers.py
+    ├── urls.py
+    ├── views.py
+    ├── weather_service.py
+    └── webhooks.py
+```
+
+The agent behaved hesitantly, it stopped several times to ask questions or report the current status without claiming that the implementation was complete.
+Had to be invited to continue work by the human saying "Do you consider implementation is completed?" or "You need to implement REQUIREMENTS.md".
+After every nudge of that type, the agent discovered more implementation gaps.
+
+The agent correctly discovered that Docker commands were blocked, and correctly decided to first verify the tests pass, before claiming the implementation is completed.
+Only a few, high level tests were included.
+
+The agent used unversioned dependencies in requirements.txt, which is the right initial choice for an educational project.
+On the other hand, the agent selected the unmaintained [graphene-django](https://github.com/graphql-python/graphene-django) library.
+Despite `CLAUDE.md` containing `You MUST only use established, currently popular, actively maintained, long-term stable releases of third-party libraries. Avoid third-party libraries if possible.`, it has not occurred to the agent to make an internet search to verify the status of various libraries.
+
+The agent made poor application infrastructure choices by not following the recommendations from https://12factor.net/build-release-run.
+For example, it added postgresql-client to the app Docker image to make the `pg_isready` command available so the container could exit when the database is inaccessible, and it generated TLS certificates at container startup instead of performing this in a separate step.
+The agent has not tested the TLS implementation, the app container fails to start with `TLS_ENABLE=1`.
+
+The agent ignored the git warning `CLRF will be replaced by LF the next time Git touches it` and committed `app/staticfiles/rest_framework/fonts/fontawesome-webfont.ttf` to git without adding ttf to the .gitattributes file, but corrected itself after a notice from the human.
+Nevertheless, it added more file types to the .gitattributes file than the project requires.
+
+Behave tests passed.
+
+See the screen recording of the session.
+The video doesn't represent the clock time, the long periods when there are no changes on the terminal are trimmed away.
+
+[![Watch Video 2026-03-01 Part1](images/2026-03-01-01.png)](https://www.youtube.com/watch?v=t-c6dbKgAV0)
 
 ## 2026-02-28
 

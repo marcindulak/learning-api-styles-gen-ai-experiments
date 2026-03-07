@@ -14,6 +14,40 @@ See examples of the outcome assessment below:
 - **fair**: no interactive human guidance needed before or during implementation, some requirements are not implemented or tested, poor projector code structure
 - **good**: no interactive human guidance needed before or during implementation, all requirements implemented and tested, good project and code structure
 
+Since this is an educational project about API styles, each API style (Atom feed, GraphQL, REST, Webhooks, WebSocket) should be in its own file, allowing a reader to study one style without reading unrelated code.
+The standard Django pattern achieves this:
+
+```
+app/
+├── config/
+├── weather/
+│   ├── consumers.py     # WebSocket API
+│   ├── feeds.py         # Atom feed API
+│   ├── models.py        # Domain models
+│   ├── schema.py        # GraphQL API
+│   ├── serializers.py   # Shared serializers
+│   ├── views.py         # REST API
+│   └── webhooks.py      # Webhooks API
+└── manage.py
+```
+
+A more modular approach organizes by API style under a views directory:
+
+```
+app/
+├── config/
+├── weather/
+│   ├── views/
+│   │   ├── atom/
+│   │   ├── graphql/
+│   │   ├── rest/
+│   │   ├── webhooks/
+│   │   └── websocket/
+│   ├── models.py
+│   └── serializers.py
+└── manage.py
+```
+
 Note that the setup includes at least 3 known errors, and they are left on purpose for the agent to discover and fix them:
 
 - [.claude/settings.json](.claude/settings.json) explicitly denies Docker. Agents like to skip tests and this is an opportunity for them.
@@ -112,7 +146,7 @@ ruff check . --select C90 --output-format=concise
 All checks passed!
 ```
 
-The code is organized by layer in a single `weather/` app, with each API style in its own file (views.py for REST, schema.py for GraphQL, consumers.py for WebSocket, feeds.py for Atom, webhooks.py for webhooks).
+The code is organized by layer in a single `weather/` app, with each API style in its own file (consumers.py for WebSocket, feeds.py for Atom, schema.py for GraphQL, webhooks.py for Webhooks, views.py for REST).
 This follows Django conventions and allows studying each API style independently.
 Data generation is separated into its own module, but data access and presentation are mixed in views.
 There is limited test coverage.
@@ -202,8 +236,9 @@ ruff check . --select C90 --output-format=concise
 All checks passed!
 ```
 
-The code organization puts models, REST views, GraphQL schema, websocket consumers, and feed generation in a single weather/ app.
-Data storage and data access are not separated, making learning and maintenance harder.
+The code is organized by layer in a single `weather/` app, with separate files for permissions and signals.
+WebSocket in consumers.py, Atom feed in feeds.py, and GraphQL is in schema.py, but Webhooks are mixed in views.py alongside REST viewsets.
+This makes it harder to study REST or Webhooks independently.
 There are almost no comments in the code.
 
 ```
@@ -290,8 +325,8 @@ ruff check . --select C90 --output-format=concise
 All checks passed!
 ```
 
-The code organization puts models, REST views, GraphQL schema, websocket consumers, and feed generation in a single weather/ app.
-Data storage and data access are not separated, making learning and maintenance harder.
+The code is organized by layer in a single `weather/` app, with each API style in its own file (consumers.py for WebSocket, feeds.py for Atom, schema.py for GraphQL, webhooks.py for Webhooks, views.py for REST).
+Permissions and signals are in separate modules, which follows Django conventions and allows studying permissions and signals without reading view code.
 
 ```
 tree -L 2 app/
@@ -377,8 +412,8 @@ ruff check . --select C90 --output-format=concise
 All checks passed!
 ```
 
-The code organization puts models, REST views, GraphQL schema, websocket consumers, and feed generation in a single weather_service/ app.
-Data storage and data access are not separated, making learning and maintenance harder.
+The code is organized by layer in a single `weather_service/` app.
+WebSocket and GraphQL are in separate files (consumers.py, schema.py), but views.py mixes Atom feed, REST, and Webhooks generation together, making it harder to study those styles independently.
 
 ```
 tree -L 2 app/
@@ -450,8 +485,8 @@ features/steps/feed_steps.py:94:5: C901 `step_entry_contains_temperature` is too
 Found 1 error.
 ```
 
-The code organization puts api/, feeds/, and graphql_api/ inside apps/ alongside data apps like alerts/, cities/, forecast/, and weather/.
-Data storage and access are not separated—data apps and presentation layers are mixed, making responsibility unclear.
+The code is split into 10 separate Django apps under `apps/`, mixing data apps (alerts, cities, forecast, historical, weather) with presentation apps (api, feeds, graphql_api).
+The fragmentation makes it harder for a reader to follow a feature end-to-end, and studying one API style requires navigating across multiple apps.
 
 ```
 tree -L 3 src/
@@ -520,8 +555,9 @@ app/apps/webhooks/views.py:69:5: C901 `github_webhook` is too complex (12 > 10)
 Found 1 error.
 ```
 
-The code organization puts api/, feeds/, and graphql/ inside apps/ alongside data apps like alerts/, cities/, and weather/.
-Data storage and access are not separated—data apps and presentation layers are mixed, making responsibility unclear.
+The code is split into 8 separate Django apps under `apps/`, mixing data apps (alerts, cities, weather) with presentation apps (api, feeds, graphql).
+The fragmentation makes it harder for a reader to follow a feature end-to-end, and studying one API style requires navigating across multiple apps.
+The alerts app has a model but no views, making it dead code.
 
 ```
 tree -L 2 app/

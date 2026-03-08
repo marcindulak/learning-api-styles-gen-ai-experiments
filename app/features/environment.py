@@ -8,11 +8,23 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
-from weather.models import City
+from weather.models import City, CurrentWeather, WeatherForecast
 
 
 def before_scenario(context, scenario):
     """Clean up test data before each scenario."""
+    try:
+        CurrentWeather.objects.all().delete()
+    except Exception:
+        # Table might not exist yet
+        pass
+
+    try:
+        WeatherForecast.objects.all().delete()
+    except Exception:
+        # Table might not exist yet
+        pass
+
     try:
         City.objects.all().delete()
     except Exception:

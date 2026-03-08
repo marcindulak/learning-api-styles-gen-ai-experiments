@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 003 Weather Data Storage
   As a weather service operator
   I want to store current weather, historical data, and forecasts
@@ -17,7 +17,7 @@ Feature: 003 Weather Data Storage
   Scenario: Retrieve historical weather data
     Given I am authenticated as admin
     And current weather data exists for "London"
-    When I send a GET request to "/api/weather/historical?city_name=London"
+    When I send a GET request to "/api/weather/historical/?city_name=London"
     Then the response status code is 200
     And the response contains weather data
 

@@ -3,8 +3,8 @@ Views for weather API endpoints.
 """
 from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
-from weather.models import City
-from weather.serializers import CitySerializer
+from weather.models import City, CurrentWeather, WeatherForecast
+from weather.serializers import CitySerializer, CurrentWeatherSerializer, WeatherForecastSerializer
 
 
 class CityViewSet(viewsets.ModelViewSet):
@@ -34,4 +34,44 @@ class CityViewSet(viewsets.ModelViewSet):
         search_name = self.request.query_params.get('search_name', None)
         if search_name is not None:
             queryset = queryset.filter(name__icontains=search_name)
+        return queryset
+
+
+class CurrentWeatherViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for CurrentWeather model.
+    Admin users can create/update/delete current weather data.
+    """
+    queryset = CurrentWeather.objects.all()
+    serializer_class = CurrentWeatherSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        """
+        Filter current weather by city name if city_name query parameter is provided.
+        """
+        queryset = CurrentWeather.objects.all()
+        city_name = self.request.query_params.get('city_name', None)
+        if city_name is not None:
+            queryset = queryset.filter(city__name=city_name)
+        return queryset
+
+
+class WeatherForecastViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for WeatherForecast model.
+    Admin users can create/update/delete weather forecasts.
+    """
+    queryset = WeatherForecast.objects.all()
+    serializer_class = WeatherForecastSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        """
+        Filter weather forecasts by city name if city_name query parameter is provided.
+        """
+        queryset = WeatherForecast.objects.all()
+        city_name = self.request.query_params.get('city_name', None)
+        if city_name is not None:
+            queryset = queryset.filter(city__name=city_name)
         return queryset

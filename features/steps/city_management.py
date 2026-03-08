@@ -160,8 +160,14 @@ def step_send_get_request(context, endpoint):
         "--silent",
         "--output", "/dev/null",
         "--write-out", "%{http_code}",
-        f"http://localhost:8000{endpoint}"
     ]
+
+    # Add authorization header if access token is available
+    if hasattr(context, 'access_token') and context.access_token:
+        curl_command_code.append("--header")
+        curl_command_code.append(f"Authorization: Bearer {context.access_token}")
+
+    curl_command_code.append(f"http://localhost:8000{endpoint}")
 
     result_code = subprocess.run(
         curl_command_code,
@@ -175,8 +181,14 @@ def step_send_get_request(context, endpoint):
         "curl",
         "--request", "GET",
         "--silent",
-        f"http://localhost:8000{endpoint}"
     ]
+
+    # Add authorization header if access token is available
+    if hasattr(context, 'access_token') and context.access_token:
+        curl_command_body.append("--header")
+        curl_command_body.append(f"Authorization: Bearer {context.access_token}")
+
+    curl_command_body.append(f"http://localhost:8000{endpoint}")
 
     result_body = subprocess.run(
         curl_command_body,

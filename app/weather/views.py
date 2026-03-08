@@ -466,3 +466,81 @@ def set_environment_variable(request):
         {'message': f'Environment variable {key} set'},
         status=status.HTTP_200_OK
     )
+
+
+@api_view(['GET'])
+@permission_classes([])
+def asyncapi_schema(request):
+    """
+    AsyncAPI schema for WebSocket API documentation.
+    """
+    schema = {
+        "asyncapi": "2.6.0",
+        "info": {
+            "title": "Weather Forecast Service WebSocket API",
+            "version": "1.0.0",
+            "description": "WebSocket API for real-time weather alerts"
+        },
+        "servers": {
+            "development": {
+                "url": "ws://localhost:8000",
+                "protocol": "ws",
+                "description": "Development WebSocket server"
+            }
+        },
+        "channels": {
+            "/ws/alerts/": {
+                "description": "WebSocket channel for weather alerts",
+                "subscribe": {
+                    "summary": "Subscribe to weather alerts for specific cities",
+                    "message": {
+                        "name": "WeatherAlert",
+                        "payload": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "description": "Message type (alert, confirmation, error)"
+                                },
+                                "city": {
+                                    "type": "string",
+                                    "description": "City name for the alert"
+                                },
+                                "severity": {
+                                    "type": "string",
+                                    "enum": ["low", "medium", "high", "severe"],
+                                    "description": "Alert severity level"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "description": "Alert message content"
+                                }
+                            }
+                        }
+                    }
+                },
+                "publish": {
+                    "summary": "Send subscription commands",
+                    "message": {
+                        "name": "SubscriptionCommand",
+                        "payload": {
+                            "type": "object",
+                            "properties": {
+                                "action": {
+                                    "type": "string",
+                                    "enum": ["subscribe", "unsubscribe"],
+                                    "description": "Subscription action"
+                                },
+                                "city": {
+                                    "type": "string",
+                                    "description": "City name to subscribe/unsubscribe"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return Response(schema, status=status.HTTP_200_OK)

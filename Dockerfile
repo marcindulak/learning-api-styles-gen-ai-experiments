@@ -59,7 +59,8 @@ RUN apt-get update && \
     libc6-dev \
     libpq-dev \
     newsboat \
-    openssl && \
+    openssl \
+    postgresql-client && \
     rm -rf /var/lib/apt/lists/*
 
 # Debugging packages
@@ -87,6 +88,6 @@ RUN test $(python -c 'import sys; version=sys.version_info[:2]; print(f"{version
 EXPOSE ${APP_PORT_HTTP} ${APP_PORT_WS}
 VOLUME ${WORKDIR}
 
-HEALTHCHECK CMD ${WORKDIR}/scripts/healthcheck.sh || exit 1
+HEALTHCHECK CMD ./scripts/healthcheck.sh || exit 1
 
-ENTRYPOINT /bin/sh -c "${WORKDIR}/scripts/startup.sh"
+ENTRYPOINT /bin/sh -c "./scripts/startup.sh"

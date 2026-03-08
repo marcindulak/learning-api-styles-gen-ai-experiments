@@ -1,4 +1,4 @@
-@status-done
+@status-active
 Feature: 001 User Management
   As a system administrator
   I want to manage admin and regular users

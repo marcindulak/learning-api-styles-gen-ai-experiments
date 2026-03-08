@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 007 Weather Forecast Atom Feed
   As a weather service user
   I want to subscribe to weather forecast feeds

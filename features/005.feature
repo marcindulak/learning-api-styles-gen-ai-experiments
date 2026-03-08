@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 005 GraphQL API for Weather Data
   As a weather service developer
   I want to query weather data using GraphQL

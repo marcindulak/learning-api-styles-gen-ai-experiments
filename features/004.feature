@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 004 REST API for Weather Data
   As a weather service user
   I want to access weather data via REST API

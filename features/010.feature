@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 010 Admin Content Management System
   As a system administrator
   I want to manage weather data through a web interface

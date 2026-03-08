@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 012 TLS Support
   As a security-conscious user
   I want the service to support encrypted connections

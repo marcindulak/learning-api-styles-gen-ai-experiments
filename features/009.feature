@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 009 GitHub Webhook Integration
   As a weather service operator
   I want to integrate with GitHub webhooks

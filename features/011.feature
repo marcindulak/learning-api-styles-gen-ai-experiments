@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 011 API Documentation
   As a weather service developer
   I want to access API documentation

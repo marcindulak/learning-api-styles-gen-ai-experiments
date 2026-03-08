@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 013 Containerized Deployment
   As a developer or operator
   I want to deploy the service using containers

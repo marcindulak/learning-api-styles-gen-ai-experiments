@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: 006 Third Party Weather API Integration
   As a weather service operator
   I want to fetch real weather data from a third-party API

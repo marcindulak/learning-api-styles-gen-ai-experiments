@@ -1,13 +1,17 @@
 """
 Views for weather API endpoints.
 """
+import os
+from datetime import datetime
 from rest_framework import viewsets
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from weather.models import City, CurrentWeather, WeatherForecast
 from weather.serializers import CitySerializer, CurrentWeatherSerializer, WeatherForecastSerializer
+from weather.weather_api_service import WeatherAPIService
 
 
 class CityViewSet(viewsets.ModelViewSet):
@@ -134,3 +138,103 @@ class WeatherForecastViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(forecasts, many=True)
         return Response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def fetch_weather_from_api(request):
+    """
+    Admin endpoint to fetch weather data from third-party API.
+    Expected POST data: {"city_name": "London", "data_type": "current"} or {"city_name": "Paris", "data_type": "forecast"}
+    """
+    city_name = request.data.get('city_name')
+    data_type = request.data.get('data_type', 'current')
+
+    if not city_name:
+        return Response(
+            {'error': 'city_name is required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        city = City.objects.get(name=city_name)
+    except City.DoesNotExist:
+        return Response(
+            {'error': f'City {city_name} not found'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    weather_service = WeatherAPIService()
+
+    if data_type == 'current':
+        weather_data = weather_service.fetch_current_weather(
+            city.name,
+            city.latitude,
+            city.longitude
+        )
+
+        if weather_data is None:
+            return Response(
+                {'error': 'Third-party weather API is unavailable'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+        CurrentWeather.objects.create(
+            city=city,
+            temperature=weather_data['temperature'],
+            humidity=weather_data['humidity'],
+            pressure=weather_data['pressure'],
+            wind_speed=weather_data['wind_speed']
+        )
+
+        return Response({
+            'message': f'Current weather data fetched and stored for {city_name}'
+        }, status=status.HTTP_200_OK)
+
+    elif data_type == 'forecast':
+        forecast_data = weather_service.fetch_forecast(
+            city.name,
+            city.latitude,
+            city.longitude,
+            days=7
+        )
+
+        if forecast_data is None:
+            return Response(
+                {'error': 'Third-party weather API is unavailable'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+        for forecast in forecast_data:
+            WeatherForecast.objects.update_or_create(
+                city=city,
+                forecast_date=forecast['forecast_date'],
+                defaults={
+                    'temperature': forecast['temperature'],
+                    'humidity': forecast['humidity'],
+                    'pressure': forecast['pressure'],
+                    'wind_speed': forecast['wind_speed']
+                }
+            )
+
+        return Response({
+            'message': f'Forecast data fetched and stored for {city_name}'
+        }, status=status.HTTP_200_OK)
+
+    else:
+        return Response(
+            {'error': 'Invalid data_type. Must be "current" or "forecast"'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+@api_view(['POST'])
+@permission_classes([])
+def set_test_mode(request):
+    """
+    Test endpoint to set weather API test mode.
+    Expected POST data: {"mode": "available"} or {"mode": "unavailable"}
+    """
+    mode = request.data.get('mode', 'available')
+    os.environ['WEATHER_API_TEST_MODE'] = mode
+    return Response({'message': f'Test mode set to {mode}'}, status=status.HTTP_200_OK)

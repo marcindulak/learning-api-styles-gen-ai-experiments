@@ -3,7 +3,13 @@ URL patterns for weather API.
 """
 from django.urls import include, path, re_path
 from rest_framework.routers import DefaultRouter
-from weather.views import CityViewSet, CurrentWeatherViewSet, WeatherForecastViewSet
+from weather.views import (
+    CityViewSet,
+    CurrentWeatherViewSet,
+    WeatherForecastViewSet,
+    fetch_weather_from_api,
+    set_test_mode
+)
 
 router = DefaultRouter()
 router.register(r'cities', CityViewSet, basename='city')
@@ -30,5 +36,7 @@ urlpatterns = [
         WeatherForecastViewSet.as_view({'post': 'create'}),
         name='weather-forecast-create'
     ),
+    path('admin/fetch-weather/', fetch_weather_from_api, name='fetch-weather-api'),
+    path('test/set-mode/', set_test_mode, name='set-test-mode'),
     path('', include(router.urls)),
 ]

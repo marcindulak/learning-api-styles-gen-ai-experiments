@@ -12,8 +12,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from weather.models import City, CurrentWeather, WeatherForecast
-from weather.serializers import CitySerializer, CurrentWeatherSerializer, WeatherForecastSerializer
+from weather.models import City, CurrentWeather, WeatherForecast, WeatherAlert
+from weather.serializers import CitySerializer, CurrentWeatherSerializer, WeatherForecastSerializer, WeatherAlertSerializer
 from weather.weather_api_service import WeatherAPIService
 
 
@@ -307,3 +307,14 @@ class ForecastAtomFeed(Feed):
         Publication date for each forecast entry.
         """
         return datetime.combine(item.forecast_date, datetime.min.time())
+
+
+class WeatherAlertViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for WeatherAlert model.
+    Admin users can create weather alerts.
+    Alerts are automatically broadcast to subscribed WebSocket clients.
+    """
+    queryset = WeatherAlert.objects.all()
+    serializer_class = WeatherAlertSerializer
+    permission_classes = [IsAdminUser]

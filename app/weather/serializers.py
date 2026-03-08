@@ -3,7 +3,7 @@ Serializers for weather data models.
 """
 from datetime import date, timedelta
 from rest_framework import serializers
-from weather.models import City, CurrentWeather, WeatherForecast
+from weather.models import City, CurrentWeather, WeatherForecast, WeatherAlert
 
 
 class CitySerializer(serializers.ModelSerializer):
@@ -80,6 +80,29 @@ class WeatherForecastSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data: dict) -> WeatherForecast:
+        city_name = validated_data.pop('city_name')
+        city = City.objects.get(name=city_name)
+        validated_data['city'] = city
+        return super().create(validated_data)
+
+
+class WeatherAlertSerializer(serializers.ModelSerializer):
+    """Serializer for WeatherAlert model."""
+    city_name = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = WeatherAlert
+        fields = [
+            'id',
+            'city',
+            'city_name',
+            'severity',
+            'message',
+            'timestamp'
+        ]
+        read_only_fields = ['id', 'city', 'timestamp']
+
+    def create(self, validated_data: dict) -> WeatherAlert:
         city_name = validated_data.pop('city_name')
         city = City.objects.get(name=city_name)
         validated_data['city'] = city

@@ -8,7 +8,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
-from weather.models import City, CurrentWeather, WeatherForecast
+from weather.models import City, CurrentWeather, WeatherForecast, WeatherAlert
 
 
 def before_scenario(context, scenario):
@@ -21,6 +21,12 @@ def before_scenario(context, scenario):
 
     try:
         WeatherForecast.objects.all().delete()
+    except Exception:
+        # Table might not exist yet
+        pass
+
+    try:
+        WeatherAlert.objects.all().delete()
     except Exception:
         # Table might not exist yet
         pass

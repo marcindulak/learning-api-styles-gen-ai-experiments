@@ -7,6 +7,7 @@ from weather.views import (
     CityViewSet,
     CurrentWeatherViewSet,
     WeatherForecastViewSet,
+    WeatherAlertViewSet,
     ForecastAtomFeed,
     fetch_weather_from_api,
     set_test_mode
@@ -15,6 +16,7 @@ from weather.views import (
 router = DefaultRouter()
 router.register(r'cities', CityViewSet, basename='city')
 router.register(r'weather/historical', CurrentWeatherViewSet, basename='historical-weather')
+router.register(r'weather/alerts', WeatherAlertViewSet, basename='weather-alert')
 
 urlpatterns = [
     re_path(

@@ -57,3 +57,24 @@ class WeatherForecast(models.Model):
 
     def __str__(self):
         return f"{self.city.name} - {self.forecast_date}"
+
+
+class WeatherAlert(models.Model):
+    """Weather alert for a city."""
+    SEVERITY_CHOICES = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+        ('severe', 'Severe'),
+    ]
+
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='alerts')
+    severity = models.CharField(max_length=20, choices=SEVERITY_CHOICES)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        return f"{self.city.name} - {self.severity} - {self.timestamp}"

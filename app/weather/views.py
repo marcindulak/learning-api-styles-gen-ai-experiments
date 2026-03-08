@@ -3,12 +3,15 @@ Views for weather API endpoints.
 """
 import os
 from datetime import datetime
+from django.contrib.syndication.views import Feed
+from django.utils.feedgenerator import Atom1Feed
 from rest_framework import viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from weather.models import City, CurrentWeather, WeatherForecast
 from weather.serializers import CitySerializer, CurrentWeatherSerializer, WeatherForecastSerializer
 from weather.weather_api_service import WeatherAPIService
@@ -238,3 +241,69 @@ def set_test_mode(request):
     mode = request.data.get('mode', 'available')
     os.environ['WEATHER_API_TEST_MODE'] = mode
     return Response({'message': f'Test mode set to {mode}'}, status=status.HTTP_200_OK)
+
+
+class ForecastAtomFeed(Feed):
+    """
+    Atom feed for weather forecasts.
+    """
+    feed_type = Atom1Feed
+
+    def get_object(self, request, city_name):
+        """
+        Get the city object from the URL parameter.
+        """
+        return get_object_or_404(City, name=city_name)
+
+    def title(self, obj):
+        """
+        Feed title.
+        """
+        return f"Weather Forecast for {obj.name}"
+
+    def link(self, obj):
+        """
+        Feed link.
+        """
+        return f"/feeds/forecast/{obj.name}/"
+
+    def description(self, obj):
+        """
+        Feed description.
+        """
+        return f"Weather forecast feed for {obj.name}"
+
+    def items(self, obj):
+        """
+        Return forecast items for the city.
+        """
+        return WeatherForecast.objects.filter(city=obj).order_by('forecast_date')
+
+    def item_title(self, item):
+        """
+        Title for each forecast entry.
+        """
+        return f"Forecast for {item.city.name} on {item.forecast_date}"
+
+    def item_description(self, item):
+        """
+        Description for each forecast entry.
+        """
+        return (
+            f"Temperature: {item.temperature}°C, "
+            f"Humidity: {item.humidity}%, "
+            f"Pressure: {item.pressure} hPa, "
+            f"Wind Speed: {item.wind_speed} m/s"
+        )
+
+    def item_link(self, item):
+        """
+        Link for each forecast entry.
+        """
+        return f"/feeds/forecast/{item.city.name}/"
+
+    def item_pubdate(self, item):
+        """
+        Publication date for each forecast entry.
+        """
+        return datetime.combine(item.forecast_date, datetime.min.time())

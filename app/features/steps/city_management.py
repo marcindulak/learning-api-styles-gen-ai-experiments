@@ -149,6 +149,9 @@ def step_create_city(context):
 @when('I send a GET request to "{endpoint}"')
 def step_send_get_request(context, endpoint):
     """Send a GET request to the specified endpoint."""
+    # Store the original endpoint for later use
+    context.last_endpoint = endpoint
+
     # Replace {uuid} placeholder if present
     if '{uuid}' in endpoint and hasattr(context, 'stored_uuid'):
         endpoint = endpoint.replace('{uuid}', str(context.stored_uuid))

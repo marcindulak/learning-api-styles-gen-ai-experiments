@@ -7,6 +7,7 @@ from weather.views import (
     CityViewSet,
     CurrentWeatherViewSet,
     WeatherForecastViewSet,
+    ForecastAtomFeed,
     fetch_weather_from_api,
     set_test_mode
 )

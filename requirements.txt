@@ -1,0 +1,15 @@
+beautifulsoup4
+behave
+channels
+channels-redis
+daphne
+Django
+django-behave
+django-filter
+djangorestframework
+djangorestframework-simplejwt
+drf-spectacular
+graphene-django
+lxml
+psycopg2-binary
+websocket-client

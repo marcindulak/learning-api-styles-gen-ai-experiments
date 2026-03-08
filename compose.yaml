@@ -11,6 +11,7 @@ services:
     ports:
       - 127.0.0.1:8000:8000
       - 127.0.0.1:8001:8001
+      - 127.0.0.1:8443:8443
     depends_on:
       - postgres
     environment:
@@ -19,7 +20,9 @@ services:
       # Avoid special characters since this value is not base64 encoded
       - SECRET_KEY=${SECRET_KEY:-VKnroLzyyjvUk316fuyY2vO8jnrP6obbEjH75PGESQpf2Zwu2SJkGUme1cRj67Hz}
       # Enable TLS by setting TLS_ENABLE=1
-      - TLS_ENABLE=0
+      - TLS_ENABLE=1
+      - APP_TLS_CERTS_DIR=/app/tls/certs
+      - APP_TLS_PRICATE_DIR=/app/tls/private
       # Avoid special characters since this value is not base64 encoded
       - WEBHOOK_SECRET=${WEBHOOK_SECRET:-a0tObtQBvNhQjRSbPRZrIkXiooIH2ucIZJeESrRcIFyYOtSV8FKWrAri8djp3CQd}
       - POSTGRES_DB=weather_forecast_service

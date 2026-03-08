@@ -170,3 +170,21 @@ ALTERNATIVES: Considered minimal README with just setup steps (rejected: users b
 OBSERVATIONS: README.md provides executable documentation approach where all commands can be copied and run directly. Commands use docker compose exec pattern consistent with REQUIREMENTS.md examples. API endpoint examples cover authentication, CRUD operations, GraphQL queries, feeds, WebSocket connections, and admin access. Architecture section gives quick overview of project structure without overwhelming detail. Security notes highlight self-signed certificates and default credentials that should be changed in production. The README serves as both quick-start guide and API reference.
 # End of ENTRY 031
 
+# Start of ENTRY 032
+DATE: 2026-03-08 16:07:51
+TITLE: Add Electronic Lab Notebook documenting implementation decisions
+COMMIT: dc6b78af8d2372674d8e086e75515e900664645f
+DECISIONS: Committed ELN.md to version control at user's explicit request. The notebook contains 31 entries documenting implementation decisions, alternatives considered, and observations from the complete 13-feature development process. Each entry follows structured format with DATE, TITLE, COMMIT, DECISIONS, ALTERNATIVES, and OBSERVATIONS sections.
+ALTERNATIVES: Considered keeping ELN.md as local-only file per original BDD prompt instructions (rejected: user explicitly requested committing it, direct user instructions override general guidelines). Considered sanitizing or summarizing entries before committing (rejected: full decision history provides value for project documentation and future reference).
+OBSERVATIONS: The ELN.md file serves as a detailed development log showing the complete implementation journey from feature generation through all 13 features. It documents technical challenges like Docker caching issues, behave step definition conflicts, cross-process testing patterns, and WebSocket signal handling. The structured format with ALTERNATIVES section ensures decision rationale is preserved. Total of 32 entries now documenting the full project lifecycle including README.md creation and this self-referential ELN.md commit.
+# End of ENTRY 032
+
+# Start of ENTRY 033
+DATE: 2026-03-08 16:12:06
+TITLE: Remove duplicate features directory at project root
+COMMIT: 7b133a0f1448c05f62dcf85b15abd3e9b247e4cf
+DECISIONS: Removed duplicate features directory at /vagrant/features/ (project root level). The canonical features directory is /vagrant/app/features/ which maps to /app/features/ inside the container where behave executes. Deleted 13 feature files, environment.py, and 2 step definition files that were out of sync with the actual working directory.
+ALTERNATIVES: Considered keeping both directories in sync (rejected: maintaining duplicate files creates confusion and sync errors). Considered moving features to root and updating container paths (rejected: app/features/ is the established location used throughout the project, changing it would require updating container configuration and break existing patterns).
+OBSERVATIONS: The duplicate at project root had outdated content - missing trailing slashes in URLs for features 004-013, different step wording in feature 005 ("for both" vs simple "and"), and different navigation steps in feature 011. These differences showed the directories had diverged during development. The behave tests run from /app working directory inside the container, so they correctly use /app/features/ (host path /vagrant/app/features/). All 55 scenarios and 214 steps still pass after removing the duplicate. This cleanup eliminates 880 lines of duplicate code and ensures single source of truth for BDD specifications.
+# End of ENTRY 033
+

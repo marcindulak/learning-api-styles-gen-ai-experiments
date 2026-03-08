@@ -2,6 +2,7 @@
 URL patterns for weather API.
 """
 from django.urls import include, path, re_path
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.routers import DefaultRouter
 from weather.views import (
     CityViewSet,
@@ -9,7 +10,9 @@ from weather.views import (
     WeatherForecastViewSet,
     WeatherAlertViewSet,
     ForecastAtomFeed,
+    GitHubWebhookView,
     fetch_weather_from_api,
+    set_environment_variable,
     set_test_mode
 )
 
@@ -41,5 +44,7 @@ urlpatterns = [
     ),
     path('admin/fetch-weather/', fetch_weather_from_api, name='fetch-weather-api'),
     path('test/set-mode/', set_test_mode, name='set-test-mode'),
+    path('test/set-env/', set_environment_variable, name='set-env'),
+    path('webhooks/github/', csrf_exempt(GitHubWebhookView.as_view()), name='github-webhook'),
     path('', include(router.urls)),
 ]

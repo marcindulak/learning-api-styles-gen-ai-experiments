@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import City, CurrentWeather, WeatherAlert, WeatherForecast
+from .models import City, CurrentWeather, WeatherAlert, WeatherForecast, WebhookEvent
 
 
 @admin.register(City)
@@ -28,4 +28,11 @@ class WeatherForecastAdmin(admin.ModelAdmin):
 class WeatherAlertAdmin(admin.ModelAdmin):
     list_display = ['city', 'severity', 'message', 'timestamp']
     list_filter = ['city', 'severity', 'timestamp']
+    readonly_fields = ['timestamp']
+
+
+@admin.register(WebhookEvent)
+class WebhookEventAdmin(admin.ModelAdmin):
+    list_display = ['event_type', 'processed', 'timestamp']
+    list_filter = ['event_type', 'processed', 'timestamp']
     readonly_fields = ['timestamp']

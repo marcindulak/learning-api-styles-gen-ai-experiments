@@ -1,18 +1,24 @@
 """
 Views for weather API endpoints.
 """
+import hashlib
+import hmac
+import json
 import os
 from datetime import datetime
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from weather.models import City, CurrentWeather, WeatherForecast, WeatherAlert
+from django.views import View
+from weather.models import City, CurrentWeather, WeatherForecast, WeatherAlert, WebhookEvent
 from weather.serializers import CitySerializer, CurrentWeatherSerializer, WeatherForecastSerializer, WeatherAlertSerializer
 from weather.weather_api_service import WeatherAPIService
 
@@ -318,3 +324,145 @@ class WeatherAlertViewSet(viewsets.ModelViewSet):
     queryset = WeatherAlert.objects.all()
     serializer_class = WeatherAlertSerializer
     permission_classes = [IsAdminUser]
+
+
+class GitHubWebhookView(View):
+    """
+    GitHub webhook endpoint.
+    Validates webhook signature and logs events.
+    Triggers data refresh for specific events.
+    """
+
+    def _verify_signature(self, payload_body, signature_header):
+        """
+        Verify GitHub webhook signature using HMAC-SHA256.
+        """
+        secret = os.environ.get('GITHUB_WEBHOOK_SECRET', '')
+        if not secret:
+            return True
+
+        if not signature_header:
+            return False
+
+        hash_object = hmac.new(
+            secret.encode('utf-8'),
+            msg=payload_body,
+            digestmod=hashlib.sha256
+        )
+        expected_signature = 'sha256=' + hash_object.hexdigest()
+        return hmac.compare_digest(expected_signature, signature_header)
+
+    def post(self, request):
+        """
+        Handle GitHub webhook POST request.
+        """
+        signature = request.META.get('HTTP_X_HUB_SIGNATURE_256')
+        payload_body = request.body
+
+        if not self._verify_signature(payload_body, signature):
+            return JsonResponse(
+                {'error': 'Invalid signature'},
+                status=401
+            )
+
+        try:
+            payload = json.loads(payload_body)
+        except json.JSONDecodeError:
+            return JsonResponse(
+                {'error': 'Invalid JSON payload'},
+                status=400
+            )
+
+        event_type = request.META.get('HTTP_X_GITHUB_EVENT', 'unknown')
+
+        webhook_event = WebhookEvent.objects.create(
+            event_type=event_type,
+            payload=payload
+        )
+
+        ref = payload.get('ref', '')
+        commits = payload.get('commits', [])
+        should_refresh = 'data-refresh' in ref
+
+        if not should_refresh:
+            for commit in commits:
+                message = commit.get('message', '')
+                if 'data-refresh' in message:
+                    should_refresh = True
+                    break
+
+        if should_refresh:
+            self._refresh_weather_data()
+            webhook_event.processed = True
+            webhook_event.save()
+
+        return JsonResponse(
+            {'message': 'Webhook received', 'event_id': webhook_event.id},
+            status=200
+        )
+
+    def _refresh_weather_data(self):
+        """
+        Refresh weather data for all cities using the third-party API.
+        """
+        weather_service = WeatherAPIService()
+        cities = City.objects.all()
+
+        for city in cities:
+            current_weather = weather_service.fetch_current_weather(
+                city.name,
+                city.latitude,
+                city.longitude
+            )
+
+            if current_weather:
+                CurrentWeather.objects.create(
+                    city=city,
+                    temperature=current_weather['temperature'],
+                    humidity=current_weather['humidity'],
+                    pressure=current_weather['pressure'],
+                    wind_speed=current_weather['wind_speed']
+                )
+
+            forecast_data = weather_service.fetch_forecast(
+                city.name,
+                city.latitude,
+                city.longitude,
+                days=7
+            )
+
+            if forecast_data:
+                for forecast in forecast_data:
+                    WeatherForecast.objects.update_or_create(
+                        city=city,
+                        forecast_date=forecast['forecast_date'],
+                        defaults={
+                            'temperature': forecast['temperature'],
+                            'humidity': forecast['humidity'],
+                            'pressure': forecast['pressure'],
+                            'wind_speed': forecast['wind_speed']
+                        }
+                    )
+
+
+@api_view(['POST'])
+@permission_classes([])
+def set_environment_variable(request):
+    """
+    Test endpoint to set environment variables dynamically.
+    Expected POST data: {"key": "VARIABLE_NAME", "value": "variable_value"}
+    """
+    key = request.data.get('key')
+    value = request.data.get('value', '')
+
+    if not key:
+        return Response(
+            {'error': 'key is required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    os.environ[key] = value
+    return Response(
+        {'message': f'Environment variable {key} set'},
+        status=status.HTTP_200_OK
+    )

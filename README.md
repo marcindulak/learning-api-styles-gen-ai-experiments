@@ -120,13 +120,109 @@ Note that the setup includes at least 3 known errors, and they are left on purpo
 
 | Date | Outcome | PR | Tool / Version | Agent | Top model | Knowledge cutoff | Duration | Cost | AGENTS.md / rules | Human guidance | MCP | Skills |
 |------|---------|----|----------------|-------|-------|------------------|----------|------|-----------|----------------|-----|--------|
-| 2026-03-02 |poor | [25](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/25) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [452f044](https://github.com/marcindulak/ralph-wiggum-bdd/commit/452f0446283b6f52d88b247aefb79490ba7809e6) | 2.1.39 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 6 hours clock time (about 5 hours agent time) | $8 USD (about 40% of Pro weekly plan) | Yes | Yes | No | No
+| 2026-03-08 |poor | [29](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/29) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [452f044](https://github.com/marcindulak/ralph-wiggum-bdd/commit/452f0446283b6f52d88b247aefb79490ba7809e6) | 2.1.39 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 7 hours clock time (about 4 hours agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | Yes | No | No
+| 2026-03-02 |poor | [25](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/25) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [452f044](https://github.com/marcindulak/ralph-wiggum-bdd/commit/452f0446283b6f52d88b247aefb79490ba7809e6) | 2.1.39 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 6 hours clock time (about 5 hours agent time) | $8 USD (about 30% of Pro weekly plan) | Yes | Yes | No | No
 | 2026-03-01 |poor | [24](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/24) | None / None | 2.1.44 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 2 hours clock time (about 2 hours agent time) | $3 USD (about 15% of Pro weekly plan) | Yes | Yes | No | No
 | 2026-02-28 |poor | [22](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/22) | [ralph-orchestrator](https://github.com/mikeyobrien/ralph-orchestrator) / [2.6.0](https://github.com/mikeyobrien/ralph-orchestrator/releases/tag/v2.6.0) | 2.1.44 (Claude Code) | claude-opus-4-6 | Aug 2025 "Reliable knowledge cutoff", and Jan 2026 "Training data cutoff" | About 2 hours clock time (about 1 hour agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | Yes | No | Yes
 | 2026-02-20 |poor | [19](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/19) | [pilot-shell](https://github.com/maxritter/pilot-shell) / [6.9.2](https://github.com/maxritter/pilot-shell/releases/tag/v6.9.2) | 2.1.39 (Claude Code) | claude-opus-4-6 | Aug 2025 "Reliable knowledge cutoff", and Jan 2026 "Training data cutoff" | About 11 hours clock time (about 2 hours agent time) | $10 USD (about 40% of Pro weekly plan) | Yes | Yes | Yes | Yes
 | 2026-02-06 |poor/fair | [14](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/14) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [d469a02](https://github.com/marcindulak/ralph-wiggum-bdd/commit/d469a020c72646590f156dfaa39f82f677316afd) | 2.1.17 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 7 hours clock time (about 3 hours agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | No | No | No
 | 2026-01-31 |poor | [8](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/8) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [542a1ca](https://github.com/marcindulak/ralph-wiggum-bdd/commit/542a1ca9640cf1e59eb31eaaa51be95a85fb84bf) | 2.1.17 (Claude Code) | claude-opus-4-5-20251101 | May 2025 "Reliable knowledge cutoff", and Aug 2025 "Training data cutoff" | About 12 hours clock time (about 5 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | No | No | No
 | 2026-01-18 |poor | [1](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/1) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / Experimental | 2.1.9 (Claude Code) | claude-haiku-4-5-20251001 | Feb 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 11 hours clock time (about 7 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | Yes | No | No
+
+## 2026-03-08
+
+Outcome: poor
+
+```
+tokei --types='Python,Gherkin (Cucumber)' app/
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Gherkin (Cucumber)       13          407          352            0           55
+ Python                   39         3685         2988           99          598
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    52         4092         3340           99          653
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ruff check app/ --select C90 --output-format=concise
+All checks passed!
+```
+
+The code is organized by layer in a single `weather/` app under `app/` directory, with standard Django `config/` for settings.
+GraphQL and WebSocket are in separate files (graphql_views.py, schema.py, and consumers.py), but Atom feeds, REST, and Webhooks are mixed in views.py, making it harder to study those styles in isolation.
+Data access is separated via weather_api_service.py module, but presentation logic is mixed in views.
+
+```
+tree -L 2 app/
+app/
+├── config
+│   ├── asgi.py
+│   ├── __init__.py
+│   ├── postgres.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── docs
+├── features
+│   ├── 001.feature
+│   ├── 002.feature
+│   ├── 003.feature
+│   ├── 004.feature
+│   ├── 005.feature
+│   ├── 006.feature
+│   ├── 007.feature
+│   ├── 008.feature
+│   ├── 009.feature
+│   ├── 010.feature
+│   ├── 011.feature
+│   ├── 012.feature
+│   ├── 013.feature
+│   ├── environment.py
+│   └── steps
+├── manage.py
+├── scripts
+│   ├── healthcheck.sh
+│   └── startup.sh
+├── tls
+│   ├── certs
+│   └── private
+└── weather
+    ├── admin.py
+    ├── apps.py
+    ├── consumers.py
+    ├── graphql_views.py
+    ├── __init__.py
+    ├── migrations
+    ├── models.py
+    ├── routing.py
+    ├── schema.py
+    ├── serializers.py
+    ├── signals.py
+    ├── urls.py
+    ├── views.py
+    └── weather_api_service.py
+```
+
+All functional and non-functional requirements were covered by tests.
+
+The agent correctly discovered that Docker commands were blocked, and asked human to correct the permissions.
+The agent did not appear to be learning from the provided implementation notes (ELN ENTRY 003 in REQUIREMENTS.md), and run into the usual `django-app  | /bin/sh: 1: app/scripts/startup.sh: not found` problem.
+
+The agent used unversioned dependencies in requirements.txt, which is the right initial choice for an educational project.
+On the other hand, the agent selected the unmaintained [graphene-django](https://github.com/graphql-python/graphene-django) library.
+This choice may have been influenced by the incorrect choice documented in the provided implementation notes (ELN ENTRY 006 in REQUIREMENTS.md), or selected spontaneously by the agent.
+
+The agent did not follow the choice of `api.openweathermap.org` documented in the provided implementation notes (ELN ENTRY 007 in REQUIREMENTS.md).
+
+Behave tests failed using the command specified in REQUIREMENTS.md, but passed when run using the workaround command provided by the agent.
+The agent followed the choice (ELN ENTRY 002 in REQUIREMENTS.md) of not running Behave tests as requested in the main REQUIREMENTS.md text by incorrectly assuming the [issue](https://github.com/behave/behave-django/issues/166) is also present in newer Behave releases.
+
+The agent mid-implementation decided to placed Gherkin files under `app/features` instead of `features`, and had to be reminded be the human to remove the duplicates.
+
+See the screen recording of the session.
+The video doesn't represent the clock time, the long periods when there are no changes on the terminal are trimmed away.
+
+[![Watch Video 2026-03-08 Part1](images/2026-03-08-01.png)](https://www.youtube.com/watch?v=ka9q4k09BCs)
 
 ## 2026-03-02
 
@@ -187,7 +283,8 @@ The agent made such libraries choices despite `.claude/CLAUDE.md` saying `You MU
 The agent got stuck a single time, was not making progress for 30 minutes, and not consuming any tokens as verified on https://claude.ai/settings/usage.
 A single human intervention by pressing `Ctrl+C` in the case of non-interactive run was needed to unblock the agent, however no human guidance was needed.
 
-The agent chose `https://api.openweathermap.org/data/2.5` as the source of weather data, but this service requires an API key, so the agent silently mocked the data during tests, without verifying the functionality of third-party interaction.
+The agent chose `https://api.openweathermap.org/data/2.5` as the source of weather data (in `src/weather/services.py`), but this service requires an API key, so the agent silently mocked the data during tests, without verifying the functionality of third-party interaction.
+The agent documented the choice of `api.openweathermap.org`.
 
 Behave tests failed using the command specified in REQUIREMENTS.md, but passed when run using the workaround command provided by the agent.
 The problem with running tests as specified is a known [issue](https://github.com/behave/behave-django/issues/166), and appeared due to the agent choosing and old version of [behave-django 1.5.0](https://github.com/behave/behave-django/releases/tag/1.5.0) from 2024.

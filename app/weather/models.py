@@ -1,12 +1,13 @@
 """
 Models for weather data.
 """
+import uuid
 from django.db import models
 
 
 class City(models.Model):
     """City model for storing city information."""
-    uuid = models.UUIDField(primary_key=True, default=models.UUIDField().default, editable=False)
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200)
     country = models.CharField(max_length=200)
     region = models.CharField(max_length=200, blank=True)

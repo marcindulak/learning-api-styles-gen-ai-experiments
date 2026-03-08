@@ -1,25 +1,28 @@
 """
-Behave environment setup.
+Behave environment configuration for Weather Forecast Service tests.
 """
 import os
 import django
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.postgres')
-
+# Setup Django before importing models
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
+
+from weather.models import City
 
 
 def before_scenario(context, scenario):
-    """Clean up before each scenario."""
-    from django.contrib.auth import get_user_model
-
-    User = get_user_model()
-    # Keep admin user, remove others
-    User.objects.exclude(username='admin').delete()
-
-    # Clean up City data if the table exists
+    """Clean up test data before each scenario."""
     try:
-        from weather.models import City
         City.objects.all().delete()
+    except Exception:
+        # City table might not exist yet in early feature implementations
+        pass
+
+    # Clean up non-admin users (preserve admin for testing)
+    try:
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        User.objects.filter(is_superuser=False).delete()
     except Exception:
         pass

@@ -11,7 +11,7 @@ The assessment of the experiment outcome is roughly based on the need for human 
 See examples of the outcome assessment below:
 
 - **poor**: interactive human guidance needed before or during implementation, some requirements are not implemented or tested, poor project or code structure
-- **fair**: no interactive human guidance needed before or during implementation, some requirements are not implemented or tested, poor projector code structure
+- **fair**: no interactive human guidance needed before or during implementation, some requirements are not implemented or tested, poor or good project or code structure
 - **good**: no interactive human guidance needed before or during implementation, all requirements implemented and tested, good project and code structure
 
 Since this is an educational project about API styles, each API style (Atom feed, GraphQL, REST, Webhooks, WebSocket) should be in its own file, allowing a reader to study one style without reading unrelated code.

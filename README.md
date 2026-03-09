@@ -1,7 +1,7 @@
 A set of experiments to determine whether generative AI, based on vague [REQUIREMENTS.md](REQUIREMENTS.md), is capable of generating Django code for the [Learning API Styles](https://github.com/ldynia/learning-api-styles) book.
 
 The source code for book was made public on GitHub on [July 17, 2025](https://github.com/ldynia/learning-api-styles/commit/35c31d369e6bef548eaf8dff7407969ef63efb21).
-The initial implementation (design, code, and tests) took a human developer about 200 hours.
+The initial implementation (design, code, and tests) took a human developer about 200 hours, with the help of chat-based GitHub Copilot in 2023.
 
 The assessment of the experiment outcome is subjective.
 Note that due to the nondeterminism of the agents, it's infeasible to draw conclusions about the influence of the framework, model, or other factors on the quality of the generated code.

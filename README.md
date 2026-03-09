@@ -208,7 +208,7 @@ All functional and non-functional requirements were covered by tests.
 The agent correctly discovered that Docker commands were blocked, and asked human to correct the permissions.
 The agent did not appear to be learning from the provided implementation notes (ELN ENTRY 003 in REQUIREMENTS.md), and run into the usual `django-app  | /bin/sh: 1: app/scripts/startup.sh: not found` problem.
 
-The agent used unversioned dependencies in requirements.txt, which is the right initial choice for an educational project.
+The agent used unversioned dependencies in requirements.txt, which is the right initial choice for an educational project, but documented "Django 5.1" in README.md.
 On the other hand, the agent selected the unmaintained [graphene-django](https://github.com/graphql-python/graphene-django) library.
 This choice may have been influenced by the incorrect choice documented in the provided implementation notes (ELN ENTRY 006 in REQUIREMENTS.md), or selected spontaneously by the agent.
 

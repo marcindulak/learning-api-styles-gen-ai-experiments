@@ -204,6 +204,7 @@ app/
 ```
 
 All functional and non-functional requirements were covered by tests.
+However, the app container did not start with `TLS_ENABLE=1` in `compose.yaml`, and the agent left the project in a non-runnable state.
 
 The agent correctly discovered that Docker commands were blocked, and asked human to correct the permissions.
 The agent did not appear to be learning from the provided implementation notes (ELN ENTRY 003 in REQUIREMENTS.md), and run into the usual `django-app  | /bin/sh: 1: app/scripts/startup.sh: not found` problem.

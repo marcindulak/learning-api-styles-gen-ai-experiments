@@ -64,6 +64,7 @@ Vagrant.configure(2) do |config|
     machine.vm.provision :shell, :inline => "echo 'alias cp=\"cp -i\"' >> ~vagrant/.bashrc"
     machine.vm.provision :shell, :inline => "echo 'alias mv=\"mv -i\"' >> ~vagrant/.bashrc"
     machine.vm.provision :shell, :inline => "echo 'alias rm=\"rm -i\"' >> ~vagrant/.bashrc"
+    machine.vm.provision :shell, :inline => "echo 'export CLAUDE_CODE_DISABLE_AUTO_MEMORY=1' >> ~vagrant/.bashrc"
     machine.vm.provision :shell, :inline => "echo 'export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1' >> ~vagrant/.bashrc"
     machine.vm.provision :shell, :inline => "echo 'export DISABLE_AUTOUPDATER=1' >> ~vagrant/.bashrc"
     machine.vm.provision :shell, :inline => "echo 'export CLAUDE_CODE_HIDE_ACCOUNT_INFO=1' >> ~vagrant/.bashrc"

@@ -1,6 +1,6 @@
 import uuid
+from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import User
 from django.utils import timezone
 
 
@@ -84,7 +84,7 @@ class WeatherAlert(models.Model):
     issued_at = models.DateTimeField(default=timezone.now)
     expires_at = models.DateTimeField(null=True, blank=True)
     created_by = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, related_name="alerts"
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="alerts"
     )
 
     class Meta:

@@ -10,5 +10,5 @@ feedgen==0.9.0
 httpx==0.27.2
 behave==1.2.6
 behave-django==1.4.0
-psycopg2-binary==2.9.9
+psycopg2-binary==2.9.10
 redis==5.0.8

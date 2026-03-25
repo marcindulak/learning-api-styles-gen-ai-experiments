@@ -1,6 +1,6 @@
 from typing import List, Optional
 import strawberry
-import strawberry_django
+from strawberry import django as strawberry_django
 from .models import City, WeatherRecord, WeatherForecast
 
 

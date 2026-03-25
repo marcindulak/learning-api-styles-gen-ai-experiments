@@ -20,7 +20,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "channels",
-    "strawberry_django",
+    "strawberry.django",
     "drf_spectacular",
     "weather",
 ]

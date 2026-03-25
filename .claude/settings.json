@@ -13,7 +13,7 @@
     "XDG_CACHE_HOME": ".cache",
     "npm_config_cache": ".cache/npm"
   },
-  "model": "haiku",
+  "model": "sonnet",
   "permissions": {
     "allow": [
       "Bash(behave *)",

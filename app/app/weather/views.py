@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import json
+import logging
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -17,6 +18,8 @@ from .serializers import (
     CitySerializer, WeatherRecordSerializer,
     WeatherForecastSerializer, WeatherAlertSerializer,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class CityViewSet(viewsets.ModelViewSet):
@@ -57,8 +60,12 @@ class CityViewSet(viewsets.ModelViewSet):
         try:
             count = fetch_and_store_forecast(city)
             return Response({"imported": count})
-        except Exception as exc:
-            return Response({"error": str(exc)}, status=status.HTTP_502_BAD_GATEWAY)
+        except Exception:
+            logger.exception("Failed to import forecast for city %s", city.uuid)
+            return Response(
+                {"error": "Failed to import forecast"},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
 
 
 class WeatherRecordViewSet(viewsets.ModelViewSet):
@@ -92,22 +99,24 @@ class WeatherAlertViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         alert = serializer.save(created_by=self.request.user)
-        # Broadcast via WebSocket
-        from channels.layers import get_channel_layer
-        from asgiref.sync import async_to_sync
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f"alerts_{alert.city.uuid}",
-            {
-                "type": "alert.message",
-                "uuid": str(alert.uuid),
-                "city": alert.city.name,
-                "severity": alert.severity,
-                "title": alert.title,
-                "message": alert.message,
-                "issued_at": alert.issued_at.isoformat(),
-            },
-        )
+        try:
+            from channels.layers import get_channel_layer
+            from asgiref.sync import async_to_sync
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f"alerts_{alert.city.uuid}",
+                {
+                    "type": "alert.message",
+                    "uuid": str(alert.uuid),
+                    "city": alert.city.name,
+                    "severity": alert.severity,
+                    "title": alert.title,
+                    "message": alert.message,
+                    "issued_at": alert.issued_at.isoformat(),
+                },
+            )
+        except Exception:
+            logger.exception("Failed to broadcast alert %s via WebSocket", alert.uuid)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -127,5 +136,5 @@ class GitHubWebhookView(View):
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-        print(f"GitHub webhook received: event={event}, action={payload.get('action', 'n/a')}")
+        logger.info("GitHub webhook received: event=%s, action=%s", event, payload.get("action", "n/a"))
         return JsonResponse({"received": True, "event": event})

@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from rest_framework import serializers
 from .models import City, WeatherRecord, WeatherForecast, WeatherAlert
 
@@ -41,7 +42,6 @@ class WeatherForecastSerializer(serializers.ModelSerializer):
         read_only_fields = ["uuid", "city_name", "created_at", "updated_at"]
 
     def validate(self, data):
-        from datetime import date, timedelta
         if "forecast_date" in data:
             max_date = date.today() + timedelta(days=WeatherForecast.max_days())
             if data["forecast_date"] > max_date:

@@ -12,21 +12,21 @@ services:
       - 127.0.0.1:8000:8000
       - 127.0.0.1:8001:8001
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       - DEBUG=False
       - DJANGO_SETTINGS_MODULE=config.postgres
-      # Avoid special characters since this value is not base64 encoded
       - SECRET_KEY=${SECRET_KEY:-VKnroLzyyjvUk316fuyY2vO8jnrP6obbEjH75PGESQpf2Zwu2SJkGUme1cRj67Hz}
-      # Enable TLS by setting TLS_ENABLE=1
       - TLS_ENABLE=0
-      # Avoid special characters since this value is not base64 encoded
       - WEBHOOK_SECRET=${WEBHOOK_SECRET:-a0tObtQBvNhQjRSbPRZrIkXiooIH2ucIZJeESrRcIFyYOtSV8FKWrAri8djp3CQd}
       - POSTGRES_DB=weather_forecast_service
       - POSTGRES_HOST=postgres
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - POSTGRES_USER=postgres
+      - REDIS_HOST=redis
     volumes:
        - ./app:/app
        - ./docs:/app/docs
@@ -45,6 +45,18 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7-alpine
+    container_name: django-redis
+    hostname: django-redis
+    networks:
+      - django_internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 30

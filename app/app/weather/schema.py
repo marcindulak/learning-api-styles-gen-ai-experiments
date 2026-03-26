@@ -1,12 +1,12 @@
 from typing import List, Optional
+from datetime import datetime, date
 import strawberry
-from strawberry import django as strawberry_django
 from .models import City, WeatherRecord, WeatherForecast
 
 
-@strawberry_django.type(City)
+@strawberry.type
 class CityType:
-    uuid: strawberry.ID
+    uuid: str
     name: str
     country: str
     region: str
@@ -15,10 +15,10 @@ class CityType:
     longitude: float
 
 
-@strawberry_django.type(WeatherRecord)
+@strawberry.type
 class WeatherRecordType:
-    uuid: strawberry.ID
-    recorded_at: str
+    uuid: str
+    recorded_at: datetime
     temperature_celsius: float
     humidity_percent: float
     wind_speed_kmh: float
@@ -26,10 +26,10 @@ class WeatherRecordType:
     description: str
 
 
-@strawberry_django.type(WeatherForecast)
+@strawberry.type
 class WeatherForecastType:
-    uuid: strawberry.ID
-    forecast_date: str
+    uuid: str
+    forecast_date: date
     temperature_max_celsius: float
     temperature_min_celsius: float
     precipitation_mm: float
@@ -41,22 +41,64 @@ class WeatherForecastType:
 class Query:
     @strawberry.field
     def cities(self) -> List[CityType]:
-        return list(City.objects.all())
+        return [
+            CityType(
+                uuid=str(c.uuid),
+                name=c.name,
+                country=c.country,
+                region=c.region,
+                timezone=c.timezone,
+                latitude=c.latitude,
+                longitude=c.longitude,
+            )
+            for c in City.objects.all()
+        ]
 
     @strawberry.field
-    def city(self, uuid: strawberry.ID) -> Optional[CityType]:
+    def city(self, uuid: str) -> Optional[CityType]:
         try:
-            return City.objects.get(uuid=uuid)
+            c = City.objects.get(uuid=uuid)
+            return CityType(
+                uuid=str(c.uuid),
+                name=c.name,
+                country=c.country,
+                region=c.region,
+                timezone=c.timezone,
+                latitude=c.latitude,
+                longitude=c.longitude,
+            )
         except City.DoesNotExist:
             return None
 
     @strawberry.field
-    def weather_records(self, city_uuid: strawberry.ID) -> List[WeatherRecordType]:
-        return list(WeatherRecord.objects.filter(city__uuid=city_uuid))
+    def weather_records(self, city_uuid: str) -> List[WeatherRecordType]:
+        return [
+            WeatherRecordType(
+                uuid=str(r.uuid),
+                recorded_at=r.recorded_at,
+                temperature_celsius=r.temperature_celsius,
+                humidity_percent=r.humidity_percent,
+                wind_speed_kmh=r.wind_speed_kmh,
+                precipitation_mm=r.precipitation_mm,
+                description=r.description,
+            )
+            for r in WeatherRecord.objects.filter(city__uuid=city_uuid)
+        ]
 
     @strawberry.field
-    def forecasts(self, city_uuid: strawberry.ID) -> List[WeatherForecastType]:
-        return list(WeatherForecast.objects.filter(city__uuid=city_uuid))
+    def forecasts(self, city_uuid: str) -> List[WeatherForecastType]:
+        return [
+            WeatherForecastType(
+                uuid=str(f.uuid),
+                forecast_date=f.forecast_date,
+                temperature_max_celsius=f.temperature_max_celsius,
+                temperature_min_celsius=f.temperature_min_celsius,
+                precipitation_mm=f.precipitation_mm,
+                wind_speed_kmh=f.wind_speed_kmh,
+                description=f.description,
+            )
+            for f in WeatherForecast.objects.filter(city__uuid=city_uuid)
+        ]
 
 
 schema = strawberry.Schema(query=Query)

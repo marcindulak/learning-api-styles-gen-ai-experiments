@@ -102,9 +102,10 @@ def step_city_name(context, name):
 
 @when("I query GraphQL for all cities")
 def step_graphql_cities(context):
+    import json
     context.response = context.client.post(
         "/graphql/",
-        {"query": "{ cities { uuid name country } }"},
+        data=json.dumps({"query": "{ cities { uuid name country } }"}),
         content_type="application/json",
     )
 

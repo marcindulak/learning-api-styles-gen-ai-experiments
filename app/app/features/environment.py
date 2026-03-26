@@ -1,1 +1,2 @@
-from behave_django import auto_use_db  # noqa: F401
+# behave-django handles database setup automatically via monkey-patching.
+# No imports needed here.

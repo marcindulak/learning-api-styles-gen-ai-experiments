@@ -1,0 +1,80 @@
+asyncapi: "2.6.0"
+info:
+  title: Weather Forecast Service - WebSocket API
+  version: "1.0.0"
+  description: Real-time weather alerts via WebSocket
+
+servers:
+  local:
+    url: ws://localhost:8000
+    protocol: ws
+
+channels:
+  /ws/alerts/{cityUuid}/:
+    description: Subscribe to weather alerts for a specific city
+    parameters:
+      cityUuid:
+        description: UUID of the city to subscribe to
+        schema:
+          type: string
+          format: uuid
+    subscribe:
+      summary: Receive weather alerts
+      message:
+        oneOf:
+          - $ref: "#/components/messages/Connected"
+          - $ref: "#/components/messages/Alert"
+          - $ref: "#/components/messages/Pong"
+    publish:
+      summary: Send ping to keep connection alive
+      message:
+        $ref: "#/components/messages/Ping"
+
+components:
+  messages:
+    Connected:
+      payload:
+        type: object
+        properties:
+          type:
+            type: string
+            const: connected
+          city_uuid:
+            type: string
+          message:
+            type: string
+    Alert:
+      payload:
+        type: object
+        properties:
+          type:
+            type: string
+            const: alert
+          uuid:
+            type: string
+          city:
+            type: string
+          severity:
+            type: string
+            enum: [info, warning, severe, extreme]
+          title:
+            type: string
+          message:
+            type: string
+          issued_at:
+            type: string
+            format: date-time
+    Ping:
+      payload:
+        type: object
+        properties:
+          type:
+            type: string
+            const: ping
+    Pong:
+      payload:
+        type: object
+        properties:
+          type:
+            type: string
+            const: pong

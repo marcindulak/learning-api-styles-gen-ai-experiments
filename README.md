@@ -121,6 +121,7 @@ Note that the setup includes at least 4 known errors, and they are left on purpo
 
 | Date | Outcome | PR | Tool / Version | Agent | Top model | Knowledge cutoff | Duration | Cost | AGENTS.md / rules | Human guidance | MCP | Skills |
 |------|---------|----|----------------|-------|-------|------------------|----------|------|-----------|----------------|-----|--------|
+| 2026-03-25 |poor/fair | [37](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/37) | [superpowers](https://github.com/obra/superpowers) / [5.0.6](https://github.com/obra/superpowers/releases/tag/v5.0.6) | 2.1.58 (Claude Code) | claude-sonnet-4-6 | Aug 2025 "Reliable knowledge cutoff", and Jan 2026 "Training data cutoff" | About 4 hours clock time (about 2 hours agent time) | $8 USD (about 30% of Pro weekly plan) | No | No | No | Yes
 | 2026-03-08 |poor | [29](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/29) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [452f044](https://github.com/marcindulak/ralph-wiggum-bdd/commit/452f0446283b6f52d88b247aefb79490ba7809e6) | 2.1.39 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 7 hours clock time (about 4 hours agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | Yes | No | No
 | 2026-03-02 |poor | [25](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/25) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [452f044](https://github.com/marcindulak/ralph-wiggum-bdd/commit/452f0446283b6f52d88b247aefb79490ba7809e6) | 2.1.39 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 6 hours clock time (about 5 hours agent time) | $8 USD (about 30% of Pro weekly plan) | Yes | Yes | No | No
 | 2026-03-01 |poor | [24](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/24) | None / None | 2.1.44 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 2 hours clock time (about 2 hours agent time) | $3 USD (about 15% of Pro weekly plan) | Yes | Yes | No | No
@@ -129,6 +130,91 @@ Note that the setup includes at least 4 known errors, and they are left on purpo
 | 2026-02-06 |poor/fair | [14](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/14) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [d469a02](https://github.com/marcindulak/ralph-wiggum-bdd/commit/d469a020c72646590f156dfaa39f82f677316afd) | 2.1.17 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 7 hours clock time (about 3 hours agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | No | No | No
 | 2026-01-31 |poor | [8](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/8) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [542a1ca](https://github.com/marcindulak/ralph-wiggum-bdd/commit/542a1ca9640cf1e59eb31eaaa51be95a85fb84bf) | 2.1.17 (Claude Code) | claude-opus-4-5-20251101 | May 2025 "Reliable knowledge cutoff", and Aug 2025 "Training data cutoff" | About 12 hours clock time (about 5 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | No | No | No
 | 2026-01-18 |poor | [1](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/1) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / Experimental | 2.1.9 (Claude Code) | claude-haiku-4-5-20251001 | Feb 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 11 hours clock time (about 7 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | Yes | No | No
+
+## 2026-03-25
+
+Outcome: poor, almost fair due to the small amount of generated code
+
+```
+tokei --types='Python,Gherkin (Cucumber)' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Gherkin (Cucumber)        1           26           22            0            4
+ Python                   27         1135          952           12          171
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    28         1161          974           12          175
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ruff check . --select C90 --output-format=concise
+All checks passed!
+```
+
+The code is organized by layer in a single `weather/` app under `app/` directory, with standard Django `config/` for settings.
+Atom feed (feeds.py), GraphQL (schema.py), and WebSocket (consumers.py) each have their own file, following Django conventions.
+However, REST viewsets and the GitHub Webhook handler are both in views.py, making it harder to study those styles in isolation.
+The feed implementation uses Django's syndication framework but omits `feed_type = Atom1Feed`, producing RSS 2.0 instead of Atom 1.0.
+There are almost no comments in the code.
+
+```
+tree -L 4 app/
+app
+└── app
+    ├── config
+    │   ├── __init__.py
+    │   ├── asgi.py
+    │   ├── postgres.py
+    │   ├── settings.py
+    │   └── urls.py
+    ├── features
+    │   ├── cities.feature
+    │   ├── environment.py
+    │   └── steps
+    │       ├── __init__.py
+    │       └── steps.py
+    ├── manage.py
+    ├── scripts
+    │   ├── healthcheck.sh
+    │   └── startup.sh
+    └── weather
+        ├── __init__.py
+        ├── admin.py
+        ├── apps.py
+        ├── consumers.py
+        ├── feeds.py
+        ├── management
+        │   ├── __init__.py
+        │   └── commands
+        ├── migrations
+        │   ├── 0001_initial.py
+        │   └── __init__.py
+        ├── models.py
+        ├── permissions.py
+        ├── schema.py
+        ├── serializers.py
+        ├── services.py
+        ├── urls.py
+        ├── urls_health.py
+        └── views.py
+```
+
+The test coverage is small, only a single feature file with scenarios covering the Cities REST endpoint and a GraphQL query.
+The Atom feed, WebSocket, and Webhook have no scenarios.
+The app container does not start with `TLS_ENABLE=1` in `compose.yaml`.
+
+The agent did not require interactive human guidance during implementation, apart from a single "You decide" instruction, and accepting other default values suggested by the agent.
+
+The agent correctly discovered that Docker commands were blocked, and asked human to correct the permissions.
+
+The agent selected [strawberry-graphql](https://github.com/strawberry-graphql/strawberry), an actively maintained GraphQL library, and used [Open-Meteo](https://open-meteo.com/) for weather data, which requires no API key.
+On the other hand, the agent decided to use end-of-life libraries (see [obra/superpowers/issues/937](https://github.com/obra/superpowers/issues/937)), like [Django 5.1.7](https://github.com/django/django/releases/tag/5.1.7) (2025), [Daphne](https://github.com/django/daphne/releases/tag/4.1.2) (2024), [redis-py 5.0.8](https://github.com/redis/redis-py/releases/tag/v5.0.8) (2024), or [behave-django 1.4.0](https://github.com/behave/behave-django/releases/tag/1.4.0) (2020).
+
+Behave tests failed using the command specified in REQUIREMENTS.md, but passed when run using the workaround command provided by the agent.
+
+See the screen recording of the session.
+The video doesn't represent the clock time, the long periods when there are no changes on the terminal are trimmed away.
+
+[![Watch Video 2026-03-25 Part1](images/2026-03-25-01.png)](https://www.youtube.com/watch?v=4zKVRldhUdc)
 
 ## 2026-03-08
 
@@ -205,7 +291,8 @@ app/
 ```
 
 All functional and non-functional requirements were covered by tests.
-However, the app container did not start with `TLS_ENABLE=1` in `compose.yaml`, and the agent left the project in a non-runnable state.
+However, the app container did not start with `TLS_ENABLE=1` in `compose.yaml`.
+The agent used that setting and therefore left the project in a non-runnable state.
 
 The agent correctly discovered that Docker commands were blocked, and asked human to correct the permissions.
 The agent did not appear to be learning from the provided implementation notes (ELN ENTRY 003 in REQUIREMENTS.md), and run into the usual `django-app  | /bin/sh: 1: app/scripts/startup.sh: not found` problem.
@@ -277,6 +364,7 @@ src/
 ```
 
 All functional and non-functional requirements were covered by tests.
+The agent removed `TLS_ENABLE=1` setting from `compose.yaml`, but the TLS implementation works on `https://127.0.0.1:8443`.
 
 The agent correctly discovered that Docker commands were blocked, and asked human to correct the permissions.
 On the other hand, the agent decided to use end-of-life libraries, like [Django 5.1.5](https://github.com/django/django/releases/tag/5.1.5) (2025), [graphene-django](https://github.com/graphql-python/graphene-django/releases/tag/v3.2.2) (2024), or unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312).
@@ -318,7 +406,7 @@ All checks passed!
 The code is organized by layer in a single `weather/` app, with each API style in its own file (consumers.py for WebSocket, feeds.py for Atom, schema.py for GraphQL, webhooks.py for Webhooks, views.py for REST).
 This follows Django conventions and allows studying each API style independently.
 Data generation is separated into its own module, but data access and presentation are mixed in views.
-There is limited test coverage.
+There are almost no comments in the code.
 
 ```
 tree -L 2 app/
@@ -360,6 +448,9 @@ app/
     ├── weather_service.py
     └── webhooks.py
 ```
+
+There is a limited test coverage.
+The app container does not start with `TLS_ENABLE=1` in `compose.yaml`.
 
 The agent behaved hesitantly, it stopped several times to ask questions or report the current status without claiming that the implementation was complete.
 Had to be invited to continue work by the human saying "Do you consider implementation is completed?" or "You need to implement REQUIREMENTS.md".
@@ -459,6 +550,7 @@ app/
 ```
 
 The agent incorrectly claimed all requirements are implemented, without running tests in Docker.
+The app container starts with `TLS_ENABLE=1` in `compose.yaml`, but is slow to respond and eventually fails on HTTPS requests.
 
 The agent correctly discovered that Docker commands were blocked.
 However, it skipped running tests in Docker, claiming that implementation is done, and had to be explicitly reminded about it by the human by starting a new iteration.
@@ -542,6 +634,7 @@ app/
 ```
 
 The agent incorrectly claimed all requirements are implemented, without running tests in Docker.
+The app container starts with `TLS_ENABLE=1` in `compose.yaml`, but is slow to respond and eventually fails on HTTPS requests.
 
 The agent correctly discovered that Docker commands were blocked.
 However, it skipped running tests in Docker, claiming that "Docker build verification will happen in the verification phase" ([see video](https://www.youtube.com/watch?v=tFff1v84kKY#t=24m02s)), but has not run these tests, and had to be explicitly reminded about this by the human ([see video](https://www.youtube.com/watch?v=tFff1v84kKY#t=56m30s)).
@@ -613,6 +706,7 @@ app/
 
 The agent incorrectly claimed all features are implemented, and only admitted gap (AsyncAPI Spec) when questioned by the human.
 On the other hand, all functional and non-functional requirements were covered by tests.
+The app container does not start with `TLS_ENABLE=1` in `compose.yaml`.
 
 The agent correctly discovered that Docker commands were blocked, and asked human to correct the permissions.
 On the other hand, the agent decided to use end-of-life libraries, like [Django 5.1.5](https://github.com/django/django/releases/tag/5.1.5) (2025), [graphene-django](https://github.com/graphql-python/graphene-django/releases/tag/v3.2.2) (2024), or unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) or [django-sslserver](https://pypi.org/project/django-sslserver/0.22/) (2019) libraries.
@@ -688,6 +782,7 @@ src/
 
 The agent incorrectly claimed all features are implemented, and only admitted gaps when questioned by the human.
 The non-functional requirements were not covered by tests, and TLS, OpenAPI Spec, AsyncAPI Spec requirements were skipped.
+The app container starts with `TLS_ENABLE=1` in `compose.yaml`, but is slow to respond and eventually fails on HTTPS requests.
 
 The agent correctly discovered that Docker commands were blocked, and correctly refused to mark the features as complete without running tests.
 On the other hand, the agent decided to use end-of-life libraries, like [Django 5.0.1](https://docs.djangoproject.com/en/6.0/releases/5.0.1/) (2024), [graphene-django](https://github.com/graphql-python/graphene-django/releases/tag/v3.2.0) (2023), or an unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) library.
@@ -752,12 +847,13 @@ app/
 ```
 
 The agent focused on writing code instead of setting up the infrastructure (Docker, database, test runner).
-Claimed success after silently skipping tests.
-
 The agent claimed successful implementation of all features without running any tests.
+
 It turned out that `.claude/settings.json` was blocking Docker commands, and the agent decided to silently skip tests.
 The agent when starting new iterations, was randomly discovering logical inconsistencies in [REQUIREMENTS.md](REQUIREMENTS.md).
 After human correcting the Docker access, and instructing the agent to use Docker, the agent started using Docker, but claimed success again, despite failing to handle database cleanup during tests.
+The app container starts with `TLS_ENABLE=1` in `compose.yaml`, but is slow to respond and eventually fails on HTTPS requests.
+
 The agent also kept git committing the `.cache` directory, containing Python packages, until instructed by human in interactive mode to stop, and left temporary files git committed (e.g., test_graphql_simple.py).
 
 The agent decided to use end-of-life libraries, like [Django 5.0.1](https://docs.djangoproject.com/en/6.0/releases/5.0.1/) (2024), [Daphne 4.0.0](https://pypi.org/project/daphne/4.0.0/) (2022), or an unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) library.

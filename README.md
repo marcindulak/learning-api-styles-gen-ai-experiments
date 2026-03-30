@@ -3,6 +3,12 @@ A set of experiments to determine whether generative AI, based on vague [REQUIRE
 The source code for book was made public on GitHub on [July 17, 2025](https://github.com/ldynia/learning-api-styles/commit/35c31d369e6bef548eaf8dff7407969ef63efb21).
 The initial implementation (design, code, and tests) took a human developer about 200 hours, with the help of chat-based GitHub Copilot in 2023.
 
+# Findings so far
+
+- 2026-03-30 [Do Coding Agents Need Design Documentation?](findings/2026-03-30-Do-Coding-Agents-Need-Design-Documentation.md)
+
+# Experiment assesment
+
 The assessment of the experiment outcome is subjective.
 Note that due to the nondeterminism of the agents, it's infeasible to draw conclusions about the influence of the framework, model, or other factors on the quality of the generated code.
 Only the rough, qualitative impression of the performance can be described.
@@ -79,13 +85,25 @@ Note that the setup includes at least 4 known errors, and they are left on purpo
    git checkout -b YYYY-MM-DD
    ```
 
-2. Clear the existing README.md file so the agent does not try to peek into it.
+2. Clear the existing README.md file, to discourage the agent from peeking into it.
 
    ```
    echo > README.md
    git add README.md
    git commit -m"Clear README.md"
    ```
+
+   Locally delete all experiment local and remote branches, to discourage the agent from peeking into them.
+
+   ```
+   git branch -d YYYY-MM-DD ...
+   git fetch --prune
+   git branch -r -d origin/YYYY-MM-DD ...
+   ```
+
+   Note that during experiments, the agent may have looked at the existing experiment branches.
+   It has not been caught doing this, but this cannot be excluded.
+   For example, the agent may read README.md by restoring it from git, or fetch remote branches.
 
 3. One of the conditions for an experiment to be valid is the presence of the terminal recording of the session.
    The reason is not so much to have a proof of agent's work, but to allow to review the agent actions later.

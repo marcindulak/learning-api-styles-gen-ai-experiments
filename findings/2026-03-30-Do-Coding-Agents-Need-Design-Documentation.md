@@ -54,8 +54,7 @@ The full results are available at [learning-api-styles-gen-ai-experiments](https
 
 ## Is design documentation useful overall?
 
-One may argue that our result is only a single case, and that with a different model, prompt or orchestrator, an agent might follow design documentation better.
-In our case, the agent did not.
+One may argue that our result is only a single case, and that with a different model, prompt or orchestrator, an agent might follow design documentation better (see [sopbench](https://github.com/Leezekun/SOPBench), which attempted to measure the agents adherence to specifications).
 Greater compliance with the documentation could be achieved with extra verification steps, but then the documentation would be used as post-implementation enforcement rather than to help the agent upfront.
 
 The problem is that current command-line coding agents behave nondeterministically and [tend not to follow instructions](https://github.com/anthropics/claude-code/issues/13689), so they may skip or invert some of the documented design choices.

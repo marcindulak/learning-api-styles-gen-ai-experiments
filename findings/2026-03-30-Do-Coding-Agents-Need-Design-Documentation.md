@@ -48,6 +48,7 @@ We ran three experiments with increasing levels of design documentation guidance
 The agent given design documentation (see the documentation [here](https://github.com/marcindulak/learning-api-styles-gen-ai-experiments/blob/2026-03-08/REQUIREMENTS.md)) was not meaningfully faster and partly ignored it. For example, it used `WORKDIR=app` instead of the documented `WORKDIR=/app`, and skipped the documented `api.openweathermap.org` API choice.
 On the other hand, the agent took several similar decisions across all three experiments, such as the choice of Django REST Framework or Atom feeds implementation.
 This appears to reflect the model's preferences rather than the provided documentation.
+For all these experiments Claude Sonnet 4.5 was used.
 
 The full results are available at [learning-api-styles-gen-ai-experiments](https://github.com/marcindulak/learning-api-styles-gen-ai-experiments) across three experiments: [2026-03-01](https://github.com/marcindulak/learning-api-styles-gen-ai-experiments?tab=readme-ov-file#2026-03-01) (agent alone), [2026-03-02](https://github.com/marcindulak/learning-api-styles-gen-ai-experiments?tab=readme-ov-file#2026-03-02) (agent with orchestrator), and [2026-03-08](https://github.com/marcindulak/learning-api-styles-gen-ai-experiments?tab=readme-ov-file#2026-03-08) (agent with orchestrator and access to design documentation produced by 2026-03-02).
 

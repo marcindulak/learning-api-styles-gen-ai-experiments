@@ -1,7 +1,8 @@
 # Do Coding Agents Need Design Documentation?
 
 Coding agent orchestrators generate design documentation, implementation plans, and even specifications.
-Whether these documents should be kept, and which ones, is debated (see for example [spec-kit](https://github.com/github/spec-kit/discussions/1437), [agentbench](https://github.com/eth-sri/agentbench), [symphony](https://github.com/openai/symphony/discussions/49), [OpenSpec](https://github.com/Fission-AI/OpenSpec/issues/878), [superpowers](https://github.com/obra/superpowers/issues/729)).
+What these documents should contain and whether they should be kept is debated (see for example [SWE-AI-Mini-Research](https://github.com/murrlincoln/SWE-AI-Mini-Research), [spec-kit](https://github.com/github/spec-kit/discussions/1437), [agentbench](https://github.com/eth-sri/agentbench), [symphony](https://github.com/openai/symphony/discussions/49), [OpenSpec](https://github.com/Fission-AI/OpenSpec/issues/878), [superpowers](https://github.com/obra/superpowers/issues/895)).
+
 
 We tested the effect of providing design documentation to a coding agent orchestrator on our project.
 The result is nuanced.
@@ -57,7 +58,7 @@ The full results are available at [learning-api-styles-gen-ai-experiments](https
 One may argue that our result is only a single case, and that with a different model, prompt or orchestrator, an agent might follow design documentation better (see [sopbench](https://github.com/Leezekun/SOPBench), which attempted to measure the agents adherence to specifications).
 Greater compliance with the documentation could be achieved with extra verification steps, but then the documentation would be used as post-implementation enforcement rather than to help the agent upfront.
 
-The problem is that current command-line coding agents behave nondeterministically and [tend not to follow instructions](https://github.com/anthropics/claude-code/issues/13689), so they may skip or invert some of the documented design choices.
+The problem is that current command-line coding agents behave nondeterministically and [tend not to follow instructions](https://github.com/anthropics/claude-code/issues/13689) (see also [AgentIF](https://github.com/THU-KEG/AgentIF)), so they may skip or invert some of the documented design choices.
 Even with verification, they may produce working software with gaps and inconsistencies, because it's infeasible to document all software behavior.
 Hickey called a similar pattern "guardrail programming":
 

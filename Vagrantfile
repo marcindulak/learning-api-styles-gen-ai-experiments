@@ -16,7 +16,7 @@ Vagrant.configure(2) do |config|
     machine.vm.box = "almalinux/9"
     machine.vm.box_url = machine.vm.box
     # claude install is slow, due to large memory usage https://github.com/anthropics/claude-code/issues/12987
-    machine.vm.boot_timeout = 1800
+    machine.vm.boot_timeout = 2700
     # https://github.com/AlmaLinux/cloud-images/issues/295
     machine.vm.disk :disk, size: "40GB", primary: true
     machine.vm.provider "virtualbox" do |p|
@@ -38,8 +38,9 @@ Vagrant.configure(2) do |config|
     machine.vm.provision :shell, :inline => "swapon --show", run: "always"
     # https://github.com/AlmaLinux/cloud-images/issues/295
     machine.vm.provision :shell, :inline => "dnf install -y --setopt=install_weak_deps=False cloud-utils-growpart"
-    machine.vm.provision :shell, :inline => "growpart /dev/sda 4"
-    machine.vm.provision :shell, :inline => "xfs_growfs /"
+    # https://github.com/AlmaLinux/cloud-images/pull/332 - filesystem growth is automatic now
+    # machine.vm.provision :shell, :inline => "growpart /dev/sda 4"
+    # machine.vm.provision :shell, :inline => "xfs_growfs /"
     machine.vm.provision :shell, :inline => "dnf install -y epel-release"
     machine.vm.provision :shell, :inline => "dnf install -y --setopt=install_weak_deps=False curl dnf-plugins-core git podman podman-compose"
     machine.vm.provision :shell, :inline => "dnf install -y --setopt=install_weak_deps=False python-unversioned-command"
@@ -48,12 +49,20 @@ Vagrant.configure(2) do |config|
     machine.vm.provision :shell, :inline => "groupadd docker || true"
     machine.vm.provision :shell, :inline => "usermod -aG docker vagrant"
     machine.vm.provision :shell, :inline => "systemctl enable --now docker"
+    # Snap installation is broken https://github.com/nodejs/snap/issues/54
+    machine.vm.provision :shell, :inline => "mkdir /usr/local/nvm && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | NVM_DIR=/usr/local/nvm bash"
+    machine.vm.provision :shell, :inline => ". ~/.bashrc && nvm install --lts && node --version"
+    machine.vm.provision :shell, :inline => "echo 'export NVM_DIR=/usr/local/nvm' >> ~vagrant/.bashrc"
+    machine.vm.provision :shell, :inline => "echo '[ -s $NVM_DIR/nvm.sh ] && \. $NVM_DIR/nvm.sh' >> ~vagrant/.bashrc"
+    machine.vm.provision :shell, :inline => "su - vagrant -c 'node --version'"
+    machine.vm.provision :shell, :inline => "dnf install -y --setopt=install_weak_deps=False bubblewrap socat"
     machine.vm.provision :shell, :inline => "dnf install -y --setopt=install_weak_deps=False snapd"
     machine.vm.provision :shell, :inline => "systemctl enable --now snapd.socket"
     machine.vm.provision :shell, :inline => "ln -s /var/lib/snapd/snap /snap"
     machine.vm.provision :shell, :inline => "snap wait system seed.loaded"
     machine.vm.provision :shell, :inline => "snap install asciinema --classic"
     machine.vm.provision :shell, :inline => "snap install ruff"
+    machine.vm.provision :shell, :inline => "dnf install -y --setopt=install_weak_deps=False ripgrep"
     machine.vm.provision :shell, :inline => "dnf install -y --setopt=install_weak_deps=False tokei tree"
     machine.vm.provision :shell, :inline => "echo '[user]' > ~vagrant/.gitconfig"
     machine.vm.provision :shell, :inline => "echo 'email = marcindulak@users.noreply.github.com' >> ~vagrant/.gitconfig"
@@ -69,6 +78,8 @@ Vagrant.configure(2) do |config|
     machine.vm.provision :shell, :inline => "echo 'export DISABLE_AUTOUPDATER=1' >> ~vagrant/.bashrc"
     machine.vm.provision :shell, :inline => "echo 'export CLAUDE_CODE_HIDE_ACCOUNT_INFO=1' >> ~vagrant/.bashrc"
     machine.vm.provision :shell, :inline => "echo 'export IS_DEMO=1' >> ~vagrant/.bashrc"
+    # Avoid claude sandbox error: mkdir /home/vagrant/.docker: read-only file system
+    machine.vm.provision :shell, :inline => "echo 'export DOCKER_CONFIG=.docker' >> ~vagrant/.bashrc"
     # claude install is slow, due to large memory usage https://github.com/anthropics/claude-code/issues/12987
     # agent: Setting up Claude Code...
     # agent: ✘ Installation failed
@@ -78,5 +89,10 @@ Vagrant.configure(2) do |config|
     machine.vm.provision :shell, :inline => "sed -i 's/ install / install --force /' /tmp/install.sh"
     machine.vm.provision :shell, :inline => "cat /tmp/install.sh | su - vagrant -c 'bash -s stable'"
     machine.vm.provision :shell, :inline => "su - vagrant -c 'claude --version'"
+    machine.vm.provision :shell, :inline => "echo 'export GEMINI_TELEMETRY_ENABLED=false' >> ~vagrant/.bashrc"
+    machine.vm.provision :shell, :inline => "su - vagrant -c 'npm install -g @google/gemini-cli'"
+    machine.vm.provision :shell, :inline => "su - vagrant -c 'gemini --version'"
+    machine.vm.provision :shell, :inline => "su - vagrant -c 'npm i -g @openai/codex'"
+    machine.vm.provision :shell, :inline => "su - vagrant -c 'codex --version'"
   end
 end

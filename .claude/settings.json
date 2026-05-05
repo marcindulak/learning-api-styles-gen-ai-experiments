@@ -38,7 +38,6 @@
       "Read(~/.aws/**)",
       "Read(~/.azure/**)",
       "Read(~/.config/gcloud/**)",
-      "Read(~/.gitconfig)",
       "Read(~/.ssh/**)",
       "Read(~/.terraform.d/**)",
       "Write(**/.gitconfig)"
@@ -49,6 +48,7 @@
     "autoAllowBashIfSandboxed": true,
     "enabled": true,
     "network": {
+      "allowAllUnixSockets": true,
       "allowLocalBinding": true
     }
   }

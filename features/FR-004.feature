@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-004 Weather forecast Atom feed
 
   The service exposes the weather forecast for each registered city as an

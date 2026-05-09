@@ -6,6 +6,8 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from cities.feeds import ForecastFeed
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -17,4 +19,10 @@ urlpatterns = [
     path("api/", include("cities.urls")),
     # GitHub posts to /webhooks/github with an HMAC signature; FR-003.
     path("webhooks/", include("webhooks.urls")),
+    # Atom 1.0 forecast feed per city; FR-004.
+    path(
+        "feeds/forecast/<str:name>",
+        ForecastFeed(),
+        name="city-forecast-feed",
+    ),
 ]

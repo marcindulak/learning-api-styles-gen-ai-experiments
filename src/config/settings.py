@@ -83,10 +83,19 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-# DRF defaults: page-number pagination so list responses include the
-# ``count``/``results`` envelope FR-009 asserts. Session authentication is
-# the default; JWT will be added in FR-011.
+# DRF configuration:
+#
+# * Page-number pagination so list responses include the
+#   ``count``/``results`` envelope FR-009 asserts.
+# * Authentication classes order matters: JWTAuthentication runs first so a
+#   ``Authorization: Bearer ...`` header is recognised, then
+#   SessionAuthentication so the Django admin session and the FR-009
+#   admin-POST scenario continue to work without a JWT.
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 100,
 }

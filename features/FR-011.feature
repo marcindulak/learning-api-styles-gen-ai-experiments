@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-011 Admin and regular user with object-level permissions
 
   The service has two user roles: admin (Django staff/superuser) and regular

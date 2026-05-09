@@ -32,12 +32,26 @@ def step_service_running(context) -> None:
     assert hasattr(context, "client"), "Test client was not initialised."
 
 
+def _remember_credentials(context, username: str, password: str) -> None:
+    # Stash username/password so a later step (e.g. FR-011's JWT obtain)
+    # can authenticate the same user without the feature having to repeat
+    # the password literal in every When clause.
+    if not hasattr(context, "credentials"):
+        context.credentials = {}
+    context.credentials[username] = password
+
+
 @given('an admin user with username "{username}" and password "{password}" exists')
 def step_admin_user_exists(context, username: str, password: str) -> None:
     from django.contrib.auth import get_user_model
 
     user_model = get_user_model()
     user_model.objects.create_superuser(username=username, password=password)
+    _remember_credentials(context, username, password)
+    # FR-011 scenarios refer to the admin without a username
+    # ("the admin obtains a JWT..."); track which user is the admin so the
+    # bare-actor step does not need to re-parse the previous Given.
+    context.admin_username = username
 
 
 @given('a regular user with username "{username}" and password "{password}" exists')
@@ -46,6 +60,7 @@ def step_regular_user_exists(context, username: str, password: str) -> None:
 
     user_model = get_user_model()
     user_model.objects.create_user(username=username, password=password)
+    _remember_credentials(context, username, password)
 
 
 @when('a browser session sends POST to "{path}" with username "{username}" and password "{password}"')

@@ -35,6 +35,8 @@ INSTALLED_APPS = [
     # behave_django registers the `manage.py behave` command prescribed by
     # REQUIREMENTS.md ("docker compose exec app python manage.py behave").
     "behave_django",
+    "rest_framework",
+    "cities",
 ]
 
 MIDDLEWARE = [
@@ -80,3 +82,11 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+
+# DRF defaults: page-number pagination so list responses include the
+# ``count``/``results`` envelope FR-009 asserts. Session authentication is
+# the default; JWT will be added in FR-011.
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 100,
+}

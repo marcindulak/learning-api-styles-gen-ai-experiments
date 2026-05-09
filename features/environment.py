@@ -104,11 +104,43 @@ def before_scenario(context, scenario) -> None:
         return
 
     from django.db import transaction
-    from django.test import Client
 
     context.atomic = transaction.atomic(using="default")
     context.atomic.__enter__()
-    context.client = Client()
+    # Prefer DRF's APIClient when DRF is installed: it is a strict
+    # superset of django.test.Client and skips CSRF for session-auth
+    # POSTs, which DRF's SessionAuthentication would otherwise reject.
+    try:
+        from rest_framework.test import APIClient
+
+        context.client = APIClient()
+    except ModuleNotFoundError:
+        from django.test import Client
+
+        context.client = Client()
+    _seed_supported_cities()
+
+
+def _seed_supported_cities() -> None:
+    """Re-insert the FR-009 cities that the data migration loads.
+
+    behave-django's default test runner uses
+    :class:`django.test.LiveServerTestCase` (a TransactionTestCase), which
+    truncates every table between scenarios. Without this hook only the
+    first scenario would see the rows that the data migration inserted at
+    ``setup_databases`` time. Calling :func:`cities.seed.seed_cities` here
+    keeps the seed source-of-truth in one place.
+    """
+
+    try:
+        from cities.models import City
+        from cities.seed import seed_cities
+    except ModuleNotFoundError:
+        # Cities app not yet on the Python path (e.g. plain `behave` run
+        # before src/ has been added to sys.path). Filesystem-only suites
+        # do not exercise the cities API, so silently skip.
+        return
+    seed_cities(City)
 
 
 def after_scenario(context, scenario) -> None:

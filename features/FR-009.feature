@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-009 Weather data limited to the 5 biggest cities
 
   The service stores weather data only for the 5 biggest cities in the world by

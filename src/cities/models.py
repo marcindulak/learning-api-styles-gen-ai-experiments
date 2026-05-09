@@ -42,3 +42,31 @@ class City(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class WeatherRecord(models.Model):
+    """A historical weather observation for one :class:`City` on one date.
+
+    FR-006 exposes these rows through ``/api/cities/<name>/weather/history``.
+    Each row is keyed by ``(city, observed_on)`` so a city has at most one
+    record per day; the API treats ``observed_on`` as a date, not a
+    timestamp, because the FR-006 Gherkin queries by ``?date=YYYY-MM-DD``.
+    """
+
+    city = models.ForeignKey(
+        City,
+        on_delete=models.CASCADE,
+        related_name="weather_records",
+    )
+    observed_on = models.DateField()
+    temperature = models.FloatField()
+    humidity = models.FloatField(null=True, blank=True)
+    wind_speed = models.FloatField(null=True, blank=True)
+    pressure = models.FloatField(null=True, blank=True)
+
+    class Meta:
+        ordering = ("-observed_on",)
+        unique_together = (("city", "observed_on"),)
+
+    def __str__(self) -> str:
+        return f"{self.city.name} on {self.observed_on.isoformat()}"

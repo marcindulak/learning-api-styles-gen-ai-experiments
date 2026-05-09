@@ -82,12 +82,53 @@ def step_admin_post_city(context, path: str, name: str) -> None:
         del context.response_json
 
 
-@then('the response body has a key "{key}" with the value {value:d}')
-def step_response_key_int(context, key: str, value: int) -> None:
+def _resolve_path(body, key: str):
+    """Walk a dotted/indexed key path like ``results[0].temperature``.
+
+    Plain attribute names (``count``) and indexed segments
+    (``results[0]``) are both supported. Duplicated in fr_006_steps for
+    readability — behave loads step files via exec rather than the
+    import system, so a shared helper module is awkward.
+    """
+
+    current = body
+    for segment in key.split("."):
+        index = None
+        if "[" in segment and segment.endswith("]"):
+            attr, _, rest = segment.partition("[")
+            index = int(rest[:-1])
+        else:
+            attr = segment
+        if not isinstance(current, dict) or attr not in current:
+            raise KeyError(
+                f"Cannot resolve {key!r}: missing {attr!r} in {current!r}."
+            )
+        current = current[attr]
+        if index is not None:
+            if not isinstance(current, list) or index >= len(current):
+                raise KeyError(
+                    f"Cannot resolve {key!r}: index {index} out of range "
+                    f"in {current!r}."
+                )
+            current = current[index]
+    return current
+
+
+@then('the response body has a key "{key}" with the value {value:g}')
+def step_response_key_numeric_value(context, key: str, value: float) -> None:
+    # ``key`` may be a dotted/indexed path such as ``results[0].temperature``
+    # so FR-006 can assert nested values without a separate step phrasing.
+    # ``{value:g}`` matches both integers (FR-009 ``count == 5``) and floats
+    # (FR-006 ``temperature == 5.0``); Python's ``5 == 5.0`` makes the
+    # equality check correct in both cases.
     body = _decode_json(context)
-    assert key in body, f"Key {key!r} not found; body keys: {list(body)}"
-    assert body[key] == value, (
-        f"Expected {key}={value}, got {body[key]!r}."
+    actual = _resolve_path(body, key)
+    assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+        f"Expected numeric value at {key!r}, got {actual!r} "
+        f"({type(actual).__name__})."
+    )
+    assert float(actual) == float(value), (
+        f"Expected {key}={value}, got {actual!r}."
     )
 
 

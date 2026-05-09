@@ -6,7 +6,7 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from .views import CityViewSet
-from .weather import current_weather, forecast
+from .weather import current_weather, forecast, history
 
 
 # trailing_slash=False so REQUIREMENTS.md's curl examples
@@ -24,5 +24,10 @@ urlpatterns = router.urls + [
         "cities/<str:name>/weather/forecast",
         forecast,
         name="city-weather-forecast",
+    ),
+    path(
+        "cities/<str:name>/weather/history",
+        history,
+        name="city-weather-history",
     ),
 ]

@@ -6,10 +6,13 @@ Exposes:
   common weather indicators (temperature, humidity, wind speed, pressure).
 * ``GET /api/cities/<name>/weather/forecast`` (FR-010) — returns up to
   ``MAX_FORECAST_DAYS`` daily entries, defaulting to the maximum.
+* ``GET /api/cities/<name>/weather/history`` (FR-006) — returns stored
+  observations for the named city, optionally filtered by ``?date=``.
 
-The values are deterministic placeholders for now; FR-008 will replace
-the placeholder source with a real third-party provider and add the
-``source`` envelope its scenarios assert.
+The current and forecast endpoints return deterministic placeholders
+for now; FR-008 will replace the placeholder source with a real
+third-party provider and add the ``source`` envelope its scenarios
+assert. The history endpoint returns rows from the database.
 """
 
 from __future__ import annotations
@@ -21,7 +24,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from .models import City
+from .models import City, WeatherRecord
 
 
 # Placeholder readings used until FR-008 introduces a real provider. Constants
@@ -106,5 +109,60 @@ def forecast(request: Request, name: str) -> Response:
             **_PLACEHOLDER_READING,
         }
         for offset in range(days)
+    ]
+    return Response({"count": len(results), "results": results})
+
+
+def _parse_date(raw: str | None) -> tuple[datetime.date | None, str | None]:
+    """Validate the ``?date=`` query parameter.
+
+    Returns ``(date, None)`` on success or ``(None, error_message)`` on
+    failure. ``raw is None`` is success with ``date=None`` so the caller
+    can distinguish "no filter" from a bad value.
+    """
+
+    if raw is None:
+        return None, None
+    try:
+        return datetime.date.fromisoformat(raw), None
+    except ValueError:
+        return None, f"date must be in YYYY-MM-DD format."
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def history(request: Request, name: str) -> Response:
+    """Return stored historical weather rows for the named city.
+
+    Honours an optional ``?date=YYYY-MM-DD`` query parameter that filters
+    results to a single observation date. A request for a date with no
+    stored records returns HTTP 200 with ``results: []`` (the FR-006
+    Gherkin asserts a 200 + empty list, not a 404).
+    """
+
+    city = City.objects.filter(name=name).first()
+    if city is None:
+        return Response(
+            {"detail": f"city {name!r} not found."},
+            status=404,
+        )
+
+    observed_on, error = _parse_date(request.query_params.get("date"))
+    if error is not None:
+        return Response({"detail": error}, status=400)
+
+    records = city.weather_records.all()
+    if observed_on is not None:
+        records = records.filter(observed_on=observed_on)
+
+    results = [
+        {
+            "observed_on": record.observed_on.isoformat(),
+            "temperature": record.temperature,
+            "humidity": record.humidity,
+            "wind_speed": record.wind_speed,
+            "pressure": record.pressure,
+        }
+        for record in records
     ]
     return Response({"count": len(results), "results": results})

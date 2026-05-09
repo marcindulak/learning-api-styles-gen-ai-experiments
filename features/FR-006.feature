@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-006 Weather historical data
 
   The service stores past weather observations and exposes them through a REST

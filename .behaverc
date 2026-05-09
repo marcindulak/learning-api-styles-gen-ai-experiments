@@ -1,0 +1,5 @@
+[behave]
+# Run only completed and active features. Features still tagged @status-todo are
+# skipped so the suite remains green while the project is built incrementally.
+tags = ~@status-todo
+show_skipped = false

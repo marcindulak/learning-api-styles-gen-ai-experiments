@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: NFR-006 Service is runnable by majority of book readers
 
   Beyond local Docker Compose, the project provides a devcontainer

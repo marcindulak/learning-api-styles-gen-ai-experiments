@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-007 Content management system for admin
 
   The service provides a content management system at "/admin/" that allows an

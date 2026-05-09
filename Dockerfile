@@ -13,7 +13,7 @@ ARG APP_TLS_CERTS_DIR=/etc/wfs/ssl/certs \
     TLS_ENABLE=1 \
     UID=1000 \
     USER=nonroot \
-    WORKDIR=app
+    WORKDIR=/app
 
 ENV APP_TLS_CERTS_DIR=$APP_TLS_CERTS_DIR \
     APP_TLS_PRICATE_DIR=$APP_TLS_PRICATE_DIR \

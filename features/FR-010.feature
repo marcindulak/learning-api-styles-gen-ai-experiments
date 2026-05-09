@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-010 Forecast horizon limited to 7 days
 
   The service exposes a forecast endpoint that returns at most 7 days of

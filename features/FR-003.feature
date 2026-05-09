@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-003 GitHub webhook integration
 
   The service exposes a webhook endpoint that GitHub can call. The endpoint

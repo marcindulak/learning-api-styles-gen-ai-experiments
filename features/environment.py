@@ -107,6 +107,12 @@ def before_scenario(context, scenario) -> None:
 
     context.atomic = transaction.atomic(using="default")
     context.atomic.__enter__()
+    # Steps may register zero-arg callables (e.g. ``override_settings.disable``)
+    # that ``after_scenario`` invokes in reverse order. The transaction
+    # rollback covers database state; this hook covers process-level state
+    # such as Django settings overrides, environment variables, or signal
+    # subscriptions that the rollback cannot undo.
+    context.scenario_cleanups = []
     # Prefer DRF's APIClient when DRF is installed: it is a strict
     # superset of django.test.Client and skips CSRF for session-auth
     # POSTs, which DRF's SessionAuthentication would otherwise reject.
@@ -150,6 +156,10 @@ def after_scenario(context, scenario) -> None:
         return
 
     from django.db import transaction
+
+    for cleanup in reversed(getattr(context, "scenario_cleanups", [])):
+        cleanup()
+    context.scenario_cleanups = []
 
     transaction.set_rollback(True)
     context.atomic.__exit__(None, None, None)

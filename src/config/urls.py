@@ -15,4 +15,6 @@ urlpatterns = [
     path("api/jwt/obtain", TokenObtainPairView.as_view(), name="jwt-obtain"),
     path("api/jwt/refresh", TokenRefreshView.as_view(), name="jwt-refresh"),
     path("api/", include("cities.urls")),
+    # GitHub posts to /webhooks/github with an HMAC signature; FR-003.
+    path("webhooks/", include("webhooks.urls")),
 ]

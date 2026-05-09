@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "behave_django",
     "rest_framework",
     "cities",
+    "webhooks",
 ]
 
 MIDDLEWARE = [
@@ -91,6 +92,12 @@ STATIC_URL = "static/"
 #   ``Authorization: Bearer ...`` header is recognised, then
 #   SessionAuthentication so the Django admin session and the FR-009
 #   admin-POST scenario continue to work without a JWT.
+# Shared secret used to verify HMAC SHA-256 signatures on incoming GitHub
+# webhook deliveries (FR-003). An empty default disables the endpoint in
+# practice because no signature can match; production deployments must
+# configure a real secret via the environment.
+GITHUB_WEBHOOK_SECRET = os.environ.get("GITHUB_WEBHOOK_SECRET", "")
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",

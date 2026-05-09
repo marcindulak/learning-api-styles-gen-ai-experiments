@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from .views import CityViewSet
+from .weather import current_weather
 
 
 # trailing_slash=False so REQUIREMENTS.md's curl examples
@@ -12,4 +14,10 @@ from .views import CityViewSet
 router = DefaultRouter(trailing_slash=False)
 router.register("cities", CityViewSet, basename="city")
 
-urlpatterns = router.urls
+urlpatterns = router.urls + [
+    path(
+        "cities/<str:name>/weather/current",
+        current_weather,
+        name="city-weather-current",
+    ),
+]

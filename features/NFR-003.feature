@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: NFR-003 Service is deployed as one unit
 
   The Django application is deployed as a single application service in the

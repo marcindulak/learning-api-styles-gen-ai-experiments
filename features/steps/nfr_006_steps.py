@@ -25,6 +25,11 @@ def step_inspect_repository(context) -> None:
     pass
 
 
+# behave matches steps by ``(keyword, text)``: a Then-only registration would
+# leave NFR-003's ``Given the file "compose.yaml" exists at the project root``
+# undefined. Registering both keywords on one body keeps the assertion in one
+# place rather than duplicating it into a sibling step file.
+@given('the file "{relative_path}" exists at the project root')
 @then('the file "{relative_path}" exists')
 @then('the file "{relative_path}" exists at the project root')
 def step_file_exists(context, relative_path: str) -> None:

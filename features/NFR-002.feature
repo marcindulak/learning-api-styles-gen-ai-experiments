@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: NFR-002 Service requests can be encrypted or unencrypted
 
   The service accepts both unencrypted HTTP requests on port 8000 and

@@ -105,6 +105,13 @@ STATIC_URL = "static/"
 # configure a real secret via the environment.
 GITHUB_WEBHOOK_SECRET = os.environ.get("GITHUB_WEBHOOK_SECRET", "")
 
+# Base URL of the third-party weather provider (FR-008). When empty the
+# /api/cities/<name>/weather/current endpoint returns the FR-001
+# placeholder reading; when set, the endpoint fetches live data from this
+# URL and wraps it with a ``source.provider`` envelope. Tests override
+# this value through ``override_settings``.
+WEATHER_PROVIDER_URL = os.environ.get("WEATHER_PROVIDER_URL", "")
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",

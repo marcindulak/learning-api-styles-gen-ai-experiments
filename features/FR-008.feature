@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-008 Weather records contain actual data
 
   Weather records returned by the service originate from a third-party weather

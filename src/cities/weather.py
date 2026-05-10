@@ -2,17 +2,16 @@
 
 Exposes:
 
-* ``GET /api/cities/<name>/weather/current`` (FR-001) — returns the four
-  common weather indicators (temperature, humidity, wind speed, pressure).
+* ``GET /api/cities/<name>/weather/current`` (FR-001, FR-008) — returns
+  the four common weather indicators (temperature, humidity, wind speed,
+  pressure). When ``settings.WEATHER_PROVIDER_URL`` is configured the
+  reading is fetched from that third-party provider (FR-008) and the
+  response carries ``observed_at`` plus ``source.provider``; otherwise
+  the deterministic placeholder defined here is returned (FR-001).
 * ``GET /api/cities/<name>/weather/forecast`` (FR-010) — returns up to
   ``MAX_FORECAST_DAYS`` daily entries, defaulting to the maximum.
 * ``GET /api/cities/<name>/weather/history`` (FR-006) — returns stored
   observations for the named city, optionally filtered by ``?date=``.
-
-The current and forecast endpoints return deterministic placeholders
-for now; FR-008 will replace the placeholder source with a real
-third-party provider and add the ``source`` envelope its scenarios
-assert. The history endpoint returns rows from the database.
 """
 
 from __future__ import annotations
@@ -24,6 +23,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from . import providers
 from .models import City, WeatherRecord
 
 
@@ -51,14 +51,35 @@ def current_weather(request: Request, name: str) -> Response:
     The ``name`` segment is matched case-sensitively against
     :attr:`City.name` so the URL ``/api/cities/Tokyo/weather/current``
     resolves only to the seeded "Tokyo" row.
+
+    When ``settings.WEATHER_PROVIDER_URL`` is configured (FR-008) the
+    reading is fetched from the third-party provider and a 503 is
+    returned if the provider cannot be reached. When unconfigured, the
+    FR-001 deterministic placeholder is returned so the simpler scenarios
+    keep passing without provider plumbing.
     """
 
-    if not City.objects.filter(name=name).exists():
+    city = City.objects.filter(name=name).first()
+    if city is None:
         return Response(
             {"detail": f"city {name!r} not found."},
             status=404,
         )
-    return Response(_PLACEHOLDER_READING)
+
+    if not providers.is_configured():
+        return Response(_PLACEHOLDER_READING)
+
+    try:
+        reading = providers.fetch_current(
+            latitude=float(city.latitude),
+            longitude=float(city.longitude),
+        )
+    except providers.ProviderError as exc:
+        return Response(
+            {"detail": f"weather provider unavailable: {exc}"},
+            status=503,
+        )
+    return Response(reading)
 
 
 def _parse_days(raw: str | None) -> tuple[int | None, str | None]:

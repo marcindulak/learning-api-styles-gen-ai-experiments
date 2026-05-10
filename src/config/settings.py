@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     # introduced in FR-002 and reads the schema location from the GRAPHENE
     # setting at the bottom of this file.
     "graphene_django",
+    # drf_spectacular generates the OpenAPI 3 schema served at /api/schema
+    # and powers the Swagger UI mounted at /api/docs (NFR-005).
+    "drf_spectacular",
     "cities",
     "webhooks",
 ]
@@ -109,6 +112,19 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 100,
+    # drf-spectacular ships its own AutoSchema; setting it here means the
+    # schema served at /api/schema reflects every viewset/view in the project
+    # without per-view opt-in.
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Weather Forecast Service API",
+    "VERSION": "1.0.0",
+    # The OpenAPI schema is served as YAML by default; Swagger UI fetches it
+    # from /api/schema, so the URL name has to match the route registered in
+    # config/urls.py.
+    "SCHEMA_PATH_PREFIX": "/api/",
 }
 
 GRAPHENE = {

@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: NFR-005 Service APIs are documented
 
   The service publishes machine-readable specifications for its synchronous

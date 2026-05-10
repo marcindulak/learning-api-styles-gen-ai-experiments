@@ -27,6 +27,7 @@ is reused from ``fr_007_steps.py``.
 
 from __future__ import annotations
 
+import os
 import pathlib
 import shlex
 import subprocess
@@ -39,6 +40,23 @@ from behave import then, when
 # Subprocesses inherit this container's environment so Django settings,
 # database credentials, and PYTHONPATH match the running service.
 _SRC_DIR = pathlib.Path("/app")
+
+# When the dispatcher runs a nested test runner (``manage.py behave`` or
+# ``manage.py test``), the inner process tries to create the same test
+# database the outer behave-django run already holds open
+# (``test_${POSTGRES_DB}``). Postgres rejects the duplicate with
+# "database is being accessed by other users". The fix is to point the
+# nested invocation at a different production database name so its derived
+# test database name does not collide. The nested DB is created and
+# destroyed by the inner Django test machinery; we never write to it from
+# the outer process.
+_NESTED_DB_SUFFIX = "_nested"
+
+# The inner ``manage.py behave`` would itself execute NFR-004 again and
+# spawn yet another nested behave process, ad infinitum. Excluding the
+# NFR-004 feature file from the inner invocation breaks the recursion
+# while still verifying behave-django can run the rest of the suite.
+_NESTED_BEHAVE_EXCLUDE = "NFR-004"
 
 
 def _parse_compose_services(compose_path: pathlib.Path) -> list[str]:
@@ -62,6 +80,47 @@ def _parse_compose_services(compose_path: pathlib.Path) -> list[str]:
     return list(services.keys())
 
 
+def _is_django_test_runner(argv: list[str]) -> bool:
+    """Return True if ``argv`` invokes a test runner that creates a test DB.
+
+    Both ``manage.py behave`` and ``manage.py test`` ask Django to set up a
+    fresh test database derived from ``DATABASES["default"]["NAME"]`` (with
+    a ``test_`` prefix). When such a command is dispatched from inside an
+    outer behave-django run, the inner process collides with the outer's
+    open test database.
+    """
+
+    if "manage.py" not in argv:
+        return False
+    return "behave" in argv or "test" in argv
+
+
+def _prepare_nested_runner_env(
+    argv: list[str],
+) -> tuple[dict[str, str], list[str]]:
+    """Avoid test-DB collisions and infinite behave recursion in subprocess.
+
+    Returns the environment to hand to ``subprocess.run`` and the (possibly
+    rewritten) argv. For non-test-runner commands the parent environment
+    and the argv are returned unchanged.
+    """
+
+    env = os.environ.copy()
+    if not _is_django_test_runner(argv):
+        return env, argv
+
+    # Pointing the nested run at a different production DB makes its derived
+    # ``test_<name>`` distinct from the outer's. The postgres user used by
+    # this image has CREATEDB so the inner can create and drop its own DB.
+    parent_db = env.get("POSTGRES_DB", "")
+    env["POSTGRES_DB"] = parent_db + _NESTED_DB_SUFFIX
+
+    new_argv = list(argv)
+    if "behave" in new_argv:
+        new_argv.append(f"--exclude={_NESTED_BEHAVE_EXCLUDE}")
+    return env, new_argv
+
+
 @when('the operator runs "{command}"')
 def step_operator_runs(context, command: str) -> None:
     if command == "docker compose config --services":
@@ -78,12 +137,14 @@ def step_operator_runs(context, command: str) -> None:
         # ``sys.executable`` makes the step robust to an unusual PATH.
         if inner and inner[0] == "python":
             inner[0] = sys.executable
+        env, inner = _prepare_nested_runner_env(inner)
         completed = subprocess.run(
             inner,
             cwd=str(_SRC_DIR),
             capture_output=True,
             text=True,
             check=False,
+            env=env,
         )
         context.command_stdout = completed.stdout
         context.command_returncode = completed.returncode

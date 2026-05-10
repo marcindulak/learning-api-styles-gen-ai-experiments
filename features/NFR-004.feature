@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: NFR-004 Service is testable
 
   The service ships with end-to-end and integration tests runnable via

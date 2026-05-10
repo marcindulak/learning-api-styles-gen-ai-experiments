@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-002 GraphQL API exposes common weather indicators
 
   The service exposes the same common weather indicators over a GraphQL API at

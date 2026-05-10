@@ -36,6 +36,10 @@ INSTALLED_APPS = [
     # REQUIREMENTS.md ("docker compose exec app python manage.py behave").
     "behave_django",
     "rest_framework",
+    # graphene_django registers the GraphQLView used by the /graphql endpoint
+    # introduced in FR-002 and reads the schema location from the GRAPHENE
+    # setting at the bottom of this file.
+    "graphene_django",
     "cities",
     "webhooks",
 ]
@@ -105,4 +109,8 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 100,
+}
+
+GRAPHENE = {
+    "SCHEMA": "cities.schema.schema",
 }

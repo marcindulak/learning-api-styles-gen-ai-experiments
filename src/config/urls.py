@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from django.contrib import admin
 from django.urls import include, path
+from django.views.decorators.csrf import csrf_exempt
+from graphene_django.views import GraphQLView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from cities.feeds import ForecastFeed
@@ -24,5 +26,13 @@ urlpatterns = [
         "feeds/forecast/<str:name>",
         ForecastFeed(),
         name="city-forecast-feed",
+    ),
+    # GraphQL endpoint; FR-002. csrf_exempt because GraphQL clients post
+    # JSON bodies without a CSRF cookie. graphiql=True exposes the in-browser
+    # explorer at the same URL when the request accepts text/html.
+    path(
+        "graphql",
+        csrf_exempt(GraphQLView.as_view(graphiql=True)),
+        name="graphql",
     ),
 ]

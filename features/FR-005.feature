@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-005 Weather alerts via WebSocket
 
   The service publishes weather alerts to subscribers over a WebSocket

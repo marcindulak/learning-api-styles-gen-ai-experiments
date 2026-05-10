@@ -26,6 +26,11 @@ DEBUG = os.environ.get("DEBUG", "False").lower() in {"1", "true", "yes"}
 ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
+    # daphne MUST be listed before django.contrib.staticfiles so its ASGI
+    # `runserver` wrapper replaces Django's default WSGI one (FR-005). The
+    # wrapper serves HTTP and WebSocket on the same port; non-WebSocket
+    # features keep working unchanged.
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -35,6 +40,10 @@ INSTALLED_APPS = [
     # behave_django registers the `manage.py behave` command prescribed by
     # REQUIREMENTS.md ("docker compose exec app python manage.py behave").
     "behave_django",
+    # channels powers the WebSocket consumer that publishes weather alerts
+    # to subscribers (FR-005). The in-memory channel layer below avoids a
+    # Redis dependency; messages stay within the daphne process.
+    "channels",
     "rest_framework",
     # graphene_django registers the GraphQLView used by the /graphql endpoint
     # introduced in FR-002 and reads the schema location from the GRAPHENE
@@ -74,6 +83,18 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
+
+# Channels: the ASGI application that wraps Django's HTTP handler with a
+# WebSocket router (FR-005). The in-memory channel layer keeps all messages
+# inside one daphne process — appropriate for a development/teaching setup;
+# production deployments would point this at channels_redis.
+ASGI_APPLICATION = "config.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
 
 DATABASES = {
     "default": {

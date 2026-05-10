@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: NFR-001 Service operates in a local environment
 
   The service can be built and started on a developer's local machine using

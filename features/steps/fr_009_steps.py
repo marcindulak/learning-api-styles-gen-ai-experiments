@@ -14,8 +14,25 @@ admin-only POST endpoint without standing up JWT.
 from __future__ import annotations
 
 import json
+import urllib.error
+import urllib.request
 
 from behave import given, then, when
+
+
+class _LiveHttpResponse:
+    """Adapter exposing the subset of Django's response surface used by steps.
+
+    NFR-001 (and any future scenario whose URL begins with ``http://`` or
+    ``https://``) makes a real network request to the running container's
+    runserver, which serves the dev database — distinct from behave-django's
+    in-process test database. The two attributes ``status_code`` and
+    ``content`` are the only ones the existing assertion steps rely on.
+    """
+
+    def __init__(self, status_code: int, content: bytes) -> None:
+        self.status_code = status_code
+        self.content = content
 
 
 def _decode_json(context):
@@ -55,8 +72,17 @@ def step_authenticated_as_admin(context) -> None:
 
 @when('a client sends GET to "{path}"')
 def step_client_get(context, path: str) -> None:
-    context.response = context.client.get(path)
-    context.response_json = None
+    if path.startswith("http://") or path.startswith("https://"):
+        # NFR-001 verifies the actually running runserver process, not the
+        # in-process WSGI app the Django test client routes to. urllib is in
+        # the standard library so no third-party dependency is added.
+        try:
+            with urllib.request.urlopen(path, timeout=5) as resp:
+                context.response = _LiveHttpResponse(resp.status, resp.read())
+        except urllib.error.HTTPError as exc:
+            context.response = _LiveHttpResponse(exc.code, exc.read())
+    else:
+        context.response = context.client.get(path)
     if hasattr(context, "response_json"):
         del context.response_json
 

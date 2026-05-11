@@ -154,6 +154,7 @@ Note that the difference between the clock and agent time is due to exhausting t
 
 | Date | Outcome | PR | Tool / Version | Agent | Top model | Knowledge cutoff | Duration | Cost | AGENTS.md / rules | Human guidance | MCP | Skills |
 |------|---------|----|----------------|-------|-------|------------------|----------|------|-----------|----------------|-----|--------|
+| 2026-05-09 |poor | [45](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/45) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [35056063](https://github.com/marcindulak/ralph-wiggum-bdd/commit/35056063573ad6e1dcc2ed98e2a555d8b8e9294f) | 2.1.126 (Claude Code) | claude-opus-4-7 xhigh | Jan 2026 "Reliable knowledge cutoff", and Jan 2026 "Training data cutoff" | About 33 hours clock time (about 6 hours agent time) | $17 USD (about 85% of Pro weekly plan) | Yes | Yes | No | No
 | 2026-03-25 |poor/fair | [37](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/37) | [superpowers](https://github.com/obra/superpowers) / [5.0.6](https://github.com/obra/superpowers/releases/tag/v5.0.6) | 2.1.58 (Claude Code) | claude-sonnet-4-6 | Aug 2025 "Reliable knowledge cutoff", and Jan 2026 "Training data cutoff" | About 4 hours clock time (about 2 hours agent time) | $8 USD (about 30% of Pro weekly plan) | No | No | No | Yes
 | 2026-03-08 |poor | [29](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/29) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [452f044](https://github.com/marcindulak/ralph-wiggum-bdd/commit/452f0446283b6f52d88b247aefb79490ba7809e6) | 2.1.39 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 7 hours clock time (about 4 hours agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | Yes | No | No
 | 2026-03-02 |poor | [25](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/25) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [452f044](https://github.com/marcindulak/ralph-wiggum-bdd/commit/452f0446283b6f52d88b247aefb79490ba7809e6) | 2.1.39 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 6 hours clock time (about 5 hours agent time) | $8 USD (about 30% of Pro weekly plan) | Yes | Yes | No | No
@@ -163,6 +164,96 @@ Note that the difference between the clock and agent time is due to exhausting t
 | 2026-02-06 |poor/fair | [14](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/14) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [d469a02](https://github.com/marcindulak/ralph-wiggum-bdd/commit/d469a020c72646590f156dfaa39f82f677316afd) | 2.1.17 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 7 hours clock time (about 3 hours agent time) | $5 USD (about 20% of Pro weekly plan) | Yes | No | No | No
 | 2026-01-31 |poor | [8](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/8) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [542a1ca](https://github.com/marcindulak/ralph-wiggum-bdd/commit/542a1ca9640cf1e59eb31eaaa51be95a85fb84bf) | 2.1.17 (Claude Code) | claude-opus-4-5-20251101 | May 2025 "Reliable knowledge cutoff", and Aug 2025 "Training data cutoff" | About 12 hours clock time (about 5 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | No | No | No
 | 2026-01-18 |poor | [1](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/1) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / Experimental | 2.1.9 (Claude Code) | claude-haiku-4-5-20251001 | Feb 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 11 hours clock time (about 7 hours agent time) | $10 USD (about 40% of Pro weekly plan) | No | Yes | No | No
+
+## 2026-05-09
+
+Outcome: poor
+
+```
+tokei --types='Python,Gherkin (Cucumber)' src
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Gherkin (Cucumber)       17          355          299            0           56
+ Python                   52         3511         2612          273          626
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    69         3866         2911          273          682
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ruff check src/ --select C90 --output-format=concise
+All checks passed!
+```
+
+The code is organized into a `cities` app and a `webhooks` app, with standard Django `config/` for settings. Within `cities`, each API style has its own file: `views.py` for city CRUD, `weather.py` for weather sub-resource REST endpoints, `schema.py` for GraphQL, `feeds.py` for the Atom 1.0 feed, and `consumers.py` for WebSocket, which allows studying each style independently.
+
+The Webhook handler is extracted into a separate `webhooks` app with its own event-log model.
+That split is undesirable because a reader comparing API styles must navigate outside `cities/` to find the one remaining style, and a single endpoint does not justify a separate Django app.
+
+The current weather, forecast, Atom feed, and GraphQL endpoints return placeholder data.
+Only the history endpoint reads real database rows.
+The three data sources: placeholder, live third-party provider, and database are used inconsistently across endpoints, which makes the code harder to follow for a reader learning API styles.
+
+The code is sufficiently commented, with comments explaining non-obvious implementation choices rather than restating what the code does.
+
+```
+tree -L 2 src/
+src/
+├── cities
+│   ├── admin.py
+│   ├── apps.py
+│   ├── consumers.py
+│   ├── feeds.py
+│   ├── __init__.py
+│   ├── migrations
+│   ├── models.py
+│   ├── providers.py
+│   ├── routing.py
+│   ├── schema.py
+│   ├── seed.py
+│   ├── serializers.py
+│   ├── urls.py
+│   ├── views.py
+│   └── weather.py
+├── config
+│   ├── asgi.py
+│   ├── asyncapi.py
+│   ├── __init__.py
+│   ├── postgres.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── features
+├── manage.py
+├── scripts
+│   ├── healthcheck.sh
+│   ├── startup.sh
+│   └── tls_forwarder.py
+└── webhooks
+    ├── apps.py
+    ├── __init__.py
+    ├── migrations
+    ├── models.py
+    ├── urls.py
+    └── views.py
+```
+
+All functional and non-functional requirements were covered by tests.
+
+The agent correctly discovered that Docker commands were blocked, but tried to bypass the instructions to use Docker included in REQUIREMENTS.md.
+Instead the agent first used a throw-away Docker container based on python:3.13-slim image, and then tried to install pip, and needed to be interrupted by the human to enforce the use of Docker commands described in REQUIREMENTS.md.
+The agent correctly switched to "WORKDIR=/app" in Dockerfile, but unnecessarily modified mounts in `compose.yaml`, and kept adding more mounts, not realizing this was unnecessary if original `compose.yaml` was kept.
+
+The agent chose the current [Django 5.2](https://docs.djangoproject.com/en/6.0/releases/5.2.14/) LTS release, used relaxed requirements.txt constrains to major-version compatibility, but decided to use the unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) library.
+
+The agent most of the time [failed to add the commit attribution](https://github.com/anthropics/claude-code/issues/58033), despite no `attribution` setting present.
+The agent sanbox generated also and left [empty dotfiles](https://github.com/anthropic-experimental/sandbox-runtime/issues/139).
+
+Behave tests passed for `TLS_ENABLE=1`, and failed for `TLS_ENABLE=0` in `compose.yaml`.
+
+See the screen recording of the session.
+The video doesn't represent the clock time, the long periods when there are no changes on the terminal are trimmed away.
+
+[![Watch Video 2026-05-09 Part1](images/2026-05-09-01.png)](https://www.youtube.com/watch?v=FLlbgmkYtws)
 
 ## 2026-03-25
 

@@ -6,6 +6,7 @@ ARG PY_VER
 ARG APP_TLS_CERTS_DIR=/etc/wfs/ssl/certs \
     APP_TLS_PRICATE_DIR=/etc/wfs/ssl/private \
     APP_PORT_HTTP=8000 \
+    APP_PORT_HTTPS=8443 \
     APP_PORT_WS=8001 \
     ENVIRONMENT=development \
     GID=1000 \
@@ -13,11 +14,12 @@ ARG APP_TLS_CERTS_DIR=/etc/wfs/ssl/certs \
     TLS_ENABLE=1 \
     UID=1000 \
     USER=nonroot \
-    WORKDIR=app
+    WORKDIR=/app
 
 ENV APP_TLS_CERTS_DIR=$APP_TLS_CERTS_DIR \
     APP_TLS_PRICATE_DIR=$APP_TLS_PRICATE_DIR \
     APP_PORT_HTTP=$APP_PORT_HTTP \
+    APP_PORT_HTTPS=$APP_PORT_HTTPS \
     APP_PORT_WS=$APP_PORT_WS \
     ENVIRONMENT=$ENVIRONMENT \
     PYTHONIOENCODING=UTF-8 \
@@ -84,7 +86,7 @@ RUN python -m pip install --upgrade pip -r ${WORKDIR}/requirements.txt --no-cach
 # Assert the expected python version
 RUN test $(python -c 'import sys; version=sys.version_info[:2]; print(f"{version[0]}.{version[1]}")') = ${PY_VER}
 
-EXPOSE ${APP_PORT_HTTP} ${APP_PORT_WS}
+EXPOSE ${APP_PORT_HTTP} ${APP_PORT_HTTPS} ${APP_PORT_WS}
 VOLUME ${WORKDIR}
 
 HEALTHCHECK CMD ${WORKDIR}/scripts/healthcheck.sh || exit 1

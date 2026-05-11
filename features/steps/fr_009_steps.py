@@ -1,0 +1,182 @@
+"""Step definitions for FR-009: Weather data limited to the 5 biggest cities.
+
+Reuses the ``the service is running`` and ``the response status is N``
+steps from FR-007. Adds steps for inspecting JSON response bodies, for
+authenticating an admin via Django session login, and for asserting
+that the seed migration has registered the five supported cities.
+
+The test client used here is :class:`django.test.Client` (created in
+``features/environment.py``). DRF accepts session authentication out of
+the box, so a successful ``client.login`` is enough to exercise the
+admin-only POST endpoint without standing up JWT.
+"""
+
+from __future__ import annotations
+
+import json
+import urllib.error
+import urllib.request
+
+from behave import given, then, when
+
+
+class _LiveHttpResponse:
+    """Adapter exposing the subset of Django's response surface used by steps.
+
+    NFR-001 (and any future scenario whose URL begins with ``http://`` or
+    ``https://``) makes a real network request to the running container's
+    runserver, which serves the dev database — distinct from behave-django's
+    in-process test database. The two attributes ``status_code`` and
+    ``content`` are the only ones the existing assertion steps rely on.
+    """
+
+    def __init__(self, status_code: int, content: bytes) -> None:
+        self.status_code = status_code
+        self.content = content
+
+
+def _decode_json(context):
+    """Parse the latest response body as JSON, caching it on the context."""
+
+    if not hasattr(context, "response_json"):
+        context.response_json = json.loads(
+            context.response.content.decode("utf-8")
+        )
+    return context.response_json
+
+
+@given('the 5 supported cities are already registered')
+def step_five_cities_registered(context) -> None:
+    # The data migration ``cities/migrations/0002_seed_cities`` populates
+    # the five rows; this step is an explicit precondition assertion so a
+    # missing or altered migration surfaces with a clear failure message.
+    from cities.models import SUPPORTED_CITY_LIMIT, City
+
+    actual = City.objects.count()
+    assert actual == SUPPORTED_CITY_LIMIT, (
+        f"Expected {SUPPORTED_CITY_LIMIT} seeded cities, found {actual}."
+    )
+
+
+@given('the user is authenticated as admin')
+def step_authenticated_as_admin(context) -> None:
+    from django.contrib.auth import get_user_model
+
+    user_model = get_user_model()
+    # Use a fixed username/password pair scoped to this scenario only;
+    # the surrounding ``before_scenario`` transaction rolls it back.
+    user_model.objects.create_superuser(username="admin", password="admin-pass")
+    logged_in = context.client.login(username="admin", password="admin-pass")
+    assert logged_in, "Admin session login failed."
+
+
+@when('a client sends GET to "{path}"')
+def step_client_get(context, path: str) -> None:
+    if path.startswith("http://") or path.startswith("https://"):
+        # NFR-001 verifies the actually running runserver process, not the
+        # in-process WSGI app the Django test client routes to. urllib is in
+        # the standard library so no third-party dependency is added.
+        try:
+            with urllib.request.urlopen(path, timeout=5) as resp:
+                context.response = _LiveHttpResponse(resp.status, resp.read())
+        except urllib.error.HTTPError as exc:
+            context.response = _LiveHttpResponse(exc.code, exc.read())
+    else:
+        context.response = context.client.get(path)
+    if hasattr(context, "response_json"):
+        del context.response_json
+
+
+@when('the admin sends POST to "{path}" with a payload for a city named "{name}"')
+def step_admin_post_city(context, path: str, name: str) -> None:
+    # Body mirrors the example payload in REQUIREMENTS.md so the test
+    # exercises the same shape an end-to-end curl would send.
+    payload = {
+        "name": name,
+        "country": "Denmark",
+        "region": "Europe",
+        "timezone": "Europe/Copenhagen",
+        "latitude": "55.676100",
+        "longitude": "12.568300",
+    }
+    context.response = context.client.post(
+        path,
+        data=json.dumps(payload),
+        content_type="application/json",
+    )
+    if hasattr(context, "response_json"):
+        del context.response_json
+
+
+def _resolve_path(body, key: str):
+    """Walk a dotted/indexed key path like ``results[0].temperature``.
+
+    Plain attribute names (``count``) and indexed segments
+    (``results[0]``) are both supported. Duplicated in fr_006_steps for
+    readability — behave loads step files via exec rather than the
+    import system, so a shared helper module is awkward.
+    """
+
+    current = body
+    for segment in key.split("."):
+        index = None
+        if "[" in segment and segment.endswith("]"):
+            attr, _, rest = segment.partition("[")
+            index = int(rest[:-1])
+        else:
+            attr = segment
+        if not isinstance(current, dict) or attr not in current:
+            raise KeyError(
+                f"Cannot resolve {key!r}: missing {attr!r} in {current!r}."
+            )
+        current = current[attr]
+        if index is not None:
+            if not isinstance(current, list) or index >= len(current):
+                raise KeyError(
+                    f"Cannot resolve {key!r}: index {index} out of range "
+                    f"in {current!r}."
+                )
+            current = current[index]
+    return current
+
+
+@then('the response body has a key "{key}" with the value {value:g}')
+def step_response_key_numeric_value(context, key: str, value: float) -> None:
+    # ``key`` may be a dotted/indexed path such as ``results[0].temperature``
+    # so FR-006 can assert nested values without a separate step phrasing.
+    # ``{value:g}`` matches both integers (FR-009 ``count == 5``) and floats
+    # (FR-006 ``temperature == 5.0``); Python's ``5 == 5.0`` makes the
+    # equality check correct in both cases.
+    body = _decode_json(context)
+    actual = _resolve_path(body, key)
+    assert isinstance(actual, (int, float)) and not isinstance(actual, bool), (
+        f"Expected numeric value at {key!r}, got {actual!r} "
+        f"({type(actual).__name__})."
+    )
+    assert float(actual) == float(value), (
+        f"Expected {key}={value}, got {actual!r}."
+    )
+
+
+@then('the response body has a key "{key}" with a value containing "{substring}"')
+def step_response_key_substring(context, key: str, substring: str) -> None:
+    body = _decode_json(context)
+    assert key in body, f"Key {key!r} not found; body keys: {list(body)}"
+    actual = body[key]
+    assert substring in str(actual), (
+        f"Expected substring {substring!r} in {key}={actual!r}."
+    )
+
+
+@then('the response body has a key "results" listing exactly the city names {names}')
+def step_results_city_names(context, names: str) -> None:
+    # ``names`` is the raw Gherkin tail starting with the first quote, e.g.
+    #   "Tokyo", "Delhi", "Shanghai", "Sao Paulo", "Mexico City"
+    # Parse it by splitting on quote pairs to avoid pulling in a regex.
+    expected = {chunk for chunk in names.split('"') if chunk.strip(", ")}
+    body = _decode_json(context)
+    assert "results" in body, f"No 'results' key; body keys: {list(body)}"
+    actual = {row["name"] for row in body["results"]}
+    assert actual == expected, (
+        f"Expected city names {sorted(expected)}, got {sorted(actual)}."
+    )

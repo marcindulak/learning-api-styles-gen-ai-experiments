@@ -93,6 +93,19 @@ Note that the setup includes at least 4 known errors, and they are left on purpo
    git commit -m"Clear README.md"
    ```
 
+   Clear also the findings directory.
+
+   ```
+   git rm -r findings
+   git comit -m"Remove findinds"
+   ```
+
+   Delete any leftover files that may indicate to the agent the project directory structure.
+
+   ```
+   rm -rf app src
+   ```
+
    Locally delete all experiment local and remote branches, to discourage the agent from peeking into them.
 
    ```
@@ -136,6 +149,8 @@ Note that the setup includes at least 4 known errors, and they are left on purpo
    ```
 
 # Experiments
+
+Note that the difference between the clock and agent time is due to exhausting the session usage limits, and the need to wait.
 
 | Date | Outcome | PR | Tool / Version | Agent | Top model | Knowledge cutoff | Duration | Cost | AGENTS.md / rules | Human guidance | MCP | Skills |
 |------|---------|----|----------------|-------|-------|------------------|----------|------|-----------|----------------|-----|--------|

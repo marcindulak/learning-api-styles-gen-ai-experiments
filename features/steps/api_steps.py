@@ -1,0 +1,185 @@
+"""Steps for the service's web APIs (REST, GraphQL).
+
+Scenario fixtures are created through the Django ORM, so they exist in
+the behave test database. Relative URL paths are therefore resolved
+against context.base_url — the behave-django live server backed by that
+same test database. Absolute URLs keep pointing at the real service.
+"""
+import parse
+import requests
+from behave import given, register_type, then, when
+from django.utils import timezone
+
+from weather.models import City, WeatherRecord
+
+
+@parse.with_pattern(r'[^"]*')
+def parse_quoted(text):
+    return text
+
+
+# A placeholder that cannot cross a quote boundary, so steps sharing the
+# prefix 'a client sends a GET request to "..."' are not ambiguous.
+register_type(Q=parse_quoted)
+
+# Reference data for cities used in scenarios.
+KNOWN_CITIES = {
+    "Tokyo": {
+        "country": "Japan",
+        "region": "Asia",
+        "timezone": "Asia/Tokyo",
+        "latitude": 35.6762,
+        "longitude": 139.6503,
+    },
+    "Delhi": {
+        "country": "India",
+        "region": "Asia",
+        "timezone": "Asia/Kolkata",
+        "latitude": 28.7041,
+        "longitude": 77.1025,
+    },
+    "Shanghai": {
+        "country": "China",
+        "region": "Asia",
+        "timezone": "Asia/Shanghai",
+        "latitude": 31.2304,
+        "longitude": 121.4737,
+    },
+    "Sao Paulo": {
+        "country": "Brazil",
+        "region": "South America",
+        "timezone": "America/Sao_Paulo",
+        "latitude": -23.5505,
+        "longitude": -46.6333,
+    },
+    "Mexico City": {
+        "country": "Mexico",
+        "region": "North America",
+        "timezone": "America/Mexico_City",
+        "latitude": 19.4326,
+        "longitude": -99.1332,
+    },
+    "Copenhagen": {
+        "country": "Denmark",
+        "region": "Europe",
+        "timezone": "Europe/Copenhagen",
+        "latitude": 55.6761,
+        "longitude": 12.5683,
+    },
+}
+
+GENERIC_CITY = {
+    "country": "Unknown",
+    "region": "Unknown",
+    "timezone": "UTC",
+    "latitude": 0.0,
+    "longitude": 0.0,
+}
+
+
+def resolve_url(context, path):
+    if path.startswith("http://") or path.startswith("https://"):
+        return path
+    return f"{context.base_url}{path}"
+
+
+def json_path(document, path):
+    value = document
+    for key in path.split("."):
+        assert isinstance(value, dict) and key in value, (
+            f'JSON path "{path}" not found at segment "{key}" in: {document}'
+        )
+        value = value[key]
+    return value
+
+
+@given('a city named "{name}" exists')
+def step_city_exists(context, name):
+    defaults = KNOWN_CITIES.get(name, GENERIC_CITY)
+    city, _ = City.objects.get_or_create(name=name, defaults=defaults)
+    context.city = city
+
+
+@given(
+    'a weather record for "{name}" exists with temperature {temperature:g}, '
+    "humidity {humidity:g}, wind_speed {wind_speed:g}, pressure {pressure:g}, "
+    "precipitation {precipitation:g}"
+)
+def step_weather_record_exists(
+    context, name, temperature, humidity, wind_speed, pressure, precipitation
+):
+    city = City.objects.get(name=name)
+    WeatherRecord.objects.create(
+        city=city,
+        observed_at=timezone.now(),
+        temperature=temperature,
+        humidity=humidity,
+        wind_speed=wind_speed,
+        pressure=pressure,
+        precipitation=precipitation,
+        source="test-fixture",
+    )
+
+
+@when('a client sends a GET request to "{path:Q}"')
+def step_get_request(context, path):
+    context.response = requests.get(resolve_url(context, path), timeout=10)
+
+
+@when('a client sends a GET request to "{path:Q}" for the city "{name:Q}"')
+def step_get_request_for_city(context, path, name):
+    city = City.objects.get(name=name)
+    path = path.replace("<city_uuid>", str(city.uuid))
+    context.response = requests.get(resolve_url(context, path), timeout=10)
+
+
+@when(
+    'a client sends a GraphQL query for the current weather of "{name}" '
+    'to "{path}" requesting fields "{fields}"'
+)
+def step_graphql_weather_query(context, name, path, fields):
+    query = f'{{ weather(cityName: "{name}") {{ {fields} }} }}'
+    context.response = requests.post(
+        resolve_url(context, path), json={"query": query}, timeout=10
+    )
+
+
+@then('the response content type is "{expected}"')
+def step_response_content_type(context, expected):
+    actual = context.response.headers.get("Content-Type", "")
+    assert actual.startswith(expected), (
+        f'expected content type "{expected}", got "{actual}"'
+    )
+
+
+@then('the response JSON contains the field "{field}" with value {expected:g}')
+def step_response_json_field_number(context, field, expected):
+    body = context.response.json()
+    assert field in body, f'field "{field}" not in response JSON: {body}'
+    actual = body[field]
+    assert actual == expected, f"expected {field}={expected}, got {actual}"
+
+
+@then(
+    'the response JSON field "{field}" contains an entry '
+    'with "{key}" equal to "{value}"'
+)
+def step_response_json_list_entry(context, field, key, value):
+    body = context.response.json()
+    assert field in body, f'field "{field}" not in response JSON: {body}'
+    entries = [entry for entry in body[field] if entry.get(key) == value]
+    assert entries, f'no entry with {key}="{value}" in "{field}": {body[field]}'
+    context.matched_entry = entries[0]
+
+
+@then('that entry contains a non-empty "{field}" field')
+def step_matched_entry_non_empty_field(context, field):
+    entry = context.matched_entry
+    assert entry.get(field), f'entry field "{field}" is empty or missing: {entry}'
+
+
+@then('the response JSON path "{path}" equals {expected:g}')
+def step_response_json_path_equals(context, path, expected):
+    body = context.response.json()
+    actual = json_path(body, path)
+    assert actual == expected, f'expected JSON path "{path}"={expected}, got {actual}'

@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-001 Service exposes common weather indicators via various web APIs
   The service exposes common weather indicators (temperature, humidity,
   wind speed, pressure, precipitation) for a city through both a REST API

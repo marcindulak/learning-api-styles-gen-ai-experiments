@@ -4,3 +4,5 @@ old
 *.py[c,d,o]
 .docker
 .vagrant
+# Electronic Lab Notebook - local only, never committed
+ELN.md

@@ -8,6 +8,7 @@ from config.webhooks import github_webhook
 from weather.schema import schema
 from weather.views import (
     CityDetailView,
+    CityForecastView,
     CityListView,
     CityWeatherHistoryView,
     CityWeatherView,
@@ -27,6 +28,11 @@ urlpatterns = [
         "api/cities/<uuid:uuid>/weather/history",
         CityWeatherHistoryView.as_view(),
         name="city-weather-history",
+    ),
+    path(
+        "api/cities/<uuid:uuid>/forecast",
+        CityForecastView.as_view(),
+        name="city-forecast",
     ),
     path(
         "graphql",

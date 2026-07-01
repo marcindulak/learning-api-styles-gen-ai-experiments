@@ -1,11 +1,16 @@
-from datetime import date, datetime, time, timezone
+from datetime import date, datetime, time, timedelta, timezone
 
 from django.shortcuts import get_object_or_404
+from django.utils import timezone as django_timezone
 from rest_framework import generics
 from rest_framework.exceptions import NotFound, ValidationError
 
-from weather.models import City
-from weather.serializers import CitySerializer, WeatherRecordSerializer
+from weather.models import MAX_FORECAST_DAYS, City
+from weather.serializers import (
+    CitySerializer,
+    ForecastRecordSerializer,
+    WeatherRecordSerializer,
+)
 
 
 class CityListView(generics.ListAPIView):
@@ -72,3 +77,37 @@ class CityWeatherHistoryView(generics.ListAPIView):
             return date.fromisoformat(value)
         except ValueError:
             raise ValidationError({name: "must be an ISO date (YYYY-MM-DD)."})
+
+
+class CityForecastView(generics.ListAPIView):
+    """Daily forecast records of a city, at most MAX_FORECAST_DAYS ahead."""
+
+    serializer_class = ForecastRecordSerializer
+
+    def get_queryset(self):
+        city = get_object_or_404(City, uuid=self.kwargs["uuid"])
+        days = self._days_param()
+        today = django_timezone.localdate()
+        return city.forecast_records.filter(
+            forecast_date__gte=today,
+            forecast_date__lte=today + timedelta(days=days),
+        ).order_by("forecast_date")
+
+    def _days_param(self):
+        value = self.request.query_params.get("days")
+        if value is None:
+            return MAX_FORECAST_DAYS
+        try:
+            days = int(value)
+        except ValueError:
+            raise ValidationError({"days": "must be an integer."})
+        if days < 1 or days > MAX_FORECAST_DAYS:
+            raise ValidationError(
+                {
+                    "days": (
+                        f"must be between 1 and the maximum of "
+                        f"{MAX_FORECAST_DAYS} days."
+                    )
+                }
+            )
+        return days

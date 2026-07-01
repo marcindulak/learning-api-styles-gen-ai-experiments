@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-009 Weather forecast is limited to up to 7 days
   The service provides weather forecasts covering at most 7 days ahead.
   Forecast queries never return entries further than 7 days in the future.

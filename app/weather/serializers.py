@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from weather.models import City, WeatherRecord
+from weather.models import City, ForecastRecord, WeatherRecord
 
 
 class CitySerializer(serializers.ModelSerializer):
@@ -27,5 +27,16 @@ class WeatherRecordSerializer(serializers.ModelSerializer):
             "wind_speed",
             "pressure",
             "precipitation",
+            "source",
+        ]
+
+
+class ForecastRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ForecastRecord
+        fields = [
+            "forecast_date",
+            "temperature_min",
+            "temperature_max",
             "source",
         ]

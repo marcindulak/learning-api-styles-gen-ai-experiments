@@ -10,9 +10,10 @@ from datetime import date, datetime, time, timedelta, timezone as dt_timezone
 import parse
 import requests
 from behave import given, register_type, then, when
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 
-from weather.models import City, WeatherRecord
+from weather.models import City, ForecastRecord, WeatherRecord
 
 
 @parse.with_pattern(r'[^"]*')
@@ -140,6 +141,78 @@ def step_weather_records_for_date_range(context, name, start, end):
             source="test-fixture",
         )
         day += timedelta(days=1)
+
+
+@given('forecast records for "{name:Q}" exist for the next 7 days')
+def step_forecast_records_next_seven_days(context, name):
+    city = City.objects.get(name=name)
+    today = timezone.localdate()
+    for day in range(1, 8):
+        ForecastRecord.objects.get_or_create(
+            city=city,
+            forecast_date=today + timedelta(days=day),
+            defaults={
+                "temperature_min": 15.0,
+                "temperature_max": 25.0,
+                "source": "test-fixture",
+            },
+        )
+
+
+@when(
+    'an attempt is made to store a forecast record for "{name:Q}" '
+    "with a forecast_date {days:d} days from today"
+)
+def step_attempt_store_forecast(context, name, days):
+    city = City.objects.get(name=name)
+    context.forecast_validation_error = None
+    try:
+        ForecastRecord.objects.create(
+            city=city,
+            forecast_date=timezone.localdate() + timedelta(days=days),
+            temperature_min=15.0,
+            temperature_max=25.0,
+            source="test-fixture",
+        )
+    except ValidationError as error:
+        context.forecast_validation_error = error
+
+
+@then("the forecast record is rejected with a validation error")
+def step_forecast_rejected(context):
+    assert context.forecast_validation_error is not None, (
+        "expected a ValidationError, but the forecast record was stored"
+    )
+
+
+@then('"{name:Q}" has {count:d} forecast records')
+def step_city_forecast_record_count(context, name, count):
+    city = City.objects.get(name=name)
+    actual = city.forecast_records.count()
+    assert actual == count, (
+        f"expected {count} forecast records for {name}, got {actual}"
+    )
+
+
+@then('every record has a "{field:Q}" within {days:d} days from today')
+def step_every_record_date_within_days(context, field, days):
+    records = context.response.json()["results"]
+    assert records, "no records in the response to check dates of"
+    today = timezone.localdate()
+    horizon = today + timedelta(days=days)
+    for record in records:
+        value = date.fromisoformat(record[field])
+        assert today <= value <= horizon, (
+            f"record {field}={record[field]} is outside [{today}, {horizon}]"
+        )
+
+
+@then("the response JSON contains an error message mentioning the maximum of 7 days")
+def step_response_mentions_seven_day_maximum(context):
+    body = context.response.text
+    assert "maximum" in body and "7" in body and "day" in body, (
+        f"response does not mention the maximum of 7 days: {body}"
+    )
 
 
 @when('a client sends a GET request to "{path:Q}"')

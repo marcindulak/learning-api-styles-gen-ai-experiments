@@ -12,6 +12,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "insecure-development-only-key")
 
 DEBUG = os.environ.get("DEBUG", "False").lower() in ("1", "true", "yes")
 
+# Shared secret for verifying GitHub webhook delivery signatures.
+WEBHOOK_SECRET = os.environ.get("WEBHOOK_SECRET", "")
+
 ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [

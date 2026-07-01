@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-002 Service integrates with GitHub via webhooks
   The service exposes a webhook endpoint that accepts GitHub webhook
   deliveries, verifies the HMAC signature using the shared webhook secret,

@@ -4,11 +4,13 @@ from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
 
 from config.views import health
+from config.webhooks import github_webhook
 from weather.schema import schema
 from weather.views import CityDetailView, CityListView, CityWeatherView
 
 urlpatterns = [
     path("api/health", health, name="health"),
+    path("api/webhooks/github", github_webhook, name="github-webhook"),
     path("api/cities", CityListView.as_view(), name="city-list"),
     path("api/cities/<uuid:uuid>", CityDetailView.as_view(), name="city-detail"),
     path(

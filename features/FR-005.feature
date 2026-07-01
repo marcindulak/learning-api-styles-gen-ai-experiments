@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-005 Service provides weather historical data
   The service stores weather records with observation timestamps and lets
   clients query historical weather data of a city for a given time range.

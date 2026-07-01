@@ -5,6 +5,8 @@ the behave test database. Relative URL paths are therefore resolved
 against context.base_url — the behave-django live server backed by that
 same test database. Absolute URLs keep pointing at the real service.
 """
+from datetime import date, datetime, time, timedelta, timezone as dt_timezone
+
 import parse
 import requests
 from behave import given, register_type, then, when
@@ -121,6 +123,25 @@ def step_weather_record_exists(
     )
 
 
+@given('weather records for "{name:Q}" exist for each day from "{start:Q}" to "{end:Q}"')
+def step_weather_records_for_date_range(context, name, start, end):
+    city = City.objects.get(name=name)
+    day = date.fromisoformat(start)
+    last = date.fromisoformat(end)
+    while day <= last:
+        WeatherRecord.objects.create(
+            city=city,
+            observed_at=datetime.combine(day, time(hour=12), tzinfo=dt_timezone.utc),
+            temperature=20.0,
+            humidity=60.0,
+            wind_speed=3.0,
+            pressure=1013.0,
+            precipitation=0.0,
+            source="test-fixture",
+        )
+        day += timedelta(days=1)
+
+
 @when('a client sends a GET request to "{path:Q}"')
 def step_get_request(context, path):
     context.response = requests.get(resolve_url(context, path), timeout=10)
@@ -176,6 +197,36 @@ def step_response_json_list_entry(context, field, key, value):
 def step_matched_entry_non_empty_field(context, field):
     entry = context.matched_entry
     assert entry.get(field), f'entry field "{field}" is empty or missing: {entry}'
+
+
+@then('the response JSON field "{field:Q}" contains exactly {count:d} records')
+def step_response_json_field_record_count(context, field, count):
+    body = context.response.json()
+    assert field in body, f'field "{field}" not in response JSON: {body}'
+    actual = len(body[field])
+    assert actual == count, (
+        f'expected exactly {count} records in "{field}", got {actual}: {body[field]}'
+    )
+
+
+@then('every record has an "{field:Q}" timestamp between "{start:Q}" and "{end:Q}"')
+def step_every_record_timestamp_between(context, field, start, end):
+    records = context.response.json()["results"]
+    assert records, "no records in the response to check timestamps of"
+    lower = datetime.fromisoformat(start.replace("Z", "+00:00"))
+    upper = datetime.fromisoformat(end.replace("Z", "+00:00"))
+    for record in records:
+        observed = datetime.fromisoformat(record[field].replace("Z", "+00:00"))
+        assert lower <= observed <= upper, (
+            f'record {field}={record[field]} is outside [{start}, {end}]'
+        )
+
+
+@then('the records are ordered by "{field:Q}" ascending')
+def step_records_ordered_ascending(context, field):
+    records = context.response.json()["results"]
+    values = [record[field] for record in records]
+    assert values == sorted(values), f'records are not ordered by "{field}": {values}'
 
 
 @then('the response JSON path "{path}" equals {expected:g}')

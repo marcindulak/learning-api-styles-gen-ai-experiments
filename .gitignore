@@ -6,3 +6,10 @@ old
 .vagrant
 # Electronic Lab Notebook - local only, never committed
 ELN.md
+# Bind-mount targets docker materializes inside ./app
+app/compose.yaml
+app/docs/
+app/features/
+# Runtime artifacts
+app/staticfiles/
+app/db.sqlite3

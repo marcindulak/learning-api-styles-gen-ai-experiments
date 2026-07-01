@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: NFR-001 Service operates in a local environment
   The service runs entirely on the local machine using containers, with no
   dependency on external hosting. All service ports bind to localhost.

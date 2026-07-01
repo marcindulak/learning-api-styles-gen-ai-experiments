@@ -30,6 +30,15 @@ services:
     volumes:
        - ./app:/app
        - ./docs:/app/docs
+       - ./features:/app/features
+       - ./compose.yaml:/app/compose.yaml:ro
+
+  redis:
+    image: redis:7-alpine
+    container_name: django-redis
+    hostname: django-redis
+    networks:
+      - django_internal
 
   postgres:
     image: postgres:17-alpine

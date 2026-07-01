@@ -1,0 +1,6 @@
+Django>=5.2,<6.0
+psycopg[binary]>=3.2
+behave-django>=1.5
+behave>=1.2.6
+requests>=2.32
+PyYAML>=6.0

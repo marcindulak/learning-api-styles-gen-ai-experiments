@@ -30,12 +30,14 @@ Vagrant.configure(2) do |config|
   end
   config.vm.define "agent" do |machine|
     machine.vm.provision :shell, :inline => "hostnamectl set-hostname agent", run: "always"
-    machine.vm.provision :shell, :inline => "fallocate -l 512M /swapfile"
-    machine.vm.provision :shell, :inline => "dd if=/dev/zero of=/swapfile bs=1M count=512"
-    machine.vm.provision :shell, :inline => "chmod 600 /swapfile"
-    machine.vm.provision :shell, :inline => "mkswap /swapfile"
+    machine.vm.provision :shell, :inline => "swapoff --verbose --all", run: "always"
+    machine.vm.provision :shell, :inline => "fallocate -l 2G /swapfile", run: "always"
+    machine.vm.provision :shell, :inline => "dd if=/dev/zero of=/swapfile bs=1M count=2048", run: "always"
+    machine.vm.provision :shell, :inline => "chmod 600 /swapfile", run: "always"
+    machine.vm.provision :shell, :inline => "mkswap /swapfile", run: "always"
     machine.vm.provision :shell, :inline => "echo '/swapfile swap swap defaults 0 0' >> /etc/fstab"
-    machine.vm.provision :shell, :inline => "swapon --show", run: "always"
+    machine.vm.provision :shell, :inline => "swapon --verbose --all", run: "always"
+    machine.vm.provision :shell, :inline => "swapon --verbose --show", run: "always"
     # https://github.com/AlmaLinux/cloud-images/issues/295
     machine.vm.provision :shell, :inline => "dnf install -y --setopt=install_weak_deps=False cloud-utils-growpart"
     # https://github.com/AlmaLinux/cloud-images/pull/332 - filesystem growth is automatic now
@@ -89,9 +91,6 @@ Vagrant.configure(2) do |config|
     machine.vm.provision :shell, :inline => "sed -i 's/ install / install --force /' /tmp/install.sh"
     machine.vm.provision :shell, :inline => "cat /tmp/install.sh | su - vagrant -c 'bash -s stable'"
     machine.vm.provision :shell, :inline => "su - vagrant -c 'claude --version'"
-    machine.vm.provision :shell, :inline => "echo 'export GEMINI_TELEMETRY_ENABLED=false' >> ~vagrant/.bashrc"
-    machine.vm.provision :shell, :inline => "su - vagrant -c 'npm install -g @google/gemini-cli'"
-    machine.vm.provision :shell, :inline => "su - vagrant -c 'gemini --version'"
     machine.vm.provision :shell, :inline => "su - vagrant -c 'npm i -g @openai/codex'"
     machine.vm.provision :shell, :inline => "su - vagrant -c 'codex --version'"
   end

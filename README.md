@@ -93,11 +93,11 @@ Note that the setup includes at least 4 known errors, and they are left on purpo
    git commit -m"Clear README.md"
    ```
 
-   Clear also the findings directory.
+   Clear also the findings and images directories.
 
    ```
-   git rm -r findings
-   git comit -m"Remove findinds"
+   git rm -r findings images
+   git comit -m"Remove findinds and images"
    ```
 
    Delete any leftover files that may indicate to the agent the project directory structure.

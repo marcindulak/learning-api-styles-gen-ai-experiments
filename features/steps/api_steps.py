@@ -86,6 +86,14 @@ def resolve_url(context, path):
     return f"{context.base_url}{path}"
 
 
+def record_http_exchange(context, response):
+    # Scenario-scoped log of HTTP exchanges, so multi-request scenarios
+    # (e.g. NFR-003) can assert over every response of the scenario.
+    if not hasattr(context, "http_exchanges"):
+        context.http_exchanges = []
+    context.http_exchanges.append(response)
+
+
 def json_path(document, path):
     value = document
     for key in path.split("."):
@@ -218,6 +226,7 @@ def step_response_mentions_seven_day_maximum(context):
 @when('a client sends a GET request to "{path:Q}"')
 def step_get_request(context, path):
     context.response = requests.get(resolve_url(context, path), timeout=10)
+    record_http_exchange(context, context.response)
 
 
 @when('a client sends a GET request to "{path:Q}" for the city "{name:Q}"')

@@ -10,6 +10,7 @@ ELN.md
 app/compose.yaml
 app/docs/
 app/features/
+app/Dockerfile
 # Runtime artifacts
 app/staticfiles/
 app/db.sqlite3

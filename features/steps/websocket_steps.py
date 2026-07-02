@@ -29,6 +29,11 @@ register_type(Q=parse_quoted)
 def ws_connect(context, path):
     connection = websocket.create_connection(f"{WS_BASE_URL}{path}", timeout=10)
     context.add_cleanup(connection.close)
+    # Scenario-scoped log of connected paths, so NFR-003 can replay the
+    # handshake against the application container by hostname.
+    if not hasattr(context, "ws_paths"):
+        context.ws_paths = []
+    context.ws_paths.append(path)
     return connection
 
 

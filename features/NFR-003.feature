@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: NFR-003 Service is deployed as one unit
   The service is a monolith: a single application container provides all
   APIs (REST, GraphQL, Atom feed, WebSocket, webhooks, CMS), backed by

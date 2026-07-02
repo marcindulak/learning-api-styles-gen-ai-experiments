@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-008 Weather data is limited to the 5 biggest cities in the world
   Automatic weather data collection covers only the 5 biggest cities in the
   world by metropolitan population: Tokyo, Delhi, Shanghai, Sao Paulo, and

@@ -282,6 +282,11 @@ def step_response_json_field_record_count(context, field, count):
     )
 
 
+@then('the response JSON field "{field:Q}" contains exactly {count:d} record')
+def step_response_json_field_record_count_singular(context, field, count):
+    step_response_json_field_record_count(context, field, count)
+
+
 @then('every record has an "{field:Q}" timestamp between "{start:Q}" and "{end:Q}"')
 def step_every_record_timestamp_between(context, field, start, end):
     records = context.response.json()["results"]

@@ -17,6 +17,12 @@ class City(models.Model):
     timezone = models.CharField(max_length=64)
     latitude = models.FloatField()
     longitude = models.FloatField()
+    is_seeded = models.BooleanField(
+        default=False,
+        editable=False,
+        help_text="Seeded by the city seed task; only seeded cities are "
+        "covered by automatic weather data collection",
+    )
 
     class Meta:
         verbose_name_plural = "cities"

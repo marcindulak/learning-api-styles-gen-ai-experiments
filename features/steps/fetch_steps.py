@@ -50,7 +50,7 @@ class StubWeatherAPIHandler(BaseHTTPRequestHandler):
         except (KeyError, ValueError):
             self._respond(400, {"reason": "missing coordinates"})
             return
-        payloads = config["cities"].get(key)
+        payloads = config["cities"].get(key, config.get("default"))
         if payloads is None:
             self._respond(404, {"reason": "no data for these coordinates"})
             return
@@ -231,3 +231,65 @@ def step_fetch_task_reports_failure(context, name):
     assert name in str(context.fetch_error), (
         f'failure message does not mention "{name}": {context.fetch_error}'
     )
+
+
+@given("the city seed task has run")
+@when("the city seed task runs again")
+def step_run_city_seed_task(context):
+    call_command("seed_cities")
+
+
+@given('an admin-created city named "{name:Q}" exists')
+def step_admin_created_city(context, name):
+    # An admin-created city is a non-seeded one: neither the admin form
+    # nor the REST serializer can set the editable=False is_seeded field.
+    City.objects.get_or_create(
+        name=name,
+        defaults={
+            "country": "Unknown",
+            "region": "Unknown",
+            "timezone": "UTC",
+            "latitude": 0.0,
+            "longitude": 0.0,
+        },
+    )
+
+
+@given("the third-party weather API returns valid weather data for any coordinates")
+def step_stub_valid_weather_any_coordinates(context):
+    config = stub_weather_api(context)
+    config["default"] = {
+        "current": {
+            "time": timezone.now().strftime("%Y-%m-%dT%H:%M"),
+            "temperature_2m": 21.5,
+            "relative_humidity_2m": 55.0,
+            "wind_speed_10m": 4.2,
+            "surface_pressure": 1012.0,
+            "precipitation": 0.0,
+        }
+    }
+
+
+@when("the weather data fetch task runs for all cities")
+def step_run_weather_fetch_all(context):
+    context.fetch_error = None
+    try:
+        call_command("fetch_weather", "--all")
+    except CommandError as error:
+        context.fetch_error = error
+
+
+@then(
+    'each of the cities "{first:Q}", "{second:Q}", "{third:Q}", '
+    '"{fourth:Q}", "{fifth:Q}" has at least 1 weather record'
+)
+def step_cities_have_at_least_one_weather_record(
+    context, first, second, third, fourth, fifth
+):
+    for name in (first, second, third, fourth, fifth):
+        city = City.objects.get(name=name)
+        actual = city.weather_records.count()
+        assert actual >= 1, (
+            f"expected at least 1 weather record for {name}, got {actual}; "
+            f"fetch error: {getattr(context, 'fetch_error', None)}"
+        )

@@ -5,6 +5,7 @@ from graphene_django.views import GraphQLView
 
 from config.views import health
 from config.webhooks import github_webhook
+from weather.feeds import CityForecastFeed
 from weather.schema import schema
 from weather.views import (
     CityDetailView,
@@ -33,6 +34,11 @@ urlpatterns = [
         "api/cities/<uuid:uuid>/forecast",
         CityForecastView.as_view(),
         name="city-forecast",
+    ),
+    path(
+        "api/cities/<uuid:uuid>/forecast/feed",
+        CityForecastFeed(),
+        name="city-forecast-feed",
     ),
     path(
         "graphql",

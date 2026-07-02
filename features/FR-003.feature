@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-003 Service provides weather forecast feed
   The service publishes the weather forecast of a city as an Atom feed
   so that clients can subscribe to forecast updates with a feed reader.

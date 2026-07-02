@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: NFR-002 Service requests can be encrypted or unencrypted
   The service can serve requests over plain HTTP or over TLS-encrypted
   HTTPS, controlled by the TLS_ENABLE environment variable.

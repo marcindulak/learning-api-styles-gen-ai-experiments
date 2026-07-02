@@ -11,6 +11,8 @@ app/compose.yaml
 app/docs/
 app/features/
 app/Dockerfile
+app/README.md
+app/.devcontainer/
 # Runtime artifacts
 app/staticfiles/
 app/db.sqlite3

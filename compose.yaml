@@ -36,6 +36,8 @@ services:
        - ./features:/app/features
        - ./compose.yaml:/app/compose.yaml:ro
        - ./Dockerfile:/app/Dockerfile:ro
+       - ./README.md:/app/README.md:ro
+       - ./.devcontainer:/app/.devcontainer:ro
 
   redis:
     image: redis:7-alpine

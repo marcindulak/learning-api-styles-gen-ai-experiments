@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-006 Service has a content management system for admin user
   The service provides a content management system (the Django admin site)
   where the admin user can manage cities, weather records, forecasts, and

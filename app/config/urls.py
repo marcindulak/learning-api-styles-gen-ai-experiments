@@ -1,4 +1,5 @@
 """URL configuration for the Weather Forecast Service."""
+from django.contrib import admin
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
@@ -17,6 +18,7 @@ from weather.views import (
 )
 
 urlpatterns = [
+    path("admin/", admin.site.urls),
     path("api/health", health, name="health"),
     path("api/jwt/obtain", TokenObtainPairView.as_view(), name="jwt-obtain"),
     path("api/webhooks/github", github_webhook, name="github-webhook"),

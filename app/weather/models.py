@@ -79,6 +79,8 @@ class ForecastRecord(models.Model):
     source = models.CharField(max_length=200, blank=True, default="")
 
     class Meta:
+        verbose_name = "forecast"
+        verbose_name_plural = "forecasts"
         ordering = ["forecast_date"]
         constraints = [
             models.UniqueConstraint(

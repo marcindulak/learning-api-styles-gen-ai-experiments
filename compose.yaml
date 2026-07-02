@@ -29,6 +29,7 @@ services:
       - POSTGRES_USER=postgres
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - WEATHER_API_BASE_URL=${WEATHER_API_BASE_URL:-https://api.open-meteo.com}
     volumes:
        - ./app:/app
        - ./docs:/app/docs

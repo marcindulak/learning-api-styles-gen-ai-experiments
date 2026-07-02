@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-007 Weather records contain actual data
   Weather records are populated with actual data fetched from a third-party
   weather API, rather than being invented by the service.

@@ -15,6 +15,11 @@ DEBUG = os.environ.get("DEBUG", "False").lower() in ("1", "true", "yes")
 # Shared secret for verifying GitHub webhook delivery signatures.
 WEBHOOK_SECRET = os.environ.get("WEBHOOK_SECRET", "")
 
+# Base URL of the third-party weather API (Open-Meteo).
+WEATHER_API_BASE_URL = os.environ.get(
+    "WEATHER_API_BASE_URL", "https://api.open-meteo.com"
+)
+
 ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [

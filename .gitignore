@@ -4,6 +4,24 @@ old
 *.py[c,d,o]
 .docker
 .vagrant
+# Local environment mount artifacts at the repository root (empty placeholders)
+/.bash_profile
+/.bashrc
+/.gitconfig
+/.gitmodules
+/.idea
+/.mcp.json
+/.profile
+/.ripgreprc
+/.vscode
+/.zprofile
+/.zshrc
+# Claude Code local harness files (the shared .claude/settings.json stays tracked)
+/.claude/agents
+/.claude/commands
+/.claude/hooks
+/.claude/skills
+/.claude/settings.local.json
 # Electronic Lab Notebook - local only, never committed
 ELN.md
 # Bind-mount targets docker materializes inside ./app

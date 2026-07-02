@@ -1,0 +1,8 @@
+.cache
+.claude
+.docker
+.git
+.idea
+.vagrant
+.vscode
+old

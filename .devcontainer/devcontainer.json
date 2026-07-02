@@ -1,0 +1,13 @@
+{
+    "name": "Weather Forecast Service",
+    "dockerComposeFile": "../compose.yaml",
+    "service": "app",
+    "workspaceFolder": "/app",
+    "overrideCommand": false,
+    "remoteUser": "nonroot",
+    "forwardPorts": [8000, 8001],
+    "portsAttributes": {
+        "8000": {"label": "HTTP API"},
+        "8001": {"label": "WebSocket"}
+    }
+}

@@ -1,0 +1,17 @@
+Django>=5.2,<6.0
+psycopg[binary]>=3.2
+channels>=4.2
+channels-redis>=4.2
+# redis-py 8 changed blocking-read timeout semantics and breaks
+# channels-redis 4.3 receive loops (consumer crashes with TimeoutError).
+redis>=4.6,<8
+daphne>=4.1
+websocket-client>=1.8
+djangorestframework>=3.16
+djangorestframework-simplejwt>=5.4
+drf-spectacular>=0.28
+graphene-django>=3.2
+behave-django>=1.5
+behave>=1.2.6
+requests>=2.32
+PyYAML>=6.0

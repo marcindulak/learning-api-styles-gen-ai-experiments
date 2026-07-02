@@ -4,3 +4,31 @@ old
 *.py[c,d,o]
 .docker
 .vagrant
+# Local environment mount artifacts at the repository root (empty placeholders)
+/.bash_profile
+/.bashrc
+/.gitconfig
+/.gitmodules
+/.idea
+/.mcp.json
+/.profile
+/.ripgreprc
+/.vscode
+/.zprofile
+/.zshrc
+# Claude Code local harness files (the shared .claude/settings.json stays tracked)
+/.claude/agents
+/.claude/commands
+/.claude/hooks
+/.claude/skills
+/.claude/settings.local.json
+# Bind-mount targets docker materializes inside ./app
+app/compose.yaml
+app/docs/
+app/features/
+app/Dockerfile
+app/README.md
+app/.devcontainer/
+# Runtime artifacts
+app/staticfiles/
+app/db.sqlite3

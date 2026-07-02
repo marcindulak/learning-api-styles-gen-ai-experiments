@@ -20,16 +20,31 @@ services:
       # Avoid special characters since this value is not base64 encoded
       - SECRET_KEY=${SECRET_KEY:-VKnroLzyyjvUk316fuyY2vO8jnrP6obbEjH75PGESQpf2Zwu2SJkGUme1cRj67Hz}
       # Enable TLS by setting TLS_ENABLE=1
-      - TLS_ENABLE=0
+      - TLS_ENABLE=${TLS_ENABLE:-0}
       # Avoid special characters since this value is not base64 encoded
       - WEBHOOK_SECRET=${WEBHOOK_SECRET:-a0tObtQBvNhQjRSbPRZrIkXiooIH2ucIZJeESrRcIFyYOtSV8FKWrAri8djp3CQd}
       - POSTGRES_DB=weather_forecast_service
       - POSTGRES_HOST=postgres
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - POSTGRES_USER=postgres
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - WEATHER_API_BASE_URL=${WEATHER_API_BASE_URL:-https://api.open-meteo.com}
     volumes:
        - ./app:/app
        - ./docs:/app/docs
+       - ./features:/app/features
+       - ./compose.yaml:/app/compose.yaml:ro
+       - ./Dockerfile:/app/Dockerfile:ro
+       - ./README.md:/app/README.md:ro
+       - ./.devcontainer:/app/.devcontainer:ro
+
+  redis:
+    image: redis:7-alpine
+    container_name: django-redis
+    hostname: django-redis
+    networks:
+      - django_internal
 
   postgres:
     image: postgres:17-alpine

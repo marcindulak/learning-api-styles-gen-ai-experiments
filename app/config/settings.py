@@ -18,6 +18,7 @@ WEBHOOK_SECRET = os.environ.get("WEBHOOK_SECRET", "")
 ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -26,9 +27,24 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "graphene_django",
+    "channels",
     "behave_django",
     "weather",
 ]
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                (
+                    os.environ.get("REDIS_HOST", "redis"),
+                    int(os.environ.get("REDIS_PORT", "6379")),
+                )
+            ],
+        },
+    }
+}
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [

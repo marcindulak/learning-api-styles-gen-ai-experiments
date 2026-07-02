@@ -44,6 +44,27 @@ class WeatherRecord(models.Model):
         return f"{self.city.name} at {self.observed_at:%Y-%m-%d %H:%M}"
 
 
+class Alert(models.Model):
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="alerts")
+    title = models.CharField(max_length=200)
+    severity = models.CharField(max_length=20)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def save(self, *args, **kwargs):
+        publishing = self._state.adding
+        super().save(*args, **kwargs)
+        if publishing:
+            from weather.alerts import publish_alert
+
+            publish_alert(self)
+
+    def __str__(self):
+        return f"{self.severity}: {self.title} ({self.city.name})"
+
+
 class ForecastRecord(models.Model):
     city = models.ForeignKey(
         City, on_delete=models.CASCADE, related_name="forecast_records"

@@ -2,6 +2,7 @@
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from config.views import health
 from config.webhooks import github_webhook
@@ -17,6 +18,7 @@ from weather.views import (
 
 urlpatterns = [
     path("api/health", health, name="health"),
+    path("api/jwt/obtain", TokenObtainPairView.as_view(), name="jwt-obtain"),
     path("api/webhooks/github", github_webhook, name="github-webhook"),
     path("api/cities", CityListView.as_view(), name="city-list"),
     path("api/cities/<uuid:uuid>", CityDetailView.as_view(), name="city-detail"),

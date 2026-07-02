@@ -6,6 +6,7 @@ from rest_framework import generics
 from rest_framework.exceptions import NotFound, ValidationError
 
 from weather.models import MAX_FORECAST_DAYS, City
+from weather.permissions import IsAdminOrReadOnly
 from weather.serializers import (
     CitySerializer,
     ForecastRecordSerializer,
@@ -13,8 +14,9 @@ from weather.serializers import (
 )
 
 
-class CityListView(generics.ListAPIView):
+class CityListView(generics.ListCreateAPIView):
     serializer_class = CitySerializer
+    permission_classes = [IsAdminOrReadOnly]
 
     def get_queryset(self):
         queryset = City.objects.order_by("name")
@@ -24,9 +26,10 @@ class CityListView(generics.ListAPIView):
         return queryset
 
 
-class CityDetailView(generics.RetrieveAPIView):
+class CityDetailView(generics.RetrieveDestroyAPIView):
     queryset = City.objects.all()
     serializer_class = CitySerializer
+    permission_classes = [IsAdminOrReadOnly]
     lookup_field = "uuid"
 
 

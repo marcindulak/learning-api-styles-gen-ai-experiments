@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-010 Service has two users: admin, and regular user
   The service distinguishes an admin user and a regular user with
   object-level permissions: the admin user can create, update and delete

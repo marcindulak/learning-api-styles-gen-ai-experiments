@@ -22,8 +22,6 @@ old
 /.claude/hooks
 /.claude/skills
 /.claude/settings.local.json
-# Electronic Lab Notebook - local only, never committed
-ELN.md
 # Bind-mount targets docker materializes inside ./app
 app/compose.yaml
 app/docs/

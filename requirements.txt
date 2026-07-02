@@ -9,6 +9,7 @@ daphne>=4.1
 websocket-client>=1.8
 djangorestframework>=3.16
 djangorestframework-simplejwt>=5.4
+drf-spectacular>=0.28
 graphene-django>=3.2
 behave-django>=1.5
 behave>=1.2.6

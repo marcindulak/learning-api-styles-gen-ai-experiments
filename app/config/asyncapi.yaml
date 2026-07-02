@@ -1,0 +1,50 @@
+asyncapi: 3.0.0
+info:
+  title: Weather Forecast Service Alerts API
+  version: 1.0.0
+  description: >
+    Weather alerts are broadcast to every client connected to the
+    WebSocket endpoint. Clients only receive messages; they do not send
+    any.
+servers:
+  local:
+    host: localhost:8000
+    protocol: ws
+    description: Local docker compose deployment (plain WebSocket).
+channels:
+  alerts:
+    address: /ws/alerts
+    description: Broadcast channel delivering weather alerts to all connected clients.
+    messages:
+      alert:
+        $ref: "#/components/messages/alert"
+operations:
+  receiveAlert:
+    action: receive
+    channel:
+      $ref: "#/channels/alerts"
+    summary: Receive a weather alert broadcast by the service.
+    messages:
+      - $ref: "#/channels/alerts/messages/alert"
+components:
+  messages:
+    alert:
+      name: alert
+      title: Weather alert
+      contentType: application/json
+      payload:
+        type: object
+        required:
+          - title
+          - severity
+          - city
+        properties:
+          title:
+            type: string
+            description: Human-readable alert title.
+          severity:
+            type: string
+            description: Severity level of the alert.
+          city:
+            type: string
+            description: Name of the city the alert applies to.

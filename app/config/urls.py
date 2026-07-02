@@ -2,10 +2,11 @@
 from django.contrib import admin
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from graphene_django.views import GraphQLView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from config.views import health
+from config.views import asyncapi, health
 from config.webhooks import github_webhook
 from weather.feeds import CityForecastFeed
 from weather.schema import schema
@@ -20,6 +21,13 @@ from weather.views import (
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/health", health, name="health"),
+    path("api/schema", SpectacularAPIView.as_view(), name="openapi-schema"),
+    path(
+        "api/docs",
+        SpectacularSwaggerView.as_view(url_name="openapi-schema"),
+        name="api-docs",
+    ),
+    path("api/asyncapi", asyncapi, name="asyncapi"),
     path("api/jwt/obtain", TokenObtainPairView.as_view(), name="jwt-obtain"),
     path("api/webhooks/github", github_webhook, name="github-webhook"),
     path("api/cities", CityListView.as_view(), name="city-list"),

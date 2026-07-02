@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: NFR-005 Service APIs are documented
   The HTTP APIs are documented with an OpenAPI specification and the
   WebSocket API is documented with an AsyncAPI specification. Both

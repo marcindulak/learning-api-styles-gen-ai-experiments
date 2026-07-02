@@ -11,5 +11,8 @@ DATABASES = {
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "postgres"),
         "HOST": os.environ.get("POSTGRES_HOST", "postgres"),
         "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        # A nested "manage.py behave" run (NFR-004) must not reuse the
+        # test database held open by the outer behave run.
+        "TEST": {"NAME": os.environ.get("POSTGRES_TEST_DB") or None},
     }
 }

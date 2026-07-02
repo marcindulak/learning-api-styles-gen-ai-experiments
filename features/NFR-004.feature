@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: NFR-004 Service is testable
   The service ships with an automated test setup: behave-django executes
   the Gherkin scenarios as integration tests inside the running container,

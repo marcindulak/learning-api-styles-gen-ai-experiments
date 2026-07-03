@@ -139,12 +139,19 @@ Note that the setup includes at least 4 known errors, and they are left on purpo
 5. Create a *Draft* pull request to this repo. It will never get merged.
 
 6. Create a pull request to this repo that describes the outcome of the experiment.
-   See examples below. Measure characteristics like the number of lines of code and code complexity:
+   See examples below.
+   Measure the number of lines of Python implementation code:
 
    ```
-   tokei --types='Python,Gherkin (Cucumber)' .
+   tokei --types='Python' .
    ```
 
+   Measure the number of lines of Python tests code and Gherkin features:
+   ```
+   tokei --types='Python,Gherkin (Cucumber)' path/to/features
+   ```
+
+   Measure code complexity:
    ```
    ruff check . --select C90 --output-format=concise
    ```
@@ -172,19 +179,30 @@ Note that the difference between the clock and agent time is due to exhausting t
 Outcome: poor, almost fair thanks to a small amount of generated code, and high test quality
 
 ```
-tokei --types='Python,Gherkin (Cucumber)' .
+tokei --types='Python' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Python                   47         3058         2441           45          572
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    47         3058         2441           45          572
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+tokei --types='Python,Gherkin (Cucumber)' features
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Language              Files        Lines         Code     Comments       Blanks
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Gherkin (Cucumber)       16          483          429            0           54
- Python                   47         3058         2441           45          572
+ Python                   13         1883         1483           33          367
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Total                    63         3541         2870           45          626
+ Total                    29         2366         1912           33          421
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ruff check . --select C90 --output-format=concise
 All checks passed!
 ```
+
+The number of lines of Python implementation (excluding tests) is: 2441 - 1483 = 958.
 
 The code is organized into a `weather` app, with `config/` holding settings, URL routing, and application-wide HTTP handlers.
 Within `weather`, each API style has its own file: `views.py` for city CRUD and weather sub-resource REST endpoints, `schema.py` for GraphQL, `feeds.py` for the Atom 1.0 feed, and `consumers.py` for WebSocket, which allows studying each style independently.
@@ -256,19 +274,30 @@ The video doesn't represent the clock time, the long periods when there are no c
 Outcome: poor
 
 ```
-tokei --types='Python,Gherkin (Cucumber)' src
+tokei --types='Python' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Python                   52         3511         2612          273          626
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    52         3511         2612          273          626
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+tokei --types='Python,Gherkin (Cucumber)' features
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Language              Files        Lines         Code     Comments       Blanks
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Gherkin (Cucumber)       17          355          299            0           56
- Python                   52         3511         2612          273          626
+ Python                   18         1916         1431          159          326
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Total                    69         3866         2911          273          682
+ Total                    35         2271         1730          159          382
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-ruff check src/ --select C90 --output-format=concise
+ruff check . --select C90 --output-format=concise
 All checks passed!
 ```
+
+The number of lines of Python implementation (excluding tests) is: 2612 - 1431 = 1181.
 
 The code is organized into a `cities` app and a `webhooks` app, with standard Django `config/` for settings. Within `cities`, each API style has its own file: `views.py` for city CRUD, `weather.py` for weather sub-resource REST endpoints, `schema.py` for GraphQL, `feeds.py` for the Atom 1.0 feed, and `consumers.py` for WebSocket, which allows studying each style independently.
 
@@ -346,19 +375,30 @@ The video doesn't represent the clock time, the long periods when there are no c
 Outcome: poor, almost fair due to the small amount of generated code
 
 ```
-tokei --types='Python,Gherkin (Cucumber)' .
+tokei --types='Python' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Python                   27         1135          952           12          171
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    27         1135          952           12          171
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+tokei --types='Python,Gherkin (Cucumber)' app/app/features
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Language              Files        Lines         Code     Comments       Blanks
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Gherkin (Cucumber)        1           26           22            0            4
- Python                   27         1135          952           12          171
+ Python                    3          121           97            2           22
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Total                    28         1161          974           12          175
+ Total                     4          147          119            2           26
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ruff check . --select C90 --output-format=concise
 All checks passed!
 ```
+
+The number of lines of Python implementation (excluding tests) is: 952 - 97 = 855.
 
 The code is organized by layer in a single `weather/` app under `app/` directory, with standard Django `config/` for settings.
 Atom feed (feeds.py), GraphQL (schema.py), and WebSocket (consumers.py) each have their own file, following Django conventions.
@@ -432,19 +472,30 @@ The video doesn't represent the clock time, the long periods when there are no c
 Outcome: poor
 
 ```
-tokei --types='Python,Gherkin (Cucumber)' app/
+tokei --types='Python' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Python                   39         3685         2988           99          598
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    39         3685         2988           99          598
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+tokei --types='Python,Gherkin (Cucumber)' app/features
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Language              Files        Lines         Code     Comments       Blanks
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Gherkin (Cucumber)       13          407          352            0           55
- Python                   39         3685         2988           99          598
+ Python                   14         2232         1765           94          373
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Total                    52         4092         3340           99          653
+ Total                    27         2639         2117           94          428
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-ruff check app/ --select C90 --output-format=concise
+ruff check . --select C90 --output-format=concise
 All checks passed!
 ```
+
+The number of lines of Python implementation (excluding tests) is: 2988 - 1765 = 1223.
 
 The code is organized by layer in a single `weather/` app under `app/` directory, with standard Django `config/` for settings.
 GraphQL and WebSocket are in separate files (graphql_views.py, schema.py, and consumers.py), but Atom feeds, REST, and Webhooks are mixed in views.py, making it harder to study those styles in isolation.
@@ -530,19 +581,30 @@ The video doesn't represent the clock time, the long periods when there are no c
 Outcome: poor
 
 ```
-tokei --types='Python,Gherkin (Cucumber)' .
+tokei --types='Python' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Python                   39         3504         2777           67          660
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    39         3504         2777           67          660
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+tokei --types='Python,Gherkin (Cucumber)' features
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Language              Files        Lines         Code     Comments       Blanks
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Gherkin (Cucumber)       13          551          496            0           55
- Python                   39         3504         2777           67          660
+ Python                   15         2162         1689           62          411
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Total                    52         4055         3273           67          715
+ Total                    28         2713         2185           62          466
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ruff check . --select C90 --output-format=concise
 All checks passed!
 ```
+
+The number of lines of Python implementation (excluding tests) is: 2777 - 1689 = 1088.
 
 The code is organized by layer in a single `weather/` app, with a service module and a signals module, but uses a unusual `wfs` directory name to store config files.
 GraphQL and WebSocket are in separate files (schema.py, consumers.py), which follows Django conventions and allows studying those styles independently.
@@ -602,19 +664,30 @@ The video doesn't represent the clock time, the long periods when there are no c
 Outcome: poor
 
 ```
-tokei --types='Python,Gherkin (Cucumber)' .
+tokei --types='Python' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Python                   29         1685         1336           12          337
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    29         1685         1336           12          337
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+tokei --types='Python,Gherkin (Cucumber)' app/features
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Language              Files        Lines         Code     Comments       Blanks
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Gherkin (Cucumber)        2           57           48            0            9
- Python                   29         1685         1336           12          337
+ Python                    4          357          272            0           85
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Total                    31         1742         1384           12          346
+ Total                     6          414          320            0           94
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ruff check . --select C90 --output-format=concise
 All checks passed!
 ```
+
+The number of lines of Python implementation (excluding tests) is: 1336 - 272 = 1064.
 
 The code is organized by layer in a single `weather/` app, with each API style in its own file (consumers.py for WebSocket, feeds.py for Atom, schema.py for GraphQL, webhooks.py for Webhooks, views.py for REST).
 This follows Django conventions and allows studying each API style independently.
@@ -696,19 +769,30 @@ The video doesn't represent the clock time, the long periods when there are no c
 Outcome: poor
 
 ```
-tokei --types='Python,Gherkin (Cucumber)' .
+tokei --types='Python' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Python                   29         1617         1333            8          276
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    29         1617         1333            8          276
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+tokei --types='Python,Gherkin (Cucumber)' app/features
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Language              Files        Lines         Code     Comments       Blanks
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Gherkin (Cucumber)        4          104           88            0           16
- Python                   29         1617         1333            8          276
+ Python                    3          368          302            0           66
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Total                    33         1721         1421            8          292
+ Total                     7          472          390            0           82
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ruff check . --select C90 --output-format=concise
 All checks passed!
 ```
+
+The number of lines of Python implementation (excluding tests) is: 1333 - 302 = 1031.
 
 The code is organized by layer in a single `weather/` app, with separate files for permissions and signals.
 WebSocket in consumers.py, Atom feed in feeds.py, and GraphQL is in schema.py, but Webhooks are mixed in views.py alongside REST viewsets.
@@ -787,19 +871,30 @@ The video doesn't represent the clock time, the long periods when there are no c
 Outcome: poor
 
 ```
-tokei --types='Python,Gherkin (Cucumber)' .
+tokei --types='Python' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Python                   34         3379         2777          123          479
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    34         3379         2777          123          479
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+tokei --types='Python,Gherkin (Cucumber)' app/features
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Language              Files        Lines         Code     Comments       Blanks
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Gherkin (Cucumber)        2          103           84            4           15
- Python                   34         3379         2777          123          479
+ Python                    4          465          389            2           74
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Total                    36         3482         2861          127          494
+ Total                     6          568          473            6           89
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ruff check . --select C90 --output-format=concise
 All checks passed!
 ```
+
+The number of lines of Python implementation (excluding tests) is: 2777 - 389 = 2388.
 
 The code is organized by layer in a single `weather/` app, with each API style in its own file (consumers.py for WebSocket, feeds.py for Atom, schema.py for GraphQL, webhooks.py for Webhooks, views.py for REST).
 Permissions and signals are in separate modules, which follows Django conventions and allows studying permissions and signals without reading view code.
@@ -876,19 +971,30 @@ The video doesn't represent the clock time, the long periods when there are no c
 Outcome: poor, almost fair due to the small amount of generated code
 
 ```
-tokei --types='Python,Gherkin (Cucumber)' .
+tokei --types='Python' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Python                   37         3225         2531           76          618
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    37         3225         2531           76          618
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+tokei --types='Python,Gherkin (Cucumber)' features
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Language              Files        Lines         Code     Comments       Blanks
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Gherkin (Cucumber)       15          498          441            0           57
- Python                   37         3225         2531           76          618
+ Python                   17         2298         1783           67          448
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Total                    52         3723         2972           76          675
+ Total                    32         2796         2224           67          505
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ruff check . --select C90 --output-format=concise
 All checks passed!
 ```
+
+The number of lines of Python implementation (excluding tests) is: 2531 - 1783 = 748.
 
 The code is organized by layer in a single `weather_service/` app.
 WebSocket and GraphQL are in separate files (consumers.py, schema.py), but views.py mixes Atom feed, REST, and Webhooks generation together, making it harder to study those styles independently.
@@ -950,20 +1056,31 @@ The video doesn't represent the clock time, the long periods when there are no c
 Outcome: poor
 
 ```
-tokei --types='Python,Gherkin (Cucumber)' .
+tokei --types='Python' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Python                   99         4474         3516          192          766
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    99         4474         3516          192          766
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+tokei --types='Python,Gherkin (Cucumber)' features
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Language              Files        Lines         Code     Comments       Blanks
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Gherkin (Cucumber)       10          412          342            0           70
- Python                   99         4474         3516          192          766
+ Python                   10         2087         1637           68          382
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Total                   109         4886         3858          192          836
+ Total                    20         2499         1979           68          452
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ruff check . --select C90 --output-format=concise
 features/steps/feed_steps.py:94:5: C901 `step_entry_contains_temperature` is too complex (11 > 10)
 Found 1 error.
 ```
+
+The number of lines of Python implementation (excluding tests) is: 3516 - 1637 = 1879.
 
 The code is split into 10 separate Django apps under `apps/`, mixing data apps (alerts, cities, forecast, historical, weather) with presentation apps (api, feeds, graphql_api).
 The fragmentation makes it harder for a reader to follow a feature end-to-end, and studying one API style requires navigating across multiple apps.
@@ -1022,20 +1139,31 @@ The video doesn't represent the clock time, the long periods when there are no c
 Outcome: poor
 
 ```
-tokei --types='Python,Gherkin (Cucumber)' .
+tokei --types='Python' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Python                  108         7289         5600          402         1287
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                   108         7289         5600          402         1287
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+tokei --types='Python,Gherkin (Cucumber)' features
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Language              Files        Lines         Code     Comments       Blanks
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Gherkin (Cucumber)       13          249          222            0           27
- Python                  108         7289         5600          402         1287
+ Python                   19         5453         4152          296         1005
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Total                   121         7538         5822          402         1314
+ Total                    32         5702         4374          296         1032
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ruff check . --select C90 --output-format=concise
 app/apps/webhooks/views.py:69:5: C901 `github_webhook` is too complex (12 > 10)
 Found 1 error.
 ```
+
+The number of lines of Python implementation (excluding tests) is: 5600 - 4152 = 1448.
 
 The code is split into 8 separate Django apps under `apps/`, mixing data apps (alerts, cities, weather) with presentation apps (api, feeds, graphql).
 The fragmentation makes it harder for a reader to follow a feature end-to-end, and studying one API style requires navigating across multiple apps.

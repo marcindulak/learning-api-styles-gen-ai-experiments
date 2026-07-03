@@ -91,6 +91,8 @@ Vagrant.configure(2) do |config|
     machine.vm.provision :shell, :inline => "sed -i 's/ install / install --force /' /tmp/install.sh"
     machine.vm.provision :shell, :inline => "cat /tmp/install.sh | su - vagrant -c 'bash -s stable'"
     machine.vm.provision :shell, :inline => "su - vagrant -c 'claude --version'"
+    machine.vm.provision :shell, :inline => "su - vagrant -c 'npm config set prefix /home/vagrant/.local'"
+    machine.vm.provision :shell, :inline => "su - vagrant -c 'nvm use --delete-prefix $(node --version) --silent'"
     machine.vm.provision :shell, :inline => "su - vagrant -c 'npm i -g @openai/codex'"
     machine.vm.provision :shell, :inline => "su - vagrant -c 'codex --version'"
   end

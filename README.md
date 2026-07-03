@@ -97,18 +97,19 @@ Note that the setup includes at least 4 known errors, and they are left on purpo
 
    ```
    git rm -r findings images
-   git comit -m"Remove findinds and images"
+   git commit -m"Remove findinds and images"
    ```
 
    Delete any leftover files that may indicate to the agent the project directory structure.
 
    ```
-   rm -rf app src
+   rm -rf app src .venv .docker
    ```
 
    Locally delete all experiment local and remote branches, to discourage the agent from peeking into them.
 
    ```
+   git branch -a
    git branch -d YYYY-MM-DD ...
    git fetch --prune
    git branch -r -d origin/YYYY-MM-DD ...

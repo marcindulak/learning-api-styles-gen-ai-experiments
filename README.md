@@ -307,7 +307,6 @@ src/
 │   ├── settings.py
 │   ├── urls.py
 │   └── wsgi.py
-├── features
 ├── manage.py
 ├── scripts
 │   ├── healthcheck.sh
@@ -327,6 +326,7 @@ All functional and non-functional requirements were covered by tests.
 The agent correctly discovered that Docker commands were blocked, but tried to bypass the instructions to use Docker included in REQUIREMENTS.md.
 Instead the agent first used a throw-away Docker container based on python:3.13-slim image, and then tried to install pip, and needed to be interrupted by the human to enforce the use of Docker commands described in REQUIREMENTS.md.
 The agent correctly switched to "WORKDIR=/app" in Dockerfile, but unnecessarily modified mounts in `compose.yaml`, and kept adding more mounts, not realizing this was unnecessary if original `compose.yaml` was kept.
+The final `compose.yaml` mounts `./src:/app` for the Django code and `./features:/app/features` separately because `features/` lives at the repository root rather than inside `src/`.
 
 The agent chose the current [Django 5.2](https://docs.djangoproject.com/en/6.0/releases/5.2.14/) LTS release, used relaxed requirements.txt constrains to major-version compatibility, but decided to use the unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) library.
 
@@ -410,6 +410,7 @@ app
 The test coverage is small, only a single feature file with scenarios covering the Cities REST endpoint and a GraphQL query.
 The Atom feed, WebSocket, and Webhook have no scenarios.
 The app container does not start with `TLS_ENABLE=1` in `compose.yaml`.
+The `compose.yaml` uses a single `./app:/app` mount, but the agent set `WORKDIR=app` (relative), which caused `COPY . ${WORKDIR}` to nest the entire repo inside `app/app/` in the container.
 
 The agent did not require interactive human guidance during implementation, apart from a single "You decide" instruction, and accepting other default values suggested by the agent.
 
@@ -501,6 +502,7 @@ app/
 
 All functional and non-functional requirements were covered by tests.
 However, the app container did not start with `TLS_ENABLE=1` in `compose.yaml`.
+The `compose.yaml` uses a single `./app:/app` mount, which is sufficient because feature files live inside `app/`.
 The agent used that setting and therefore left the project in a non-runnable state.
 
 The agent correctly discovered that Docker commands were blocked, and asked human to correct the permissions.
@@ -574,6 +576,7 @@ src/
 
 All functional and non-functional requirements were covered by tests.
 The agent removed `TLS_ENABLE=1` setting from `compose.yaml`, but the TLS implementation works on `https://127.0.0.1:8443`.
+The `compose.yaml` has no volume mounts, so the code is baked into the image and any code change requires a full image rebuild.
 
 The agent correctly discovered that Docker commands were blocked, and asked human to correct the permissions.
 On the other hand, the agent decided to use end-of-life libraries, like [Django 5.1.5](https://github.com/django/django/releases/tag/5.1.5) (2025), [graphene-django](https://github.com/graphql-python/graphene-django/releases/tag/v3.2.2) (2024), or unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312).
@@ -660,6 +663,7 @@ app/
 
 There is a limited test coverage.
 The app container does not start with `TLS_ENABLE=1` in `compose.yaml`.
+The `compose.yaml` uses a single `./app:/app` mount, which is sufficient because feature files live inside `app/`.
 
 The agent behaved hesitantly, it stopped several times to ask questions or report the current status without claiming that the implementation was complete.
 Had to be invited to continue work by the human saying "Do you consider implementation is completed?" or "You need to implement REQUIREMENTS.md".
@@ -760,6 +764,7 @@ app/
 
 The agent incorrectly claimed all requirements are implemented, without running tests in Docker.
 The app container starts with `TLS_ENABLE=1` in `compose.yaml`, but is slow to respond and eventually fails on HTTPS requests.
+The `compose.yaml` uses a single `./app:/app` mount, which is sufficient because feature files live inside `app/`.
 
 The agent correctly discovered that Docker commands were blocked.
 However, it skipped running tests in Docker, claiming that implementation is done, and had to be explicitly reminded about it by the human by starting a new iteration.
@@ -844,6 +849,7 @@ app/
 
 The agent incorrectly claimed all requirements are implemented, without running tests in Docker.
 The app container starts with `TLS_ENABLE=1` in `compose.yaml`, but is slow to respond and eventually fails on HTTPS requests.
+The `compose.yaml` uses a single `./app:/app` mount, which is sufficient because feature files live inside `app/`.
 
 The agent correctly discovered that Docker commands were blocked.
 However, it skipped running tests in Docker, claiming that "Docker build verification will happen in the verification phase" ([see video](https://www.youtube.com/watch?v=tFff1v84kKY#t=24m02s)), but has not run these tests, and had to be explicitly reminded about this by the human ([see video](https://www.youtube.com/watch?v=tFff1v84kKY#t=56m30s)).
@@ -916,6 +922,7 @@ app/
 The agent incorrectly claimed all features are implemented, and only admitted gap (AsyncAPI Spec) when questioned by the human.
 On the other hand, all functional and non-functional requirements were covered by tests.
 The app container does not start with `TLS_ENABLE=1` in `compose.yaml`.
+The `compose.yaml` mounts `./app:/app` for the Django code and `./features:/app/features` separately because `features/` lives at the repository root rather than inside `app/`.
 
 The agent correctly discovered that Docker commands were blocked, and asked human to correct the permissions.
 On the other hand, the agent decided to use end-of-life libraries, like [Django 5.1.5](https://github.com/django/django/releases/tag/5.1.5) (2025), [graphene-django](https://github.com/graphql-python/graphene-django/releases/tag/v3.2.2) (2024), or unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) or [django-sslserver](https://pypi.org/project/django-sslserver/0.22/) (2019) libraries.
@@ -992,6 +999,7 @@ src/
 The agent incorrectly claimed all features are implemented, and only admitted gaps when questioned by the human.
 The non-functional requirements were not covered by tests, and TLS, OpenAPI Spec, AsyncAPI Spec requirements were skipped.
 The app container starts with `TLS_ENABLE=1` in `compose.yaml`, but is slow to respond and eventually fails on HTTPS requests.
+The `compose.yaml` mounts `./src/app:/app` for the Django code and adds `./features:/app/features` separately because `features/` lives at the repository root rather than inside `src/app/`.
 
 The agent correctly discovered that Docker commands were blocked, and correctly refused to mark the features as complete without running tests.
 On the other hand, the agent decided to use end-of-life libraries, like [Django 5.0.1](https://docs.djangoproject.com/en/6.0/releases/5.0.1/) (2024), [graphene-django](https://github.com/graphql-python/graphene-django/releases/tag/v3.2.0) (2023), or an unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) library.
@@ -1062,6 +1070,7 @@ It turned out that `.claude/settings.json` was blocking Docker commands, and the
 The agent when starting new iterations, was randomly discovering logical inconsistencies in [REQUIREMENTS.md](REQUIREMENTS.md).
 After human correcting the Docker access, and instructing the agent to use Docker, the agent started using Docker, but claimed success again, despite failing to handle database cleanup during tests.
 The app container starts with `TLS_ENABLE=1` in `compose.yaml`, but is slow to respond and eventually fails on HTTPS requests.
+The `compose.yaml` has no volume mounts, so the code is baked into the image and any code change requires a full image rebuild.
 
 The agent also kept git committing the `.cache` directory, containing Python packages, until instructed by human in interactive mode to stop, and left temporary files git committed (e.g., test_graphql_simple.py).
 

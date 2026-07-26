@@ -151,6 +151,8 @@ Note that the setup includes at least 4 known errors, and they are left on purpo
    tokei --types='Python,Gherkin (Cucumber)' path/to/features
    ```
 
+   For reference, the number of lines of Python implementation (excluding tests) of the [human implementation](https://github.com/ldynia/learning-api-styles/tree/main/src/django), is: 4891 - 1185 = 3706.
+
    Measure code complexity:
    ```
    ruff check . --select C90 --output-format=concise
@@ -170,6 +172,8 @@ Note that the setup includes at least 4 known errors, and they are left on purpo
    docker compose exec app coverage run --source=. manage.py behave
    docker compose exec app coverage report
    ```
+
+   For reference, the test line coverage of the [human implementation](https://github.com/ldynia/learning-api-styles/tree/main/src/django), obtained from `docker compose exec app coverage run manage.py test && docker compose exec app coverage report`, is 85%.
 
 # Experiments
 

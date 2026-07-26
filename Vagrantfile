@@ -52,11 +52,11 @@ Vagrant.configure(2) do |config|
     machine.vm.provision :shell, :inline => "usermod -aG docker vagrant"
     machine.vm.provision :shell, :inline => "systemctl enable --now docker"
     # Snap installation is broken https://github.com/nodejs/snap/issues/54
-    machine.vm.provision :shell, :inline => "mkdir /usr/local/nvm && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | NVM_DIR=/usr/local/nvm bash"
-    machine.vm.provision :shell, :inline => ". ~/.bashrc && nvm install --lts && node --version"
-    machine.vm.provision :shell, :inline => "echo 'export NVM_DIR=/usr/local/nvm' >> ~vagrant/.bashrc"
+    machine.vm.provision :shell, :inline => "su - vagrant -c 'mkdir ~/.nvm && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | NVM_DIR=~/.nvm bash'"
+    machine.vm.provision :shell, :inline => "su - vagrant -c '. ~/.bashrc && nvm install --lts && node --version'"
+    machine.vm.provision :shell, :inline => "echo 'export NVM_DIR=~/.nvm' >> ~vagrant/.bashrc"
     machine.vm.provision :shell, :inline => "echo '[ -s $NVM_DIR/nvm.sh ] && \. $NVM_DIR/nvm.sh' >> ~vagrant/.bashrc"
-    machine.vm.provision :shell, :inline => "su - vagrant -c 'node --version'"
+    machine.vm.provision :shell, :inline => "su - vagrant -c 'which node && node --version'"
     machine.vm.provision :shell, :inline => "dnf install -y --setopt=install_weak_deps=False bubblewrap socat"
     machine.vm.provision :shell, :inline => "dnf install -y --setopt=install_weak_deps=False snapd"
     machine.vm.provision :shell, :inline => "systemctl enable --now snapd.socket"
@@ -82,7 +82,7 @@ Vagrant.configure(2) do |config|
     machine.vm.provision :shell, :inline => "echo 'export IS_DEMO=1' >> ~vagrant/.bashrc"
     # Avoid claude sandbox error: mkdir /home/vagrant/.docker: read-only file system
     machine.vm.provision :shell, :inline => "echo 'export DOCKER_CONFIG=.docker' >> ~vagrant/.bashrc"
-    # claude install is slow, due to large memory usage https://github.com/anthropics/claude-code/issues/12987
+    # claude install is slow, due to large memory usage https://github.com/anthropics/claude-code/issues/79421
     # agent: Setting up Claude Code...
     # agent: ✘ Installation failed
     # agent: Download stalled: no data received for 60 seconds
@@ -90,10 +90,8 @@ Vagrant.configure(2) do |config|
     machine.vm.provision :shell, :inline => "cd /tmp && curl -sLO https://claude.ai/install.sh"
     machine.vm.provision :shell, :inline => "sed -i 's/ install / install --force /' /tmp/install.sh"
     machine.vm.provision :shell, :inline => "cat /tmp/install.sh | su - vagrant -c 'bash -s stable'"
-    machine.vm.provision :shell, :inline => "su - vagrant -c 'claude --version'"
-    machine.vm.provision :shell, :inline => "su - vagrant -c 'npm config set prefix /home/vagrant/.local'"
-    machine.vm.provision :shell, :inline => "su - vagrant -c 'nvm use --delete-prefix $(node --version) --silent'"
+    machine.vm.provision :shell, :inline => "su - vagrant -c 'which claude && claude --version'"
     machine.vm.provision :shell, :inline => "su - vagrant -c 'npm i -g @openai/codex'"
-    machine.vm.provision :shell, :inline => "su - vagrant -c 'codex --version'"
+    machine.vm.provision :shell, :inline => "su - vagrant -c 'which codex && codex --version'"
   end
 end

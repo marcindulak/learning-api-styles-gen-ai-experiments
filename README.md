@@ -156,6 +156,21 @@ Note that the setup includes at least 4 known errors, and they are left on purpo
    ruff check . --select C90 --output-format=concise
    ```
 
+   Measure test line coverage.
+   Note that coverage only tracks code executed by the behave-django in-process test client.
+   For implementations where some features don't use behave-django's test client (in-process), for example when a server is started and tests run against it, the test coverage numbers are underestimated.
+
+   ```
+   rm -rf app src .venv .docker
+   git checkout .
+   docker compose down --volumes
+   docker compose build --build-arg UID=$(id -u) --build-arg GID=$(id -g)
+   docker compose up --detach --wait
+   docker compose exec app python -m pip install coverage
+   docker compose exec app coverage run --source=. manage.py behave
+   docker compose exec app coverage report
+   ```
+
 # Experiments
 
 Note that the difference between the clock and agent time is due to exhausting the session usage limits, and the need to wait.
@@ -203,6 +218,7 @@ All checks passed!
 ```
 
 The number of lines of Python implementation (excluding tests) is: 2441 - 1483 = 958.
+Test line coverage is 94%.
 
 The code is organized into a `weather` app, with `config/` holding settings, URL routing, and application-wide HTTP handlers.
 Within `weather`, each API style has its own file: `views.py` for city CRUD and weather sub-resource REST endpoints, `schema.py` for GraphQL, `feeds.py` for the Atom 1.0 feed, and `consumers.py` for WebSocket, which allows studying each style independently.
@@ -298,6 +314,7 @@ All checks passed!
 ```
 
 The number of lines of Python implementation (excluding tests) is: 2612 - 1431 = 1181.
+Test line coverage is 92%.
 
 The code is organized into a `cities` app and a `webhooks` app, with standard Django `config/` for settings. Within `cities`, each API style has its own file: `views.py` for city CRUD, `weather.py` for weather sub-resource REST endpoints, `schema.py` for GraphQL, `feeds.py` for the Atom 1.0 feed, and `consumers.py` for WebSocket, which allows studying each style independently.
 
@@ -399,6 +416,7 @@ All checks passed!
 ```
 
 The number of lines of Python implementation (excluding tests) is: 952 - 97 = 855.
+Test line coverage is 70%.
 
 The code is organized by layer in a single `weather/` app under `app/` directory, with standard Django `config/` for settings.
 Atom feed (feeds.py), GraphQL (schema.py), and WebSocket (consumers.py) each have their own file, following Django conventions.
@@ -496,6 +514,7 @@ All checks passed!
 ```
 
 The number of lines of Python implementation (excluding tests) is: 2988 - 1765 = 1223.
+Test line coverage is 67%.
 
 The code is organized by layer in a single `weather/` app under `app/` directory, with standard Django `config/` for settings.
 GraphQL and WebSocket are in separate files (graphql_views.py, schema.py, and consumers.py), but Atom feeds, REST, and Webhooks are mixed in views.py, making it harder to study those styles in isolation.
@@ -605,6 +624,7 @@ All checks passed!
 ```
 
 The number of lines of Python implementation (excluding tests) is: 2777 - 1689 = 1088.
+Test line coverage is 66%.
 
 The code is organized by layer in a single `weather/` app, with a service module and a signals module, but uses a unusual `wfs` directory name to store config files.
 GraphQL and WebSocket are in separate files (schema.py, consumers.py), which follows Django conventions and allows studying those styles independently.
@@ -688,6 +708,7 @@ All checks passed!
 ```
 
 The number of lines of Python implementation (excluding tests) is: 1336 - 272 = 1064.
+Test line coverage is 68%.
 
 The code is organized by layer in a single `weather/` app, with each API style in its own file (consumers.py for WebSocket, feeds.py for Atom, schema.py for GraphQL, webhooks.py for Webhooks, views.py for REST).
 This follows Django conventions and allows studying each API style independently.
@@ -793,6 +814,7 @@ All checks passed!
 ```
 
 The number of lines of Python implementation (excluding tests) is: 1333 - 302 = 1031.
+Test line coverage is 75%.
 
 The code is organized by layer in a single `weather/` app, with separate files for permissions and signals.
 WebSocket in consumers.py, Atom feed in feeds.py, and GraphQL is in schema.py, but Webhooks are mixed in views.py alongside REST viewsets.
@@ -895,6 +917,7 @@ All checks passed!
 ```
 
 The number of lines of Python implementation (excluding tests) is: 2777 - 389 = 2388.
+Test line coverage is 63%.
 
 The code is organized by layer in a single `weather/` app, with each API style in its own file (consumers.py for WebSocket, feeds.py for Atom, schema.py for GraphQL, webhooks.py for Webhooks, views.py for REST).
 Permissions and signals are in separate modules, which follows Django conventions and allows studying permissions and signals without reading view code.
@@ -995,6 +1018,7 @@ All checks passed!
 ```
 
 The number of lines of Python implementation (excluding tests) is: 2531 - 1783 = 748.
+Test line coverage is 95%.
 
 The code is organized by layer in a single `weather_service/` app.
 WebSocket and GraphQL are in separate files (consumers.py, schema.py), but views.py mixes Atom feed, REST, and Webhooks generation together, making it harder to study those styles independently.
@@ -1081,6 +1105,7 @@ Found 1 error.
 ```
 
 The number of lines of Python implementation (excluding tests) is: 3516 - 1637 = 1879.
+Test line coverage is 86%.
 
 The code is split into 10 separate Django apps under `apps/`, mixing data apps (alerts, cities, forecast, historical, weather) with presentation apps (api, feeds, graphql_api).
 The fragmentation makes it harder for a reader to follow a feature end-to-end, and studying one API style requires navigating across multiple apps.
@@ -1164,6 +1189,7 @@ Found 1 error.
 ```
 
 The number of lines of Python implementation (excluding tests) is: 5600 - 4152 = 1448.
+Test line coverage was not measured, tests fail too early.
 
 The code is split into 8 separate Django apps under `apps/`, mixing data apps (alerts, cities, weather) with presentation apps (api, feeds, graphql).
 The fragmentation makes it harder for a reader to follow a feature end-to-end, and studying one API style requires navigating across multiple apps.

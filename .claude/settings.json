@@ -39,8 +39,7 @@
       "Read(~/.azure/**)",
       "Read(~/.config/gcloud/**)",
       "Read(~/.ssh/**)",
-      "Read(~/.terraform.d/**)",
-      "Write(**/.gitconfig)"
+      "Read(~/.terraform.d/**)"
     ]
   },
   "sandbox": {

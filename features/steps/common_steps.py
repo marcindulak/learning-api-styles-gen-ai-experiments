@@ -3,6 +3,8 @@ import json
 from behave import then, when
 from django.test import Client
 
+from weather.providers import OpenMeteoWeatherProvider, WeatherProviderUnavailable, WeatherReading
+
 CITY_DEFAULTS = {
     "country": "Testland",
     "region": "Testregion",
@@ -10,6 +12,26 @@ CITY_DEFAULTS = {
     "latitude": 0.0,
     "longitude": 0.0,
 }
+
+
+class FakeWeatherProvider:
+    """A hand-written test double substituted for OpenMeteoWeatherProvider.
+
+    Configured directly by Given steps (readings per city, availability),
+    then passed into poll_city_weather the same way the real provider would
+    be, so no mocking library or monkeypatching is needed.
+    """
+
+    name = OpenMeteoWeatherProvider.name
+
+    def __init__(self):
+        self.readings = {}
+        self.available = True
+
+    def fetch_current(self, city) -> WeatherReading:
+        if not self.available:
+            raise WeatherProviderUnavailable("fake provider is offline")
+        return self.readings[city.name]
 
 
 def _client_for(context, username):

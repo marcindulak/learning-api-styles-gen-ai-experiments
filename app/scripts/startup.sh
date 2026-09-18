@@ -5,4 +5,5 @@ set -eu
 # (depends_on: condition: service_healthy), so postgres is already accepting
 # connections by the time this script runs.
 python manage.py migrate --no-input
+python manage.py seed_cities
 exec python manage.py runserver "0.0.0.0:${APP_PORT_HTTP}"

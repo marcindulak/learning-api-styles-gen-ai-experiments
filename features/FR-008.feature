@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-008 - Weather data limited to the 5 biggest cities
   On first startup the service seeds weather data for the 5 biggest
   cities in the world by UN metro-area population: Tokyo, Delhi,

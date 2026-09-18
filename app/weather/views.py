@@ -1,10 +1,25 @@
 from datetime import date
 
+from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Forecast, WeatherRecord
-from .serializers import ForecastSerializer, HistoricalWeatherRecordSerializer, WeatherRecordSerializer
+from .models import City, Forecast, WeatherRecord
+from .serializers import (
+    CitySerializer,
+    ForecastSerializer,
+    HistoricalWeatherRecordSerializer,
+    WeatherRecordSerializer,
+)
+
+
+# Unlike this file's other views, listing/creating a City needs no custom
+# query-param parsing or filtering, so DRF's generic covers it exactly as
+# written; the other views stay hand-rolled because they do have custom
+# logic the generic can't express.
+class CityListCreateView(generics.ListCreateAPIView):
+    queryset = City.objects.all()
+    serializer_class = CitySerializer
 
 
 class CurrentWeatherView(APIView):

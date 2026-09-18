@@ -2,31 +2,12 @@ import logging
 from datetime import timedelta
 
 from behave import given, then, when
+from common_steps import FakeWeatherProvider
 from django.utils import timezone
 
 from weather.models import City, WeatherRecord
-from weather.providers import OpenMeteoWeatherProvider, WeatherProviderUnavailable, WeatherReading
+from weather.providers import OpenMeteoWeatherProvider, WeatherReading
 from weather.services import poll_city_weather
-
-
-class FakeWeatherProvider:
-    """A hand-written test double substituted for OpenMeteoWeatherProvider.
-
-    Configured directly by Given steps (readings per city, availability),
-    then passed into poll_city_weather the same way the real provider would
-    be, so no mocking library or monkeypatching is needed.
-    """
-
-    name = OpenMeteoWeatherProvider.name
-
-    def __init__(self):
-        self.readings = {}
-        self.available = True
-
-    def fetch_current(self, city) -> WeatherReading:
-        if not self.available:
-            raise WeatherProviderUnavailable("fake provider is offline")
-        return self.readings[city.name]
 
 
 def _provider(context):

@@ -1,8 +1,16 @@
 from rest_framework import serializers
 
-from .models import Forecast, WeatherRecord
+from .models import City, Forecast, WeatherRecord
 
 _INDICATOR_FIELDS = ["temperature", "humidity", "wind_speed", "precipitation_probability", "condition"]
+
+
+class CitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        # City.uuid has editable=False, which ModelSerializer already infers
+        # as read_only=True, so no explicit read_only_fields is needed.
+        fields = ["uuid", "name", "country", "region", "timezone", "latitude", "longitude"]
 
 
 class WeatherRecordSerializer(serializers.ModelSerializer):

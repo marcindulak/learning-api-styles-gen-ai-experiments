@@ -31,14 +31,23 @@ def _post_login(context, username, password, next_path):
     })
 
 
+def _remember_password(context, username, password):
+    # FR-010 reuses these two user-creation steps in its own Background, and
+    # needs the plaintext password later to obtain a JWT for that user.
+    context.user_passwords = getattr(context, "user_passwords", {})
+    context.user_passwords[username] = password
+
+
 @given('an admin user "{username}" with password "{password}"')
 def step_given_admin_user(context, username, password):
     User.objects.create_user(username, password=password, is_staff=True, is_superuser=True)
+    _remember_password(context, username, password)
 
 
 @given('a regular user "{username}" with password "{password}"')
 def step_given_regular_user(context, username, password):
     User.objects.create_user(username, password=password, is_staff=False)
+    _remember_password(context, username, password)
 
 
 @when('"{username}" logs into "{path}" with password "{password}"')

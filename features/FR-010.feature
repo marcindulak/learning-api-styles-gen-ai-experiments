@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-010 - Two users with object-level permission
   The service distinguishes an admin user from a regular user. Admins
   can create, update, and delete cities and weather records, and can

@@ -68,6 +68,17 @@ CHANNEL_LAYERS = {
     },
 }
 
+# FR-010: JWTAuthentication is the only authentication class in use so far
+# (no endpoint uses session- or basic-auth login), and DEFAULT_PERMISSION_CLASSES
+# is left at DRF's own default (AllowAny) since most existing endpoints are
+# intentionally public reads; the few endpoints that need restriction opt in
+# via their own permission_classes instead.
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+}
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",

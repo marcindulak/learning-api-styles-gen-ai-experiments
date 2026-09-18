@@ -1,7 +1,9 @@
 import json
 
 from behave import then, when
+from django.contrib.auth.models import User
 from django.test import Client
+from rest_framework_simplejwt.tokens import AccessToken
 
 from weather.providers import OpenMeteoWeatherProvider, WeatherProviderUnavailable, WeatherReading
 
@@ -41,6 +43,22 @@ def _client_for(context, username):
 
 def _response_body(context):
     return json.loads(context.last_response.content)
+
+
+def _jwt_for(username, is_staff=False):
+    # FR-010 made JWT auth mandatory for city-creation and WebSocket-alert
+    # requests; other features' scenarios never named a specific user for
+    # those requests, so this fixture user/token exists only to satisfy that
+    # requirement without changing those features' own Gherkin text.
+    user, _ = User.objects.get_or_create(username=username, defaults={"is_staff": is_staff})
+    return str(AccessToken.for_user(user))
+
+
+def _auth_header(context, username):
+    token = getattr(context, "jwt_tokens", {}).get(username)
+    if token is None:
+        return {}
+    return {"HTTP_AUTHORIZATION": f"Bearer {token}"}
 
 
 @when('a client sends "{method:w} {path:S}"')

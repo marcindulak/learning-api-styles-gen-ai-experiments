@@ -3,5 +3,6 @@ channels
 daphne
 django
 djangorestframework
+djangorestframework-simplejwt
 psycopg2
 strawberry-graphql-django

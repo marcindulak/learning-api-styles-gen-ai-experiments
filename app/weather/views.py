@@ -1,14 +1,18 @@
 from datetime import date
 
+from django.contrib.auth.models import User
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import City, Forecast, WeatherRecord
+from .permissions import IsAdminOrReadOnly, IsSelfOrAdmin
 from .serializers import (
     CitySerializer,
     ForecastSerializer,
     HistoricalWeatherRecordSerializer,
+    UserSerializer,
     WeatherRecordSerializer,
 )
 
@@ -20,6 +24,14 @@ from .serializers import (
 class CityListCreateView(generics.ListCreateAPIView):
     queryset = City.objects.all()
     serializer_class = CitySerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+
+class UserDetailView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = "username"
+    permission_classes = [IsAuthenticated, IsSelfOrAdmin]
 
 
 class CurrentWeatherView(APIView):

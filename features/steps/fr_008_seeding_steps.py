@@ -1,7 +1,7 @@
 import json
 
 from behave import given, then, when
-from common_steps import CITY_DEFAULTS, FakeWeatherProvider, _client_for
+from common_steps import CITY_DEFAULTS, FakeWeatherProvider, _client_for, _jwt_for
 
 from weather.models import City, WeatherRecord
 from weather.providers import WeatherReading
@@ -53,9 +53,16 @@ def step_given_five_seeded_cities(context):
 
 @when('an admin creates a city named "{name}" via "POST /api/cities"')
 def step_when_admin_creates_city(context, name):
+    # FR-008's own Gherkin text predates FR-010's admin-only write restriction
+    # and never names a specific admin user, so this fixture user exists only
+    # to satisfy that requirement without changing FR-008.feature's text.
+    token = _jwt_for("_fr008_admin", is_staff=True)
     payload = {"name": name, **CITY_DEFAULTS}
     context.last_response = _client_for(context, "admin").post(
-        "/api/cities", data=json.dumps(payload), content_type="application/json"
+        "/api/cities",
+        data=json.dumps(payload),
+        content_type="application/json",
+        HTTP_AUTHORIZATION=f"Bearer {token}",
     )
 
 

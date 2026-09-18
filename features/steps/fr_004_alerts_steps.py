@@ -3,7 +3,7 @@ import json
 from behave import given, then, when
 from channels.db import database_sync_to_async
 from channels.testing import WebsocketCommunicator
-from common_steps import FakeWeatherProvider
+from common_steps import FakeWeatherProvider, _jwt_for
 
 from config.asgi import application
 from weather.models import City
@@ -29,9 +29,9 @@ def _trigger_reading(context, name, temperature, wind_speed):
     poll_city_weather(City.objects.get(name=name), provider)
 
 
-async def _connect(context, name):
+async def _connect(context, name, token):
     city = await database_sync_to_async(City.objects.get)(name=name)
-    communicator = WebsocketCommunicator(application, f"/ws/alerts/{city.uuid}/")
+    communicator = WebsocketCommunicator(application, f"/ws/alerts/{city.uuid}/?token={token}")
     connected, _ = await communicator.connect()
     assert connected
     context.ws_clients[name] = communicator
@@ -40,7 +40,8 @@ async def _connect(context, name):
 @given('a client has an open WebSocket connection subscribed to alerts for "{name}"')
 def step_given_subscribed_client(context, name):
     context.ws_clients = getattr(context, "ws_clients", {})
-    context.ws_loop.run_until_complete(_connect(context, name))
+    token = _jwt_for("_fr004_ws_client")
+    context.ws_loop.run_until_complete(_connect(context, name, token))
 
 
 @when('"{name}" receives a new weather record with temperature {temperature:g}')

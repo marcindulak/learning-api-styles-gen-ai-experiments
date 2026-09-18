@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-002 - GitHub webhook receiver
   The service exposes a webhook endpoint that receives GitHub webhook
   events, verifies the payload signature against a shared secret, and

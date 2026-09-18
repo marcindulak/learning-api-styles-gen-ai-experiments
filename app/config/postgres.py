@@ -5,6 +5,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ["SECRET_KEY"]
 
+WEBHOOK_SECRET = os.environ["WEBHOOK_SECRET"]
+
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
@@ -20,6 +22,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "strawberry_django",
     "weather",
+    "webhooks",
 ]
 
 MIDDLEWARE = [

@@ -15,7 +15,7 @@ def _client_for(context, username):
     return context.clients.setdefault(username, Client())
 
 
-@when('a client sends "{method} {path}"')
+@when('a client sends "{method:w} {path:S}"')
 def step_when_sends_request(context, method, path):
     context.last_response = getattr(_client_for(context, "anonymous"), method.lower())(path)
 

@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "channels",
     "behave_django",
     "rest_framework",
+    "drf_spectacular",
     "strawberry_django",
     "weather",
     "webhooks",
@@ -77,6 +78,14 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+# NFR-005: only TITLE is required by drf-spectacular; every other setting is
+# left at its default per CLAUDE.md's "use default settings as much as
+# possible" guidance.
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Weather Forecast Service API",
 }
 
 DATABASES = {

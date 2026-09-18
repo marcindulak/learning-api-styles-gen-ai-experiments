@@ -4,5 +4,6 @@ daphne
 django
 djangorestframework
 djangorestframework-simplejwt
+drf-spectacular
 psycopg2
 strawberry-graphql-django

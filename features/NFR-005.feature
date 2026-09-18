@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: NFR-005 - Service APIs are documented
   The synchronous APIs are documented with an OpenAPI specification and
   the asynchronous APIs (WebSocket alerts, GitHub webhook) are

@@ -1,3 +1,5 @@
 behave-django
 django
+djangorestframework
 psycopg2
+strawberry-graphql-django

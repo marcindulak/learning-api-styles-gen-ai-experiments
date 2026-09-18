@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-001 - Weather indicators via REST and GraphQL APIs
   The service exposes current weather indicators (temperature, humidity,
   wind speed, precipitation probability, condition) for a city through

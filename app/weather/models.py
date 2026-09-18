@@ -22,7 +22,14 @@ class City(models.Model):
 class WeatherRecord(models.Model):
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="weather_records")
     temperature = models.FloatField()
+    humidity = models.PositiveSmallIntegerField()
+    wind_speed = models.FloatField()
+    precipitation_probability = models.PositiveSmallIntegerField()
+    condition = models.CharField(max_length=100)
     recorded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        get_latest_by = "recorded_at"
 
     def __str__(self) -> str:
         return f"{self.city} @ {self.recorded_at}: {self.temperature}"

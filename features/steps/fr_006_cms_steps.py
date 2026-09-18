@@ -100,6 +100,9 @@ def step_when_creates_weather_record(context, username, city_name, temperature):
     city = City.objects.get(name=city_name)
     _post_as(context, username, reverse("admin:weather_weatherrecord_add"), {
         "city": str(city.pk), "temperature": temperature,
+        # This scenario only cares about temperature; the other indicators are
+        # required fields on WeatherRecord (FR-001) so the CMS form needs values.
+        "humidity": 50, "wind_speed": 0.0, "precipitation_probability": 0, "condition": "Clear",
     })
 
 

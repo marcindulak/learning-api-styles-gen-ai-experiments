@@ -17,6 +17,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "behave_django",
+    "rest_framework",
+    "strawberry_django",
     "weather",
 ]
 

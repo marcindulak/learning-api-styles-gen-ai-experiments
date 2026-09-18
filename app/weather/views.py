@@ -3,8 +3,8 @@ from datetime import date
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import WeatherRecord
-from .serializers import HistoricalWeatherRecordSerializer, WeatherRecordSerializer
+from .models import Forecast, WeatherRecord
+from .serializers import ForecastSerializer, HistoricalWeatherRecordSerializer, WeatherRecordSerializer
 
 
 class CurrentWeatherView(APIView):
@@ -33,3 +33,19 @@ class HistoricalWeatherView(APIView):
             city__uuid=city_uuid, recorded_at__date__range=(start, end)
         ).order_by("recorded_at")
         return Response(HistoricalWeatherRecordSerializer(records, many=True).data)
+
+
+class ForecastView(APIView):
+    # Query params are parsed by hand, matching HistoricalWeatherView above:
+    # a single bounded integer param doesn't justify a DRF Serializer-based
+    # validator when no endpoint in this codebase uses that pattern yet.
+    def get(self, request, city_uuid):
+        try:
+            days = int(request.query_params["days"])
+        except (KeyError, ValueError):
+            return Response(status=400)
+        if not 1 <= days <= 7:
+            return Response({"error": "the maximum is 7 days"}, status=400)
+        # Forecast.Meta.ordering = ["date"] already orders these ascending.
+        forecasts = Forecast.objects.filter(city__uuid=city_uuid)[:days]
+        return Response(ForecastSerializer(forecasts, many=True).data)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import WeatherRecord
+from .models import Forecast, WeatherRecord
 
 
 class WeatherRecordSerializer(serializers.ModelSerializer):
@@ -13,3 +13,9 @@ class HistoricalWeatherRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = WeatherRecord
         fields = WeatherRecordSerializer.Meta.fields + ["recorded_at"]
+
+
+class ForecastSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Forecast
+        fields = ["date", "condition", "temp_min", "temp_max"]

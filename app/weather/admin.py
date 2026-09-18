@@ -11,7 +11,7 @@ class CityAdmin(admin.ModelAdmin):
 
 @admin.register(WeatherRecord)
 class WeatherRecordAdmin(admin.ModelAdmin):
-    list_display = ("city", "temperature", "recorded_at")
+    list_display = ("city", "temperature", "source", "recorded_at")
     list_filter = ("city",)
 
 

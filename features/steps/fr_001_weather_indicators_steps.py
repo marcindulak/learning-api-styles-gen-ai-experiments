@@ -14,7 +14,10 @@ def _graphql_data(context, path):
 
 
 def _coerce(value):
-    # A quoted literal like `"Clear"` is a string; anything else is a number.
+    # A quoted literal like `"Clear"` is a string, `true`/`false` is a bool
+    # (FR-007's "stale" field), and anything else is a number.
+    if value in ("true", "false"):
+        return value == "true"
     if value.startswith('"') and value.endswith('"'):
         return value[1:-1]
     return float(value)

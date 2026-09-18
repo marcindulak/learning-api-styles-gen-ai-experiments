@@ -1,7 +1,12 @@
 import uuid
+from datetime import timedelta
 
 from django.db import models
 from django.utils import timezone
+
+# FR-007: a reading is stale once more than this long has passed since it
+# was last refreshed from the weather data provider.
+STALE_AFTER = timedelta(hours=1)
 
 
 class City(models.Model):
@@ -27,6 +32,9 @@ class WeatherRecord(models.Model):
     wind_speed = models.FloatField()
     precipitation_probability = models.PositiveSmallIntegerField()
     condition = models.CharField(max_length=100)
+    # FR-007: identifies the weather data provider a reading came from
+    # (e.g. "open-meteo"), so consumers can be certain no value is fabricated.
+    source = models.CharField(max_length=100)
     # editable=False keeps this out of ModelForms (e.g. the CMS admin form),
     # matching auto_now_add's implicit behavior; default=timezone.now (instead
     # of auto_now_add=True) allows FR-005 to still set it explicitly via the
@@ -38,6 +46,10 @@ class WeatherRecord(models.Model):
 
     def __str__(self) -> str:
         return f"{self.city} @ {self.recorded_at}: {self.temperature}"
+
+    @property
+    def is_stale(self) -> bool:
+        return timezone.now() - self.recorded_at > STALE_AFTER
 
 
 class Forecast(models.Model):

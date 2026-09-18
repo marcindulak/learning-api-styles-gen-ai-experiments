@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.utils import timezone
 
 
 class City(models.Model):
@@ -26,7 +27,11 @@ class WeatherRecord(models.Model):
     wind_speed = models.FloatField()
     precipitation_probability = models.PositiveSmallIntegerField()
     condition = models.CharField(max_length=100)
-    recorded_at = models.DateTimeField(auto_now_add=True)
+    # editable=False keeps this out of ModelForms (e.g. the CMS admin form),
+    # matching auto_now_add's implicit behavior; default=timezone.now (instead
+    # of auto_now_add=True) allows FR-005 to still set it explicitly via the
+    # ORM for backfilled historical records.
+    recorded_at = models.DateTimeField(default=timezone.now, editable=False)
 
     class Meta:
         get_latest_by = "recorded_at"

@@ -1,11 +1,10 @@
-@status-todo
+@status-done
 Feature: FR-005 - Weather historical data
   The service stores past weather records for a city and exposes them
   through a date-range query.
 
   Background:
     Given the city "Shanghai" exists with uuid "55555555-5555-5555-5555-555555555555"
-    And "Shanghai" was added to the service on "2026-01-01"
     And "Shanghai" has historical weather records for every day from "2026-01-01" to "2026-01-10"
 
   Scenario: Retrieve historical weather data for a valid date range

@@ -1,3 +1,5 @@
+import json
+
 from behave import then, when
 from django.test import Client
 
@@ -13,6 +15,10 @@ CITY_DEFAULTS = {
 def _client_for(context, username):
     context.clients = getattr(context, "clients", {})
     return context.clients.setdefault(username, Client())
+
+
+def _response_body(context):
+    return json.loads(context.last_response.content)
 
 
 @when('a client sends "{method:w} {path:S}"')

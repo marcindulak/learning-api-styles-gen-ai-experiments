@@ -1,13 +1,9 @@
 import json
 
 from behave import given, then, when
-from common_steps import CITY_DEFAULTS, _client_for
+from common_steps import CITY_DEFAULTS, _client_for, _response_body
 
 from weather.models import City, WeatherRecord
-
-
-def _response_body(context):
-    return json.loads(context.last_response.content)
 
 
 def _graphql_data(context, path):

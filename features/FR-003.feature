@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-003 - Weather forecast feed via Atom
   The service publishes each city's 7-day weather forecast as an Atom
   feed, with one entry per forecast day.

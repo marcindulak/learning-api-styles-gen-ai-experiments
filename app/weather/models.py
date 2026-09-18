@@ -38,3 +38,18 @@ class WeatherRecord(models.Model):
 
     def __str__(self) -> str:
         return f"{self.city} @ {self.recorded_at}: {self.temperature}"
+
+
+class Forecast(models.Model):
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="forecasts")
+    date = models.DateField()
+    condition = models.CharField(max_length=100)
+    temp_min = models.FloatField()
+    temp_max = models.FloatField()
+
+    class Meta:
+        ordering = ["date"]
+        unique_together = ("city", "date")
+
+    def __str__(self) -> str:
+        return f"{self.city} @ {self.date}: {self.condition}"

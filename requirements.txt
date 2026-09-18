@@ -1,4 +1,6 @@
 behave-django
+channels
+daphne
 django
 djangorestframework
 psycopg2

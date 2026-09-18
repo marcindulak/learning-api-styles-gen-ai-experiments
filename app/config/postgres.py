@@ -12,12 +12,14 @@ DEBUG = os.environ.get("DEBUG", "False") == "True"
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "channels",
     "behave_django",
     "rest_framework",
     "strawberry_django",
@@ -54,6 +56,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
+ASGI_APPLICATION = "config.asgi.application"
+
+# FR-004: a single process serves every connection (matches NFR-003's
+# single-container/single-unit deployment), so the in-memory channel layer
+# is sufficient -- no cross-process pub/sub is needed and no broker (e.g.
+# Redis) is introduced.
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
 
 DATABASES = {
     "default": {

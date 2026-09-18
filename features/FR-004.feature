@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: FR-004 - Weather alerts via WebSocket
   The service pushes a weather alert to subscribed clients over a
   WebSocket connection when a city's current reading crosses a defined

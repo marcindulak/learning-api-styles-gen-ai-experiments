@@ -6,4 +6,5 @@ set -eu
 # connections by the time this script runs.
 python manage.py migrate --no-input
 python manage.py seed_cities
+python manage.py seed_admin
 exec python manage.py runserver "0.0.0.0:${APP_PORT_HTTP}"

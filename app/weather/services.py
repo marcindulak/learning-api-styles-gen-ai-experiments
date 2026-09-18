@@ -1,5 +1,7 @@
 import logging
 
+from django.contrib.auth.models import User
+
 from .models import City, WeatherRecord
 from .providers import WeatherProviderUnavailable
 
@@ -40,6 +42,31 @@ def seed_cities(provider):
     for city_data in BIGGEST_CITIES:
         city = City.objects.create(**city_data)
         poll_city_weather(city, provider)
+
+
+def seed_admin_user(username, password):
+    """Seeds a single admin (is_staff/is_superuser) user, once.
+
+    A no-op once any user already exists, so this is safe to invoke on
+    every container startup without resetting an operator's own password
+    after the first run. Mirrors seed_cities' idempotency guard above:
+    plain management command invoked from startup.sh, not a data
+    migration, for the same reasons (single-container topology per
+    NFR-003; a migration would also run on every test-database `migrate`
+    django-behave issues, seeding a real user in every scenario run).
+    """
+    if User.objects.exists():
+        return
+    User.objects.create_superuser(username=username, password=password)
+    # REQUIREMENTS.md's own curl walkthrough hardcodes admin/admin, and
+    # compose.yaml defaults ADMIN_USERNAME/ADMIN_PASSWORD to exactly that,
+    # so seeding it isn't itself a bug to fix here. Flagged by the mandatory
+    # /security-review gate as a real risk if an operator ever exposes this
+    # service beyond the project's default 127.0.0.1-only port binding
+    # without overriding the credentials, so a startup-time warning gives
+    # that operator a visible signal instead of a silent default.
+    if password == "admin":
+        logger.warning("seed_admin_user: seeded superuser %r with the well-known default password", username)
 
 
 def poll_city_weather(city, provider):

@@ -1,17 +1,25 @@
-@status-todo
+@status-done
 Feature: NFR-004 - Service is testable
   The project includes an automated integration test suite and an
   automated end-to-end test suite, each reporting a clear pass/fail
   result via process exit status.
 
-  Scenario: Integration test suite runs and reports a result
+  Scenario Outline: Integration test suite reports its result via exit status
     Given the project's integration test command is available
-    When the operator runs the integration test suite
-    Then the command exits with status 0 when all integration tests pass
-    And the command exits with a non-zero status when any integration test fails
+    When the operator runs a <outcome> integration test suite
+    Then the command's exit status reflects that the suite is <outcome>
 
-  Scenario: End-to-end test suite runs and reports a result
+    Examples:
+      | outcome |
+      | passing |
+      | failing |
+
+  Scenario Outline: End-to-end test suite reports its result via exit status
     Given the service is running via "docker compose up --detach --wait"
-    When the operator runs the end-to-end test suite against the running service
-    Then the command exits with status 0 when all end-to-end tests pass
-    And the command exits with a non-zero status when any end-to-end test fails
+    When the operator runs a <outcome> end-to-end test suite against the running service
+    Then the command's exit status reflects that the suite is <outcome>
+
+    Examples:
+      | outcome |
+      | passing |
+      | failing |

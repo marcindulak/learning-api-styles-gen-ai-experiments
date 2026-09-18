@@ -7,6 +7,12 @@ SECRET_KEY = os.environ["SECRET_KEY"]
 
 WEBHOOK_SECRET = os.environ["WEBHOOK_SECRET"]
 
+# NFR-004/REQUIREMENTS.md's own end-to-end curl walkthrough authenticates as
+# this admin user; seeded at startup (see weather.services.seed_admin_user)
+# so the walkthrough works against a fresh checkout with no manual step.
+ADMIN_USERNAME = os.environ["ADMIN_USERNAME"]
+ADMIN_PASSWORD = os.environ["ADMIN_PASSWORD"]
+
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
@@ -79,6 +85,13 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    # NFR-004: REQUIREMENTS.md's own curl walkthrough reads the created
+    # city's UUID from a `.results[0]` wrapper, which DRF only produces once
+    # a pagination class is configured; PageNumberPagination's own PAGE_SIZE
+    # default is None (pagination class enabled but inactive), so PAGE_SIZE
+    # must also be set explicitly.
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
 }
 
 # NFR-005: only TITLE is required by drf-spectacular; every other setting is

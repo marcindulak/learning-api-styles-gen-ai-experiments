@@ -18,12 +18,30 @@ from .serializers import (
 
 
 # Unlike this file's other views, listing/creating a City needs no custom
-# query-param parsing or filtering, so DRF's generic covers it exactly as
-# written; the other views stay hand-rolled because they do have custom
-# logic the generic can't express.
+# query-param parsing or filtering beyond the name search below, so DRF's
+# generic covers it almost as written; the other views stay hand-rolled
+# because they do have custom logic the generic can't express.
 class CityListCreateView(generics.ListCreateAPIView):
     queryset = City.objects.all()
     serializer_class = CitySerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+    # NFR-004: REQUIREMENTS.md's own curl walkthrough filters the list by
+    # `?search_name=`, so this is a required part of that documented contract,
+    # not a speculative feature.
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_name = self.request.query_params.get("search_name")
+        if search_name:
+            queryset = queryset.filter(name__icontains=search_name)
+        return queryset
+
+
+class CityDetailView(generics.RetrieveAPIView):
+    queryset = City.objects.all()
+    serializer_class = CitySerializer
+    lookup_field = "uuid"
+    lookup_url_kwarg = "city_uuid"
     permission_classes = [IsAdminOrReadOnly]
 
 

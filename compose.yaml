@@ -21,6 +21,9 @@ services:
       - SECRET_KEY=${SECRET_KEY:-VKnroLzyyjvUk316fuyY2vO8jnrP6obbEjH75PGESQpf2Zwu2SJkGUme1cRj67Hz}
       # Enable TLS by setting TLS_ENABLE=1
       - TLS_ENABLE=0
+      # Matches REQUIREMENTS.md's own curl walkthrough credentials
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
       # Avoid special characters since this value is not base64 encoded
       - WEBHOOK_SECRET=${WEBHOOK_SECRET:-a0tObtQBvNhQjRSbPRZrIkXiooIH2ucIZJeESrRcIFyYOtSV8FKWrAri8djp3CQd}
       - POSTGRES_DB=weather_forecast_service
@@ -31,6 +34,7 @@ services:
        - ./app:/app
        - ./docs:/app/docs
        - ./features:/app/features
+       - ./tests:/app/tests
 
   postgres:
     image: postgres:17-alpine

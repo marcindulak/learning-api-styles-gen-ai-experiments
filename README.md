@@ -15,4 +15,6 @@ covered by standalone scripts instead, run directly on the host/CI runner:
 ```
 docker compose up --detach --wait
 tests/single_unit_lifecycle.sh
+tests/clean_checkout_lifecycle.sh
+tests/codespace_setup_lifecycle.sh
 ```

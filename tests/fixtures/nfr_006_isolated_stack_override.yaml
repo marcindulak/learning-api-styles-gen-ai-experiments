@@ -1,0 +1,24 @@
+# Test-only override for NFR-006's two host-verified lifecycle scripts
+# (tests/clean_checkout_lifecycle.sh, tests/codespace_setup_lifecycle.sh),
+# used to run a throwaway compose stack alongside the main dev stack without
+# name collisions. compose.yaml pins container_name/hostname/the network's
+# name to fixed strings; resetting them here (rather than dropping the pins
+# from compose.yaml itself) keeps this iteration's change scoped to NFR-006's
+# own test scripts instead of shared infrastructure every other already-
+# @status-done feature was built and reviewed against -- see ELN.md ENTRY 017.
+#
+# `!reset null` (not a plain override value) is required: Compose scalar keys
+# are normally replaced by an override, but confirmed empirically (ELN.md
+# ENTRY 017) that only `!reset` reliably falls back to Compose's own
+# project-scoped auto-naming here, rather than needing this file to also
+# guess/hardcode alternate names.
+services:
+  app:
+    container_name: !reset null
+    hostname: !reset null
+  postgres:
+    container_name: !reset null
+    hostname: !reset null
+networks:
+  django_internal:
+    name: !reset null

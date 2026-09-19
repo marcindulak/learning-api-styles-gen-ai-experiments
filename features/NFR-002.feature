@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: NFR-002 - Requests can be encrypted or unencrypted
   The service accepts requests over both plain HTTP and TLS-encrypted
   HTTPS.

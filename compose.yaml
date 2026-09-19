@@ -11,6 +11,7 @@ services:
     ports:
       - 127.0.0.1:8000:8000
       - 127.0.0.1:8001:8001
+      - 127.0.0.1:8443:8443
     depends_on:
       postgres:
         condition: service_healthy
@@ -19,8 +20,8 @@ services:
       - DJANGO_SETTINGS_MODULE=config.postgres
       # Avoid special characters since this value is not base64 encoded
       - SECRET_KEY=${SECRET_KEY:-VKnroLzyyjvUk316fuyY2vO8jnrP6obbEjH75PGESQpf2Zwu2SJkGUme1cRj67Hz}
-      # Enable TLS by setting TLS_ENABLE=1
-      - TLS_ENABLE=0
+      # Disable TLS by setting TLS_ENABLE=0
+      - TLS_ENABLE=1
       # Matches REQUIREMENTS.md's own curl walkthrough credentials
       - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}

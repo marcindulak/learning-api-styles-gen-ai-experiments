@@ -21,3 +21,7 @@ Feature: FR-005 - Weather historical data
     When a client sends "GET /api/cities/55555555-5555-5555-5555-555555555555/history?start=2025-01-01&end=2025-01-05"
     Then the response status is 200
     And the response body contains 0 records
+
+  Scenario: Historical data request for a nonexistent city returns not found
+    When a client sends "GET /api/cities/99999999-9999-9999-9999-999999999999/history?start=2026-01-02&end=2026-01-05"
+    Then the response status is 404

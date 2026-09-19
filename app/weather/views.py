@@ -67,6 +67,15 @@ class HistoricalWeatherView(APIView):
     # yet, and two date fields don't justify introducing that pattern ahead
     # of a second consumer (AHA - avoid hasty abstractions).
     def get(self, request, city_uuid):
+        # An empty queryset is indistinguishable from "city has no records in
+        # this range", so a nonexistent city must be checked explicitly to
+        # return 404 instead of silently returning an empty 200 for both
+        # cases -- via the same try/except DoesNotExist idiom CurrentWeatherView
+        # above uses, rather than a second, differently-shaped existence check.
+        try:
+            City.objects.get(uuid=city_uuid)
+        except City.DoesNotExist:
+            return Response(status=404)
         try:
             start = date.fromisoformat(request.query_params["start"])
             end = date.fromisoformat(request.query_params["end"])

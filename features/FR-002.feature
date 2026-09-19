@@ -25,3 +25,16 @@ Feature: FR-002 - GitHub webhook receiver
     When a client sends "POST /api/webhooks/github" with the unsigned payload and header "X-GitHub-Event: push"
     Then the response status is 401
     And no event is recorded
+
+  Scenario: Reject a GitHub webhook event with a malformed JSON body
+    Given a malformed JSON body signed with the secret "test-webhook-secret" using HMAC-SHA256
+    When a client sends "POST /api/webhooks/github" with the signed payload and header "X-GitHub-Event: push"
+    Then the response status is 400
+    And no event is recorded
+
+  Scenario: Redelivering the same event is accepted idempotently without recording a duplicate
+    Given a "push" event payload signed with the secret "test-webhook-secret" using HMAC-SHA256
+    When a client sends "POST /api/webhooks/github" with the signed payload and header "X-GitHub-Event: push"
+    And a client sends "POST /api/webhooks/github" with the signed payload and header "X-GitHub-Event: push"
+    Then the response status is 200
+    And exactly 1 event is recorded with type "push"

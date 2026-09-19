@@ -19,6 +19,11 @@ def _build_payload(context, event_type):
     context.webhook_delivery_id = str(uuid.uuid4())
 
 
+def _sign(context, secret):
+    digest = hmac.new(secret.encode(), msg=context.webhook_body, digestmod=hashlib.sha256).hexdigest()
+    context.webhook_signature_header = f"sha256={digest}"
+
+
 @given('the GitHub webhook secret is configured as "{secret}"')
 def step_given_webhook_secret(context, secret):
     override = override_settings(WEBHOOK_SECRET=secret)
@@ -29,14 +34,20 @@ def step_given_webhook_secret(context, secret):
 @given('a "{event_type}" event payload signed with the secret "{secret}" using HMAC-SHA256')
 def step_given_signed_payload(context, event_type, secret):
     _build_payload(context, event_type)
-    digest = hmac.new(secret.encode(), msg=context.webhook_body, digestmod=hashlib.sha256).hexdigest()
-    context.webhook_signature_header = f"sha256={digest}"
+    _sign(context, secret)
 
 
 @given('a "{event_type}" event payload with no "X-Hub-Signature-256" header')
 def step_given_unsigned_payload(context, event_type):
     _build_payload(context, event_type)
     context.webhook_signature_header = None
+
+
+@given('a malformed JSON body signed with the secret "{secret}" using HMAC-SHA256')
+def step_given_malformed_json_payload(context, secret):
+    context.webhook_body = b"{not valid json"
+    context.webhook_delivery_id = str(uuid.uuid4())
+    _sign(context, secret)
 
 
 @when('a client sends "POST /api/webhooks/github" with the signed payload and header "{header}: {value}"')
@@ -66,3 +77,8 @@ def step_then_event_recorded(context, event_type):
 @then("no event is recorded")
 def step_then_no_event_recorded(context):
     assert not GitHubWebhookEvent.objects.exists()
+
+
+@then('exactly {count:d} event is recorded with type "{event_type}"')
+def step_then_exactly_n_events_recorded(context, count, event_type):
+    assert GitHubWebhookEvent.objects.filter(event_type=event_type).count() == count

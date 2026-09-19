@@ -1,4 +1,4 @@
-@status-todo
+@status-done
 Feature: NFR-001 - Service operates in a local environment
   The service and its dependencies run entirely on the local machine via
   containers, without requiring any externally hosted infrastructure
@@ -12,5 +12,5 @@ Feature: NFR-001 - Service operates in a local environment
 
   Scenario: The running service responds to requests without external orchestration
     Given the service was started with "docker compose up --detach --wait"
-    When a client sends "GET /api/cities"
+    When a client sends "GET http://localhost:8000/api/cities"
     Then the response status is 200

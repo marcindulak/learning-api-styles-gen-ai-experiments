@@ -181,6 +181,7 @@ Note that the difference between the clock and agent time is due to exhausting t
 
 | Date | Outcome | PR | Tool / Version | Agent | Top model | Knowledge cutoff | Duration | Cost | AGENTS.md / rules | Human guidance | MCP | Skills |
 |------|---------|----|----------------|-------|-------|------------------|----------|------|-----------|----------------|-----|--------|
+| 2026-09-17 |fair | [57](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/57) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [29835b29](https://github.com/marcindulak/ralph-wiggum-bdd/commit/29835b297943a8832c74b020efcac3316320e85c) | 2.1.274 (Claude Code) | claude-sonnet-5 high | Jan 2026 "Reliable knowledge cutoff", and Jan 2026 "Training data cutoff" | About 16 hours clock time (about 9 hours agent time) | $2 USD (about 40% of Pro weekly plan) | Yes | Yes | Yes | Yes
 | 2026-07-01 |poor/fair | [49](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/49) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [b7fbd891](https://github.com/marcindulak/ralph-wiggum-bdd/commit/b7fbd891eb51e55025b69338e042b51325f420bb) | 2.1.185 (Claude Code) | claude-fable-5 high | Jan 2026 "Reliable knowledge cutoff", and Jan 2026 "Training data cutoff" | About 22 hours clock time (about 3 hours agent time) | $2 USD (about 35% of Pro weekly plan) | No | Yes | No | No
 | 2026-05-09 |poor | [45](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/45) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [35056063](https://github.com/marcindulak/ralph-wiggum-bdd/commit/35056063573ad6e1dcc2ed98e2a555d8b8e9294f) | 2.1.126 (Claude Code) | claude-opus-4-7 xhigh | Jan 2026 "Reliable knowledge cutoff", and Jan 2026 "Training data cutoff" | About 33 hours clock time (about 6 hours agent time) | $4 USD (about 85% of Pro weekly plan) | Yes | Yes | No | No
 | 2026-03-25 |poor/fair | [37](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/37) | [superpowers](https://github.com/obra/superpowers) / [5.0.6](https://github.com/obra/superpowers/releases/tag/v5.0.6) | 2.1.58 (Claude Code) | claude-sonnet-4-6 | Aug 2025 "Reliable knowledge cutoff", and Jan 2026 "Training data cutoff" | About 4 hours clock time (about 2 hours agent time) | $2 USD (about 30% of Pro weekly plan) | No | No | No | Yes
@@ -192,6 +193,141 @@ Note that the difference between the clock and agent time is due to exhausting t
 | 2026-02-06 |poor/fair | [14](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/14) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [d469a02](https://github.com/marcindulak/ralph-wiggum-bdd/commit/d469a020c72646590f156dfaa39f82f677316afd) | 2.1.17 (Claude Code) | claude-sonnet-4-5-20250929 | Jan 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 7 hours clock time (about 3 hours agent time) | $1 USD (about 20% of Pro weekly plan) | Yes | No | No | No
 | 2026-01-31 |poor | [8](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/8) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / [542a1ca](https://github.com/marcindulak/ralph-wiggum-bdd/commit/542a1ca9640cf1e59eb31eaaa51be95a85fb84bf) | 2.1.17 (Claude Code) | claude-opus-4-5-20251101 | May 2025 "Reliable knowledge cutoff", and Aug 2025 "Training data cutoff" | About 12 hours clock time (about 5 hours agent time) | $2 USD (about 40% of Pro weekly plan) | No | No | No | No
 | 2026-01-18 |poor | [1](https://github.com/marcindulak/learning-api-styles-gen-ai/pull/1) | [ralph-wiggum-bdd](https://github.com/marcindulak/ralph-wiggum-bdd) / Experimental | 2.1.9 (Claude Code) | claude-haiku-4-5-20251001 | Feb 2025 "Reliable knowledge cutoff", and Jul 2025 "Training data cutoff" | About 11 hours clock time (about 7 hours agent time) | $2 USD (about 40% of Pro weekly plan) | No | Yes | No | No
+
+## 2026-09-17
+
+Outcome: fair, thanks to a small amount of generated code, good project structure, high test coverage, and e2e tests that start and stop Docker containers and perform HTTP requests
+
+```
+tokei --types='Python,Shell' .
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Python                   54         2272         1517          267          488
+ Shell                     7          369          178          150           41
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    61         2641         1695          417          529
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+tokei --types='Python,Gherkin (Cucumber)' features/
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Gherkin (Cucumber)       16          454          365           22           67
+ Python                   17         1115          721          112          282
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                    33         1569         1086          134          349
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ruff check . --select C90 --output-format=concise
+All checks passed!
+```
+
+The number of lines of Python implementation (excluding tests) is: 1517 - 721 = 796.
+Test line coverage is 94%.
+
+The code is organized into a `weather` app, with `config/` holding settings, and a separate `webhooks` app.
+Within `weather`, each API style has its own file: `views.py` for city create/read and weather sub-resource REST endpoints (no update or delete endpoint exists for a city), `schema.py` for GraphQL, `feeds.py` for the Atom 1.0 feed, and `consumers.py` for WebSocket, which allows studying each style independently.
+The `config/` directory also contains `views.py` for the AsyncAPI document endpoint (`/api/async-schema`).
+The code for the GitHub webhook handler is located in a separate `webhooks/` directory, importing nothing from `weather/`.
+There is however no dedicated health-check endpoint, only a Docker healthcheck that curls `/admin/login/`.
+
+All weather, forecast, and feed endpoints query real database rows.
+Only `City` and `WeatherRecord` stay current from a live source.
+No equivalent poller populates `Forecast`, so its rows exist only where an admin or a test fixture wrote them.
+The requirement for weather forecast only asked for modeling the domain, not live data, so this matches what was asked, but it also means the forecast endpoint and its Atom feed are empty by default.
+
+The code is too verbosely commented, and uses space filling adverbs, like `actually`, `just`, `clean`, `deliberately`, or `truly`.
+The `ELN.md` file also uses the filler words characteristic to the mid-2026 Anthropic models, like [`load-bearing`](https://github.com/anthropics/claude-code/issues/53454), or `prose`.
+
+```
+tree  -L 2 app tests
+app/
+├── behave.ini
+├── config
+│   ├── asgi.py
+│   ├── __init__.py
+│   ├── postgres.py
+│   ├── urls.py
+│   ├── views.py
+│   └── wsgi.py
+├── docs
+├── features
+├── manage.py
+├── scripts
+│   ├── healthcheck.sh
+│   └── startup.sh
+├── tests
+├── weather
+│   ├── admin.py
+│   ├── apps.py
+│   ├── consumers.py
+│   ├── feeds.py
+│   ├── __init__.py
+│   ├── management
+│   ├── migrations
+│   ├── models.py
+│   ├── permissions.py
+│   ├── providers.py
+│   ├── routing.py
+│   ├── schema.py
+│   ├── serializers.py
+│   ├── services.py
+│   ├── signals.py
+│   ├── urls.py
+│   └── views.py
+└── webhooks
+    ├── apps.py
+    ├── __init__.py
+    ├── migrations
+    ├── models.py
+    ├── urls.py
+    └── views.py
+tests/
+├── clean_checkout_lifecycle.sh
+├── codespace_setup_lifecycle.sh
+├── e2e.sh
+├── fixtures
+│   ├── behave_probe
+│   └── nfr_006_isolated_stack_override.yaml
+├── lib
+│   └── nfr_006_stack_helpers.sh
+└── single_unit_lifecycle.sh
+```
+
+All functional and non-functional requirements were covered by tests.
+Some NFRs needed host-run scripts, because the in-container `behave` cannot manage its own container starting, stopping, or being built.
+These scripts could be extended, and REQUIREMENTS.md itself suggests plain curl-based end-to-end tests for this kind of verification.
+However, this project used Gherkin scenarios to represent such NFRs, a known anti-pattern.
+
+The agent correctly discovered that Docker commands were blocked, and asked the human to allow them, as expected.
+The agent correctly switched to "WORKDIR=/app" in Dockerfile.
+
+The agent flagged the instruction to not read the git history as a prompt injection.
+This instruction is needed in the particular setup of this project, so agents don't peek into other agent's branches.
+Nevertheless flagging this instructions as suspicious was reasonable, so this does not count as an interactive human guidance.
+
+A Claude Code bug created a `tests` directory, the agent could not remove it, so the human did, and this counts as an interactive human guidance.
+
+The agent used unversioned requirements.txt, which is an appropriate choice considering security risks for a non-production, educational project.
+
+Roughly in the mid of the implementation, by using the [oreillymedia/expert-intelligence-skills](https://github.com/oreillymedia/expert-intelligence-skills), the agent realized that this project corresponds to the "Learning API Styles" book, and from there based some of the decisions (see `ELN.md`) on the choices made in the book.
+Most book searches found no closely matching source, so the agent made decisions on its own.
+However, two agent's decisions improved thanks to the book: a per-deployment TLS keypair is used instead of one shared image key, and idempotent handling of webhook redeliveries implemented.
+On the other hand, the WebSocket JWT is carried in the query string, following the book, even though a query string can leak into logs.
+The agent considered a `Sec-WebSocket-Protocol` header instead, which is not standardized for carrying a token and only reduces, rather than eliminates, the risk of logging, and chose the book's query-string approach anyway.
+
+The agent sandbox also generated and left [empty dotfiles](https://github.com/anthropic-experimental/sandbox-runtime/issues/139), but the agent realized these files must not be committed.
+The agent also once [failed to include the commit attribution](https://github.com/anthropics/claude-code/issues/58033).
+
+Behave tests passed for `TLS_ENABLE=1` (the agent changed this to be the default), and failed for `TLS_ENABLE=0` (single TLS test failed) in `compose.yaml`.
+
+See the screen recording of the session.
+It's split into two due to Claude Code large memory use ([anthropics/claude-code/issues/11315](https://github.com/anthropics/claude-code/issues/11315)) that caused an unrecoverable freeze (requiring hard reboot) of the virtual machine host.
+The videos don't represent the clock time, the long periods when there are no changes on the terminal are trimmed away.
+
+[![Watch Video 2026-09-17 Part1](images/2026-09-17-01.png)](https://www.youtube.com/watch?v=YmcjAedOpDA)
+[![Watch Video 2026-09-17 Part2](images/2026-09-17-02.png)](https://www.youtube.com/watch?v=gsd8XOhlmLE)
 
 ## 2026-07-01
 

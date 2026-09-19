@@ -1,0 +1,88 @@
+{
+  "asyncapi": "3.0.0",
+  "info": {
+    "title": "Weather Forecast Service Async API",
+    "version": "1.0.0",
+    "description": "Asynchronous channels: WebSocket weather alerts pushed to subscribed clients, and the GitHub webhook events received from GitHub."
+  },
+  "channels": {
+    "weatherAlerts": {
+      "address": "/ws/alerts/{cityUuid}/",
+      "parameters": {
+        "cityUuid": {
+          "description": "UUID of the city whose alerts this connection subscribes to."
+        }
+      },
+      "messages": {
+        "weatherAlert": {
+          "$ref": "#/components/messages/weatherAlert"
+        }
+      }
+    },
+    "githubWebhook": {
+      "address": "/api/webhooks/github",
+      "messages": {
+        "githubWebhookEvent": {
+          "$ref": "#/components/messages/githubWebhookEvent"
+        }
+      }
+    }
+  },
+  "operations": {
+    "receiveWeatherAlert": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/weatherAlerts"
+      },
+      "summary": "A subscribed client receives a weather alert when a stored reading crosses an alert threshold."
+    },
+    "receiveGithubWebhookEvent": {
+      "action": "receive",
+      "channel": {
+        "$ref": "#/channels/githubWebhook"
+      },
+      "summary": "The service receives a signed GitHub webhook event."
+    }
+  },
+  "components": {
+    "messages": {
+      "weatherAlert": {
+        "payload": {
+          "type": "object",
+          "required": ["type", "city"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["heat", "cold", "wind"]
+            },
+            "city": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "githubWebhookEvent": {
+        "headers": {
+          "type": "object",
+          "properties": {
+            "X-GitHub-Event": {
+              "type": "string"
+            },
+            "X-GitHub-Delivery": {
+              "type": "string"
+            },
+            "X-Hub-Signature-256": {
+              "type": "string",
+              "description": "HMAC-SHA256 signature of the raw request body, keyed with the shared webhook secret."
+            }
+          },
+          "required": ["X-GitHub-Event", "X-GitHub-Delivery", "X-Hub-Signature-256"]
+        },
+        "payload": {
+          "type": "object",
+          "description": "The GitHub event payload, forwarded as-is."
+        }
+      }
+    }
+  }
+}

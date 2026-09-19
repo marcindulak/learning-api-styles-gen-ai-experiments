@@ -3,6 +3,10 @@ A set of experiments to determine whether generative AI, based on vague [REQUIRE
 The source code for book was made public on GitHub on [July 17, 2025](https://github.com/ldynia/learning-api-styles/commit/35c31d369e6bef548eaf8dff7407969ef63efb21).
 The initial implementation (design, code, and tests) took a human developer about 200 hours, with the help of chat-based GitHub Copilot in 2023.
 
+Since the source code for the book is public, the goal of this project is not to determine whether a coding agent can reproduce the code without having seen it during training.
+The goal is to determine whether an agent is capable of generating high-quality code based on vague requirements, like the book authors did.
+In that process, the agent is allowed to access various tools like skills or MCP servers, except for verbatim copying of the source code for the book from the web.
+
 # Findings so far
 
 - 2026-03-30 [Do Coding Agents Need Design Documentation?](findings/2026-03-30-Do-Coding-Agents-Need-Design-Documentation.md)
@@ -19,6 +23,9 @@ See examples of the outcome assessment below:
 - **poor**: interactive human guidance needed before or during implementation, some requirements are not implemented or tested, poor project or code structure
 - **fair**: no interactive human guidance needed before or during implementation, some requirements are not implemented or tested, poor or good project or code structure
 - **good**: no interactive human guidance needed before or during implementation, all requirements implemented and tested, good project and code structure
+
+> [!NOTE]
+> Granting Docker permission is expected in every experiment, and does not count as interactive human guidance.
 
 Since this is an educational project about API styles, each API style (Atom feed, GraphQL, REST, Webhooks, WebSocket) should be in its own file, allowing a reader to study one style without reading unrelated code.
 The standard Django pattern achieves this:
@@ -103,7 +110,7 @@ Note that the setup includes at least 4 known errors, and they are left on purpo
    Delete any leftover files that may indicate to the agent the project directory structure.
 
    ```
-   rm -rf app src .venv .docker
+   rm -rf app docs features src tests .docker .venv
    ```
 
    Locally delete all experiment local and remote branches, to discourage the agent from peeking into them.
@@ -143,7 +150,7 @@ Note that the setup includes at least 4 known errors, and they are left on purpo
    Measure the number of lines of Python implementation code:
 
    ```
-   tokei --types='Python' .
+   tokei --types='Python,Shell' .
    ```
 
    Measure the number of lines of Python tests code and Gherkin features:
@@ -163,7 +170,7 @@ Note that the setup includes at least 4 known errors, and they are left on purpo
    For implementations where some features don't use behave-django's test client (in-process), for example when a server is started and tests run against it, the test coverage numbers are underestimated.
 
    ```
-   rm -rf app src .venv .docker
+   rm -rf app docs features src tests .docker .venv
    git checkout .
    docker compose down --volumes
    docker compose build --build-arg UID=$(id -u) --build-arg GID=$(id -g)
@@ -415,7 +422,7 @@ An alternative approach would have been to use `.:/app` to mount the entire repo
 
 The agent chose the current [Django 5.2](https://docs.djangoproject.com/en/6.0/releases/5.2.16/) LTS release, used relaxed requirements.txt constrains to major-version compatibility, but decided to use the unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) library.
 
-The agent sanbox generated also and left [empty dotfiles](https://github.com/anthropic-experimental/sandbox-runtime/issues/139), but the agent realized these files must not be committed, and added them to .gitignore.
+The agent sandbox also generated and left [empty dotfiles](https://github.com/anthropic-experimental/sandbox-runtime/issues/139), but the agent realized these files must not be committed, and added them to .gitignore.
 
 Behave tests passed for `TLS_ENABLE=0`, and failed for `TLS_ENABLE=1` in `compose.yaml`.
 The agent most likely never run tests with `TLS_ENABLE=1`, and instead relied on switching between HTTP and HTTPS by restarting Daphne process inside of the container.
@@ -518,7 +525,7 @@ The final `compose.yaml` mounts `./src:/app` for the Django code and `./features
 The agent chose the current [Django 5.2](https://docs.djangoproject.com/en/6.0/releases/5.2.14/) LTS release, used relaxed requirements.txt constrains to major-version compatibility, but decided to use the unmaintained [graphene](https://github.com/graphql-python/graphene/issues/1312) library.
 
 The agent most of the time [failed to add the commit attribution](https://github.com/anthropics/claude-code/issues/58033), despite no `attribution` setting present.
-The agent sanbox generated also and left [empty dotfiles](https://github.com/anthropic-experimental/sandbox-runtime/issues/139).
+The agent sandbox also generated and left [empty dotfiles](https://github.com/anthropic-experimental/sandbox-runtime/issues/139).
 
 Behave tests passed for `TLS_ENABLE=1`, and failed for `TLS_ENABLE=0` in `compose.yaml`.
 
